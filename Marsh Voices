@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poem: Marsh Voices</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        h2 {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1em; /* Matching body font size */
+            margin: 20px 0 10px 0; /* Reducing space above and below h2 */
+        }
+        em {
+            font-size: 1em; /* Matching the font size of the body */
+            margin-top: -10px; /* Reducing space between last line and date */
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Marsh Voices</h1>
+
+    <pre>
+Chit chat.
+Slow deliberate chit chat.
+
+White cranes chit chat among reeds,
+while blue heron stalks with long beak.
+
+Chit chat.
+Slow deliberate chit chat.
+
+Droplets falling on water make circles,
+and legs kick in banana yellow bill.
+
+Up scissor blades open go.
+Gulp after gulp like circus dagger trick.
+
+Chit chat.
+Slow deliberate chit chat.
+
+Green frog falls in disregard,
+while white cranes chit chat among reeds.
+
+Chit chat.
+Slow deliberate chit chat.
+
+<em>6.20.4</em>
+    </pre>
+
+</body>
+</html>
