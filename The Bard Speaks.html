@@ -11,7 +11,6 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            overflow-wrap: break-word; /* Prevents overflow */
         }
 
         h1 {
@@ -20,6 +19,8 @@
 
         pre {
             white-space: pre-wrap; /* Preserves whitespace and line breaks */
+            word-break: break-word; /* Breaks long words at the end of the line */
+            overflow-wrap: break-word; /* Prevents overflow */
             margin: 0; /* Remove default margin from pre */
             font-size: 16px; /* Adjust font size for better readability */
         }
