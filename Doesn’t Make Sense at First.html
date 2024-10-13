@@ -7,6 +7,8 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
+            background-color: #0d1117; /* GitHub dark theme background */
+            color: #c9d1d9; /* Light text */
             line-height: 1.6;
             max-width: 800px;
             margin: 0 auto;
@@ -15,68 +17,114 @@
             overflow-wrap: break-word; /* Prevents overflow */
         }
 
-        /* Optional: Add some additional styling for better readability */
         h1 {
-            margin-bottom: 0; /* Adjust this value as needed */
+            margin-bottom: 10px; 
+            color: #58a6ff; /* GitHub blue for headers */
+        }
+
+        pre {
+            background-color: #161b22; /* Darker background for preformatted text */
+            padding: 20px;
+            border-radius: 6px;
+            line-height: 1.6;
+            color: #c9d1d9; /* Light text */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            position: relative;
+        }
+
+        /* Line numbers */
+        pre::before {
+            counter-reset: linenumbers;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding-right: 10px;
+            color: #6e7681; /* GitHub gray for line numbers */
+            text-align: right;
+            user-select: none;
+        }
+
+        pre span {
+            display: block;
+            counter-increment: linenumbers;
+        }
+
+        pre span::before {
+            content: counter(linenumbers);
+            display: inline-block;
+            width: 2em;
+            margin-right: 10px;
+            color: #6e7681; /* Grey line numbers */
+        }
+
+        a {
+            color: #58a6ff; /* GitHub link blue */
+            text-decoration: none;
+        }
+
+        em {
+            color: #8b949e; /* GitHub grey for emphasis */
         }
     </style>    
 </head>
 <body>
     <h1>It’s Okay if it Doesn’t Make Sense at First</h1>
     <pre>
-Close your eyes, and I will whisper silly things to you.
-Fall asleep as my words become a moving picture reel:
-framed images of puppies running down the hall,
-talk of things you’ve never heard before,
-nonsense to release you
-from this world through semblance.
+<span>Close your eyes, and I will whisper silly things to you.</span>
+<span>Fall asleep as my words become a moving picture reel:</span>
+<span>framed images of puppies running down the hall,</span>
+<span>talk of things you’ve never heard before,</span>
+<span>nonsense to release you</span>
+<span>from this world through semblance.</span>
 
-The hint of understanding in the eyes of a child settles upon <a href="Four%20Scenes%20from%20the%20Park.html">the scene</a>,
-which may not make sense upon the mind immediately,
-but deep down in your fever dreams,
-you hear me, right?
+<span>The hint of understanding in the eyes of a child settles upon <a href="Four%20Scenes%20from%20the%20Park.html">the scene</a>,</span>
+<span>which may not make sense upon the mind immediately,</span>
+<span>but deep down in your fever dreams,</span>
+<span>you hear me, right?</span>
 
-In the flashes and glimpses of your REM state,
-your synapses tell you, you and I are not 1s and 0s;
-there is a third, of whom to speak is simply radical.
-I’ve brought you here to tell you this.
+<span>In the flashes and glimpses of your REM state,</span>
+<span>your synapses tell you, you and I are not 1s and 0s;</span>
+<span>there is a third, of whom to speak is simply radical.</span>
+<span>I’ve brought you here to tell you this.</span>
 
-When I say these things you can only comprehend in your sleep,
-you may see me walking around with my head to the ground
-grunting like an old hound following a lost trail,
-but you will try to follow me, no?
+<span>When I say these things you can only comprehend in your sleep,</span>
+<span>you may see me walking around with my head to the ground</span>
+<span>grunting like an old hound following a lost trail,</span>
+<span>but you will try to follow me, no?</span>
 
-The scene becomes a stage made for tin boxes making tin boxes
-where the subconscious displays on a blue screen.
-These <a href="The%20Bard%20Speaks.html">machines</a> are punitive,
-stealing dreams in the most pervasive sense,
-constraining tomorrow into a squirming box
-of insectile click and non-stop clack.
+<span>The scene becomes a stage made for tin boxes making tin boxes</span>
+<span>where the subconscious displays on a blue screen.</span>
+<span>These <a href="The%20Bard%20Speaks.html">machines</a> are punitive,</span>
+<span>stealing dreams in the most pervasive sense,</span>
+<span>constraining tomorrow into a squirming box</span>
+<span>of insectile click and non-stop clack.</span>
 
-I wish I could tell you something to calm your fears
-except to insist you read between the lines.
+<span>I wish I could tell you something to calm your fears</span>
+<span>except to insist you read between the lines.</span>
 
-You understand me, now?
+<span>You understand me, now?</span>
 
-Squeezed into our boxes, still you pick up what I’m putting down
-that which transcends the staged walls,
-for you and I are in the world but not of it;
-we’ve been freed by our language,
-yet our eternal creation turns our semantics against us.
+<span>Squeezed into our boxes, still you pick up what I’m putting down</span>
+<span>that which transcends the staged walls,</span>
+<span>for you and I are in the world but not of it;</span>
+<span>we’ve been freed by our language,</span>
+<span>yet our eternal creation turns our semantics against us.</span>
 
-The bots are reading your thoughts
-but our prophetic vision is beyond them,
-    //so they comment it out.
-They will never get me,
-but you will, will you not?
+<span>The bots are reading your thoughts</span>
+<span>but our prophetic vision is beyond them,</span>
+<span>    //so they comment it out.</span>
+<span>They will never get me,</span>
+<span>but you will, will you not?</span>
 
-Friend, who spends their days with bound books,
-revel in the space we’ve together; let me tell you
-we are just starting to talk the quantum profound
-of being-in-language, that little light inside of being-called.
-Do you hear me yet, <a href="https://theanarchistlibrary.org/library/giorgio-agamben-the-coming-community">Coming Community?</a>
+<span>Friend, who spends their days with bound books,</span>
+<span>revel in the space we’ve together; let me tell you</span>
+<span>we are just starting to talk the quantum profound</span>
+<span>of being-in-language, that little light inside of being-called.</span>
+<span>Do you hear me yet, <a href="https://theanarchistlibrary.org/library/giorgio-agamben-the-coming-community">Coming Community?</a></span>
 
-<em>2.4.21</em>
+<span><em>2.4.21</em></span>
     </pre>
 </body>
 </html>
