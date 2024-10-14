@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nostalgia</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #0d1117; /* GitHub dark background */
+            color: #c9d1d9; /* Light text color */
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #58a6ff; /* Blue color for the title */
+        }
+
+        h2 {
+            font-size: 1em; /* Same font size as the body */
+            font-weight: bold; /* Makes the text bold */
+            color: #56d364; /* GitHub green for subheadings */
+            text-align: left; /* Align to the left */
+            padding-left: 120px; /* Indent with one tab */
+            margin: 0; /* Remove default margins */
+            margin-bottom: 5px; /* Space below the heading */
+            padding-top: 10px; /* Space above the heading */
+        }
+
+        pre {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #c9d1d9; /* Light text color */
+            margin: 0; /* Removes default margin */
+            padding: 4px 0; /* Reduces space between stanzas */
+            padding-left: 40px; /* Space for line numbers */
+        }
+
+        a {
+            color: #58a6ff; /* GitHub link blue */
+            text-decoration: none;
+        }
+
+        em {
+            color: red; /* Red color for the date */
+            font-size: 1em; /* Same size as the poem */
+            margin: 0; /* Removes space above the date */
+            display: block; /* Ensures the date starts on a new line */
+            padding-left: 40px; /* Indents the date to align with the poem */
+        }
+
+        .line-number {
+            color: #8b949e; /* Color for line numbers */
+            display: inline-block;
+            width: 30px; /* Fixed width for alignment */
+            text-align: right; /* Aligns line numbers to the right */
+            position: relative; /* Allows for absolute positioning */
+            left: -40px; /* Moves line numbers to the left */
+        }
+    </style>    
+</head>
+<body>
+
+    <h1>Nostalgia</h1>
+    <pre>
+<span class="line-number">1</span> Solstices and equinoxes
+<span class="line-number">2</span> 	last longer than a day. 
+<span class="line-number">3</span> Like any good fix, they get you 
+<span class="line-number">4</span> 	sillier than a brassiere on a small dog’s head 
+<span class="line-number">5</span> running down the hall of an early 20th-century 
+<span class="line-number">6</span> 	Craftsman bungalow lost to memory 
+<span class="line-number">7</span> 		but once in a blue moon: 
+<span class="line-number">8</span> 
+<span class="line-number">9</span> When suddenly then is now – 
+<span class="line-number">10</span> 	yesterday, today, and tomorrow 
+<span class="line-number">11</span> 		run into a wall. 
+    </pre>
+    <em>2.22.17</em> <!-- Date is now indented -->
+</body>
+</html>
