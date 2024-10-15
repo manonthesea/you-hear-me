@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,69 +6,79 @@
     <title>SNAFU</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
+            font-family: 'Courier New', monospace;
             background-color: #0d1117; /* GitHub dark background */
             color: #c9d1d9; /* Light text color */
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            white-space: pre; /* Preserve whitespace and line breaks */
-            overflow-wrap: break-word;
+            overflow-wrap: break-word; /* Allow text wrapping */
         }
 
         h1 {
-            margin-bottom: 10px;
-            color: #58a6ff; /* Blue color for the title */
+            color: #58a6ff; /* Title color */
         }
 
         pre {
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
-            color: #c9d1d9; /* Light text color */
+            font-size: 1em; 
+            color: #c9d1d9;
+            margin: 0;
+            padding: 4px 0;
             padding-left: 40px; /* Space for line numbers */
         }
 
-        a {
-            color: #58a6ff; /* GitHub link blue */
-            text-decoration: none;
+        .line-number {
+            color: #8b949e;
+            display: inline-block;
+            width: 30px;
+            text-align: right;
+            position: relative;
+            left: -40px; /* Keeps line numbers aligned to the left */
+        }
+
+        .indent {
+            padding-left: 40px; /* Indentation for indented lines */
+        }
+
+        .footnote {
+            font-size: 0.85em; /* Slightly smaller font for footnotes */
+            color: #c9d1d9;
+            margin-top: 5px; /* Less space between date and footnotes */
+            padding-left: 40px;
+            line-height: 1.2; /* Control line height for footnotes */
+            word-wrap: break-word; /* Allow text wrapping */
+        }
+
+        .footnote-number {
+            color: #2ea043; /* Green superscript for footnote references */
+            font-size: 0.75em; /* Smaller superscript */
+            vertical-align: super; /* Aligns superscript to the top of the line */
+            display: inline-block; /* Ensure proper alignment */
+            margin-top: -0.5em; /* Adjust position to align with the top of the line */
         }
 
         em {
-            color: red; /* Red color for the date */
+            color: #c9d1d9; /* Match body text */
+            font-style: italic;
         }
 
-        h2 {
-            font-size: 1em; /* Same font size as the body */
-            font-weight: bold; /* Makes the text bold */
-            text-align: left; /* Align to the left */
-            padding-left: 120px; /* Indent with one tab */
-            margin: 0; /* Remove default margins */
-            margin-bottom: 5px; /* Space below the heading */
-            padding-top: 10px; /* Space above the heading */
-            color: #56d364; /* GitHub green for the ellipses */
-        }
-
-        .line-number {
-            color: #8b949e; /* Color for line numbers */
-            display: inline-block;
-            width: 30px; /* Fixed width for alignment */
-            text-align: right; /* Aligns line numbers to the right */
-            position: relative; /* Allows for absolute positioning */
-            left: -40px; /* Moves line numbers to the left */
-        }
-
-        .italic {
-            font-style: italic; /* Italicizes text */
+        .date {
+            color: red;
+            font-size: 1em;
+            display: block;
+            padding-left: 40px;
+            margin-bottom: 5px; /* Less space between date and footnotes */
         }
     </style>    
 </head>
 <body>
+
     <h1>SNAFU</h1>
+
     <pre>
 <span class="line-number">1</span> The signal is digging in,
 <span class="line-number">2</span> digging trenches until disjunction inherits
-<span class="line-number">3</span> a troglodyte world<span class="footnote-number">1</span>:
+<span class="line-number">3</span> a <em>troglodyte</em> world<span class="footnote-number">1</span>:
 <span class="line-number">4</span> assimilation, successful metaphor,
 <span class="line-number">5</span> and repetitive repetition
 <span class="line-number">6</span> breed forgetfulness,
@@ -108,10 +118,8 @@
     </pre>
 
     <em class="date">11.26.10</em>
-
-    
-    <p class="footnote"><sup class="footnote-number">1</sup> Fussell, Paul. *The Great War and Modern Memory*. Oxford University Press, 1977. "The idea of 'the trenches' has been assimilated so successfully by metaphor and myth ('Georgian complacency died in the trenches') that it is not easy now to recover a feeling for the actualities" (36).</p>
-    <p class="footnote"><sup class="footnote-number">2</sup> Sledge, E. B. *With the Old Breed: at Peleliu and Okinawa*. Presidio Press, 2010. "The stench of death was overpowering. The only way I could bear the monstrous horror of it all was to look upward away from the earthly reality surrounding us" (273).</p>
+    <p class="footnote"><sup class="footnote-number">1</sup> Fussell, Paul. <em>The Great War and Modern Memory</em>. Oxford University Press, 1977. "The idea of 'the trenches' has been assimilated so successfully by metaphor and myth ('Georgian complacency died in the trenches') that it is not easy now to recover a feeling for the actualities" (36).</p>
+    <p class="footnote"><sup class="footnote-number">2</sup> Sledge, E. B. <em>With the Old Breed: at Peleliu and Okinawa</em>. Presidio Press, 2010. "The stench of death was overpowering. The only way I could bear the monstrous horror of it all was to look upward away from the earthly reality surrounding us" (273).</p>
 
 </body>
 </html>
