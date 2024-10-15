@@ -13,8 +13,8 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            white-space: pre; /* Preserve whitespace and line breaks */
-            overflow-wrap: break-word;
+            white-space: pre-wrap; /* Preserve whitespace, allow word wrap */
+            overflow-wrap: break-word; /* Break long words */
         }
 
         h1 {
@@ -27,6 +27,8 @@
             font-size: 1em;
             color: #c9d1d9; /* Light text color */
             padding-left: 40px; /* Space for line numbers */
+            white-space: pre-wrap; /* Allow text wrapping within <pre> */
+            word-wrap: break-word; /* Ensure long lines wrap inside the pre block */
         }
 
         a {
@@ -116,13 +118,13 @@
 <span class="line-number">24</span> and sheets are strewn about
 <span class="line-number">25</span> over lying men’s heads:
 
-<span class="line-number">26</span> <span class="indent italic">Mud knee deep in some places,</span>
-<span class="line-number">27</span> <span class="indent italic">others deeper than one dared to venture,</span>
-<span class="line-number">28</span> <span class="indent italic">crawling about in the muck,</span>
-<span class="line-number">29</span> <span class="indent italic">washed away by the runoff of the leaden rain.</span>
-<span class="line-number">30</span> <span class="indent italic">Only way to bear the monstrous horror of it all</span>
-<span class="line-number">31</span> <span class="indent italic">was to look upward away the earthly reality . . .</span>
-<span class="line-number">32</span> <span class="indent italic">existing from moment to moment<span class="footnote-number">2</span>,</span>
+<span class="line-number">26</span> <span class="indent"><span class="italic">Mud knee deep in some places,</span></span>
+<span class="line-number">27</span> <span class="indent"><span class="italic">others deeper than one dared to venture,</span></span>
+<span class="line-number">28</span> <span class="indent"><span class="italic">crawling about in the muck,</span></span>
+<span class="line-number">29</span> <span class="indent"><span class="italic">washed away by the runoff of the leaden rain.</span></span>
+<span class="line-number">30</span> <span class="indent"><span class="italic">Only way to bear the monstrous horror of it all</span></span>
+<span class="line-number">31</span> <span class="indent"><span class="italic">was to look upward away the earthly reality . . .</span></span>
+<span class="line-number">32</span> <span class="indent"><span class="italic">existing from moment to moment<span class="footnote-number">2</span>,</span></span>
 
 <span class="line-number">33</span> from half-sleep to waking-dream
 <span class="line-number">34</span> of physical sanctimony
@@ -131,6 +133,7 @@
 
     <em class="date">11.26.10</em>
 
+    
     <p class="footnote"><sup class="footnote-number">1</sup> Fussell, Paul. <span class="italic">The Great War and Modern Memory</span>. Oxford University Press, 1977. "The idea of 'the trenches' has been assimilated so successfully by metaphor and myth ('Georgian complacency died in the trenches') that it is not easy now to recover a feeling for the actualities" (36).</p>
     <p class="footnote"><sup class="footnote-number">2</sup> Sledge, E. B. <span class="italic">With the Old Breed: at Peleliu and Okinawa</span>. Presidio Press, 2010. "The stench of death was overpowering. The only way I could bear the monstrous horror of it all was to look upward away from the earthly reality surrounding us" (273).</p>
 
