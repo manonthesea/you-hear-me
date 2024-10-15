@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertile Ground</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #0d1117; /* GitHub dark background */
+            color: #c9d1d9; /* Light text color */
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #58a6ff; /* Blue color for the title */
+        }
+
+        pre {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #c9d1d9; /* Light text color */
+            padding-left: 40px; /* Space for line numbers */
+        }
+
+        a {
+            color: #58a6ff; /* GitHub link blue */
+            text-decoration: none;
+        }
+
+        em {
+            color: red; /* Red color for the date */
+        }
+
+        h2 {
+            font-size: 1em; /* Same font size as the body */
+            font-weight: bold; /* Makes the text bold */
+            text-align: left; /* Align to the left */
+            padding-left: 120px; /* Indent with one tab */
+            margin: 0; /* Remove default margins */
+            margin-bottom: 5px; /* Space below the heading */
+            padding-top: 10px; /* Space above the heading */
+            color: #56d364; /* GitHub green for the ellipses */
+        }
+
+        .line-number {
+            color: #8b949e; /* Color for line numbers */
+            display: inline-block;
+            width: 30px; /* Fixed width for alignment */
+            text-align: right; /* Aligns line numbers to the right */
+            position: relative; /* Allows for absolute positioning */
+            left: -40px; /* Moves line numbers to the left */
+        }
+
+        .italic {
+            font-style: italic; /* Italicizes text */
+        }
+    </style>    
+</head>
+<body>
+    <h1>Fertile Ground</h1>
+    <pre>
+<span class="line-number">1</span> If this year tells us 
+<span class="line-number">2</span> what becomes of our age,
+<span class="line-number">3</span> remember the wide-eyed rabbit 
+<span class="line-number">4</span> shocked by the world and staring 
+<span class="line-number">5</span> about-face into a human abyss.
+
+<span class="line-number">6</span> A hare stopped in its tracks like time 
+<span class="line-number">7</span> on a stuck clock hung on a cold kitchen wall 
+<span class="line-number">8</span> is startling brutality of broken-off reality,
+<span class="line-number">9</span> of men killing not out of necessity
+<span class="line-number">10</span> but simply to be the rabbit’s misery.
+
+<span class="line-number">11</span> Wide-eyed and dead,
+<span class="line-number">12</span> left to become a vessel of death
+<span class="line-number">13</span> and maggots in a field, 
+<span class="line-number">14</span> having seized itself to death,
+<span class="line-number">15</span> the dead-eyed faces of men living 
+<span class="line-number">16</span> in empty vessels of abdicated souls 
+<span class="line-number">17</span> lord over the rabbit no longer.
+
+<span class="line-number">18</span> Pray fertile death restores our land,
+<span class="line-number">19</span> and brutal men never retake dominion.
+<em>6.27.21</em> <!-- No line number for the date, and the date is red -->
+    </pre>
+</body>
+</html>
