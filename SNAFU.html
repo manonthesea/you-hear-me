@@ -6,19 +6,18 @@
     <title>SNAFU</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
+            font-family: 'Courier New', monospace;
             background-color: #0d1117; /* GitHub dark background */
-            color: #c9d1d9; /* Light text color */
+            color: #c9d1d9;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             white-space: pre;
             overflow-wrap: break-word;
+            line-height: 1.6;
         }
 
         h1 {
-            margin-bottom: 10px;
             color: #58a6ff;
         }
 
@@ -26,7 +25,6 @@
             font-size: 1em;
             font-weight: bold;
             color: #58a6ff;
-            text-align: left;
             padding-left: 120px;
             margin: 0;
             margin-bottom: 5px;
@@ -34,19 +32,8 @@
         }
 
         pre {
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
-            color: #c9d1d9;
             margin: 0;
             padding: 4px 0;
-            padding-left: 40px;
-        }
-
-        em {
-            font-size: 1em;
-            margin: 0;
-            display: block;
-            padding-left: 40px;
         }
 
         .line-number {
@@ -58,35 +45,44 @@
             left: -40px;
         }
 
-        .footnote {
-            color: #c9d1d9; /* Light text color */
-            font-size: 0.9em;
-        }
-
-        .footnote-title {
-            font-style: italic;
-        }
-
-        .date {
-            color: red;
+        em {
             font-size: 1em;
-            display: block;
-            padding-left: 40px;
+        }
+
+        em.superscript {
+            font-size: 1em;
+            vertical-align: super;
+            font-size: smaller;
+            color: #58a6ff; /* Green superscript */
         }
 
         .indented {
-            padding-left: 80px;
+            padding-left: 40px;
+            text-indent: 0;
         }
 
+        .footnotes {
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding-left: 40px;
+            line-height: 1.6; /* Matching the body */
+        }
+
+        em.date {
+            color: red;
+            font-size: 1em;
+            padding-left: 40px;
+        }
     </style>
 </head>
 <body>
 
 <h1>SNAFU</h1>
+
 <pre>
 <span class="line-number">1</span> The signal is digging in, 
 <span class="line-number">2</span> digging trenches until disjunction inherits 
-<span class="line-number">3</span> a troglodyte world: 
+<span class="line-number">3</span> a troglodyte world: <em class="superscript">1</em>
 <span class="line-number">4</span> assimilation, successful metaphor, 
 <span class="line-number">5</span> and repetitive repetition
 <span class="line-number">6</span> breed forgetfulness, 
@@ -111,33 +107,24 @@
 <span class="line-number">23</span> where trees are torn from their beds
 <span class="line-number">24</span> and sheets are strewn about 
 <span class="line-number">25</span> over lying men’s heads:
-</pre>
-<pre class="indented">
-<span class="line-number">26</span> Mud knee deep in some places, 
-<span class="line-number">27</span> others deeper than one dared to venture, 
-<span class="line-number">28</span> crawling about in the muck,
-<span class="line-number">29</span> washed away by the runoff of the leaden rain.
-<span class="line-number">30</span> Only way to bear the monstrous horror of it all 
-<span class="line-number">31</span> was to look upward away the earthly reality . . . 
-<span class="line-number">32</span> existing from moment to moment, 
-</pre>
-<pre>
-<span class="line-number">33</span> from half-sleep to waking-dream
-<span class="line-number">34</span> of physical sanctimony
-<span class="line-number">35</span> and gas-lit automaticrazy.
+
+    <span class="line-number">26</span> Mud knee deep in some places, 
+    <span class="line-number">27</span> others deeper than one dared to venture, 
+    <span class="line-number">28</span> crawling about in the muck,
+    <span class="line-number">29</span> washed away by the runoff of the leaden rain.
+    <span class="line-number">30</span> Only way to bear the monstrous horror of it all 
+    <span class="line-number">31</span> was to look upward away the earthly reality . . . 
+    <span class="line-number">32</span> existing from moment to moment, <em class="superscript">2</em>
 </pre>
 
 <em class="date">11.26.10</em>
 
 <div class="footnotes">
-    <p class="footnote">
-        <sup>1</sup> Fussel, Paul. <span class="footnote-title">The Great War and Modern Memory.</span> Oxford University Press, 1977. 
-        "The idea of 'the trenches' has been assimilated so successfully by metaphor and myth ('Georgian complacency died in the trenches') that it is not easy now to recover a feeling for the actualities. Entrenched, in an expression like entrenched power, has been a dead metaphor so long that we must bestir ourselves to recover its literal sense" (36).
-    </p>
-    <p class="footnote">
-        <sup>2</sup> Sledge, E. B. <span class="footnote-title">With the Old Breed: at Peleliu and Okinawa.</span> Presidio Press, 2010. 
-        "The stench of death was overpowering. The only way I could bear the monstrous horror of it all was to look upward away from the earthly reality surrounding us, watch the leaden gray clouds go skudding over, and repeat over and over to myself that the situation was unreal—just a nightmare— that I would soon awake and find myself somewhere else. But the ever-present smell of death saturated my nostrils. It was there with every breath I took. I existed from moment to moment, sometimes thinking death would have been preferable" (273).
-    </p>
+    <p><em>1. Fussel, Paul. The Great War and Modern Memory. Oxford University Press, 1977. </em> 
+    "The idea of 'the trenches' has been assimilated so successfully by metaphor and myth ('Georgian complacency died in the trenches') that it is not easy now to recover a feeling for the actualities. Entrenched, in an expression like entrenched power, has been a dead metaphor so long that we must bestir ourselves to recover its literal sense" (36).</p>
+
+    <p><em>2. Sledge, E. B. With the Old Breed: at Peleliu and Okinawa. Presidio Press, 2010. </em>
+    "The stench of death was overpowering. The only way I could bear the monstrous horror of it all was to look upward away from the earthly reality surrounding us, watch the leaden gray clouds go skudding over, and repeat over and over to myself that the situation was unreal—just a nightmare— that I would soon awake and find myself somewhere else. But the ever-present smell of death saturated my nostrils. It was there with every breath I took. I existed from moment to moment, sometimes thinking death would have been preferable" (273).</p>
 </div>
 
 </body>
