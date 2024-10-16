@@ -13,8 +13,6 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            white-space: pre-wrap; /* Preserve whitespace, allow word wrap */
-            overflow-wrap: break-word; /* Break long words */
         }
 
         h1 {
@@ -27,8 +25,9 @@
             font-size: 1em;
             color: #c9d1d9; /* Light text color */
             padding-left: 40px; /* Space for line numbers */
-            white-space: pre-wrap; /* Allow text wrapping within <pre> */
-            word-wrap: break-word; /* Ensure long lines wrap inside the pre block */
+            white-space: pre; /* Keep text formatting */
+            overflow-x: auto; /* Enable horizontal scrolling */
+            word-wrap: normal; /* Disable word wrapping */
         }
 
         a {
