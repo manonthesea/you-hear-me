@@ -8,43 +8,60 @@
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: #0d1117; /* GitHub dark background */
+            color: #c9d1d9; /* Light text color */
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
         }
 
         h1 {
-            color: #58a6ff;
+            margin-bottom: 10px;
+            color: #58a6ff; /* Blue color for the title */
         }
 
         pre {
             font-family: 'Courier New', monospace;
             font-size: 1em;
-            color: #c9d1d9;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            color: #c9d1d9; /* Light text color */
+            padding-left: 40px; /* Space for line numbers */
+        }
+
+        a {
+            color: #58a6ff; /* GitHub link blue */
+            text-decoration: none;
         }
 
         em {
-            font-style: italic;
+            color: red; /* Red color for emphasized text */
+        }
+
+        h2 {
+            font-size: 1em; /* Same font size as the body */
+            font-weight: bold; /* Makes the text bold */
+            text-align: left; /* Align to the left */
+            padding-left: 120px; /* Indent with one tab */
+            margin: 0; /* Remove default margins */
+            margin-bottom: 5px; /* Space below the heading */
+            padding-top: 10px; /* Space above the heading */
+            color: #56d364; /* GitHub green for the ellipses */
         }
 
         .line-number {
-            color: #8b949e;
+            color: #8b949e; /* Color for line numbers */
             display: inline-block;
-            width: 30px;
-            text-align: right;
-            margin-right: 10px;
+            width: 30px; /* Fixed width for alignment */
+            text-align: right; /* Aligns line numbers to the right */
+            position: relative; /* Allows for absolute positioning */
+            left: -40px; /* Moves line numbers to the left */
         }
 
-        .date {
-            color: #8b949e;
-            font-style: italic;
+        .italic {
+            font-style: italic; /* Italicizes text */
         }
-
-    </style>
+    </style>    
 </head>
 <body>
 
@@ -57,7 +74,7 @@
 <span class="line-number">4</span> with everyone in a satisfactory state,
 <span class="line-number">5</span> seemingly ready to take part in the festivities of relativity,
 <span class="line-number">6</span> inhaling the red rose that fills the room of the man
-<span class="line-number">7</span> saying <em>c’est ne pas une pipe</em> but is still smoking.
+<span class="line-number">7</span> saying <i>c’est ne pas une pipe</i> but is still smoking.
 
 <span class="line-number">8</span> Soon, the party wants nothing to do with psychoanalytic theory,
 <span class="line-number">9</span> cursing the red rose for being obtuse and big enough to fill the entire room,
@@ -74,7 +91,7 @@
 <span class="line-number">19</span> Welcome to the 21st century where even egos run amuck.
 </pre>
 
-<p class="date">Circa 2008</p>
+<p><em>Circa 2008</em></p>
 
 </body>
 </html>
