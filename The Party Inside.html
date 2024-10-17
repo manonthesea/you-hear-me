@@ -8,44 +8,42 @@
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            background-color: #0d1117; /* GitHub dark background */
-            color: #c9d1d9; /* Light text color */
+            background-color: #0d1117;
+            color: #c9d1d9;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
 
         h1 {
-            margin-bottom: 10px;
-            color: #58a6ff; /* Blue color for the title */
+            color: #58a6ff;
         }
 
         pre {
             font-family: 'Courier New', monospace;
             font-size: 1em;
-            color: #c9d1d9; /* Light text color */
-            padding-left: 40px; /* Space for line numbers */
-            white-space: pre; /* Keep text formatting */
-            overflow-x: auto; /* Enable horizontal scrolling */
-            word-wrap: normal; /* Disable word wrapping */
+            color: #c9d1d9;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         em {
-            color: red; /* Red color for the date */
+            font-style: italic;
         }
 
         .line-number {
-            color: #8b949e; /* Color for line numbers */
+            color: #8b949e;
             display: inline-block;
-            width: 30px; /* Fixed width for alignment */
-            text-align: right; /* Aligns line numbers to the right */
-            position: relative; /* Allows for absolute positioning */
-            left: -40px; /* Moves line numbers to the left */
+            width: 30px;
+            text-align: right;
+            margin-right: 10px;
         }
 
-        .indent {
-            padding-left: 40px; /* Indentation for indented lines */
+        .date {
+            color: #8b949e;
+            font-style: italic;
         }
+
     </style>
 </head>
 <body>
@@ -59,7 +57,7 @@
 <span class="line-number">4</span> with everyone in a satisfactory state,
 <span class="line-number">5</span> seemingly ready to take part in the festivities of relativity,
 <span class="line-number">6</span> inhaling the red rose that fills the room of the man
-<span class="line-number">7</span> saying c’est ne pas une pipe but is still smoking.
+<span class="line-number">7</span> saying <em>c’est ne pas une pipe</em> but is still smoking.
 
 <span class="line-number">8</span> Soon, the party wants nothing to do with psychoanalytic theory,
 <span class="line-number">9</span> cursing the red rose for being obtuse and big enough to fill the entire room,
@@ -71,10 +69,12 @@
 
 <span class="line-number">15</span> In the early morning hours, the party starts coming out,
 <span class="line-number">16</span> leading the neighbors to think we are all going mad.
-<span class="line-number">17</span> By now, the party chases itself about the lawn;
+<span class="line-number">17</span> By now, the party chases itself about the lawn; 
 <span class="line-number">18</span> given over to the id, the party is in a splendid fit.
 <span class="line-number">19</span> Welcome to the 21st century where even egos run amuck.
 </pre>
+
+<p class="date">Circa 2008</p>
 
 </body>
 </html>
