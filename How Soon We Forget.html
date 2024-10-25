@@ -13,6 +13,8 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
         }
 
         h1 {
@@ -25,29 +27,12 @@
             font-size: 1em;
             color: #c9d1d9; /* Light text color */
             padding-left: 40px; /* Space for line numbers */
-            white-space: pre; /* Keep text formatting */
-            overflow-x: auto; /* Enable horizontal scrolling */
-            word-wrap: normal; /* Disable word wrapping */
+            white-space: pre-wrap; /* Preserve whitespace formatting */
         }
 
         a {
             color: #58a6ff; /* GitHub link blue */
             text-decoration: none;
-        }
-
-        em {
-            color: red; /* Red color for the date */
-        }
-
-        h2 {
-            font-size: 1em; /* Same font size as the body */
-            font-weight: bold; /* Makes the text bold */
-            text-align: left; /* Align to the left */
-            padding-left: 120px; /* Indent with one tab */
-            margin: 0; /* Remove default margins */
-            margin-bottom: 5px; /* Space below the heading */
-            padding-top: 10px; /* Space above the heading */
-            color: #56d364; /* GitHub green for the ellipses */
         }
 
         .line-number {
@@ -82,10 +67,6 @@
 
         .indent {
             padding-left: 40px; /* Indentation for indented lines */
-        }
-
-        .green-ellipsis {
-            color: #56d364; /* GitHub green for ellipses */
         }
     </style>
 </head>
