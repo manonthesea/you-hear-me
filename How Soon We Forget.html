@@ -10,7 +10,7 @@
             line-height: 1.6;
             background-color: #0d1117; /* GitHub dark background */
             color: #c9d1d9; /* Light text color */
-            max-width: 10000px; /* Increased max-width to allow more space */
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             white-space: pre; /* Preserve whitespace and line breaks */
@@ -26,8 +26,9 @@
             font-family: 'Courier New', monospace;
             font-size: 1em;
             color: #c9d1d9; /* Light text color */
-            padding-left: 50px; /* Extra space for long line numbers */
+            padding-left: 40px; /* Space for line numbers */
             white-space: pre-wrap; /* Preserve whitespace formatting */
+            word-wrap: break-word; /* Prevent long words from overflowing */
         }
 
         a {
@@ -38,10 +39,10 @@
         .line-number {
             color: #8b949e; /* Color for line numbers */
             display: inline-block;
-            width: 35px; /* Increased width for alignment */
+            width: 30px; /* Fixed width for alignment */
             text-align: right; /* Aligns line numbers to the right */
             position: relative; /* Allows for absolute positioning */
-            left: -50px; /* Moves line numbers to the left */
+            left: -40px; /* Moves line numbers to the left */
         }
 
         .italic {
@@ -52,7 +53,7 @@
             font-size: 0.85em; /* Slightly smaller font for footnotes */
             color: #c9d1d9;
             margin-top: 5px; /* Less space between date and footnotes */
-            padding-left: 50px;
+            padding-left: 40px;
             line-height: 1.2; /* Control line height for footnotes */
             word-wrap: break-word; /* Allow text wrapping */
         }
@@ -66,7 +67,11 @@
         }
 
         .indent {
-            padding-left: 50px; /* Indentation for indented lines */
+            padding-left: 40px; /* Indentation for indented lines */
+        }
+
+        .no-wrap {
+            white-space: nowrap; /* Prevents wrapping */
         }
 
         em {
@@ -83,7 +88,7 @@
 <span class="line-number">2</span> splashing bare legs as a single sheet of frozen glass.
 
 <span class="line-number">3</span> Tepidity abounds as the sun rejuvenates
-<span class="line-number">4</span> the world at a molecular level with the <a href="12.31.19.html">promise of an aspiring year</a>.
+<span class="line-number">4</span> the world at a molecular level with the <span class="no-wrap"><a href="12.31.19.html">promise of an aspiring year</a></span>.
 
 <span class="line-number">5</span> Waves thrust upon the skin cut to the bone
 <span class="line-number">6</span> with ecstasy that is cold water in premature spring.
