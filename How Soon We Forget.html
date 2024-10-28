@@ -13,7 +13,8 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            white-space: pre-wrap; /* Preserve whitespace formatting */
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
         }
 
         h1 {
@@ -21,18 +22,12 @@
             color: #58a6ff; /* Blue color for the title */
         }
 
-        .line {
-            font-family: 'Courier New', monospace; /* Consistent font */
+        pre {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
             color: #c9d1d9; /* Light text color */
-            margin-bottom: 0.5em; /* Space between lines */
-        }
-
-        .line-number {
-            color: #8b949e; /* Color for line numbers */
-            display: inline-block;
-            width: 30px; /* Fixed width for alignment */
-            text-align: right; /* Aligns line numbers to the right */
-            margin-right: 10px; /* Space between line number and text */
+            padding-left: 40px; /* Space for line numbers */
+            margin: 0; /* Remove default margins */
         }
 
         a {
@@ -41,8 +36,16 @@
         }
 
         em {
-            color: red; /* Red color for date */
-            font-size: 0.85em; /* Slightly smaller font for date */
+            color: red; /* Red color for the date */
+        }
+
+        .line-number {
+            color: #8b949e; /* Color for line numbers */
+            display: inline-block;
+            width: 30px; /* Fixed width for alignment */
+            text-align: right; /* Aligns line numbers to the right */
+            position: relative; /* Allows for absolute positioning */
+            left: -40px; /* Moves line numbers to the left */
         }
     </style>
 </head>
@@ -50,17 +53,19 @@
 
 <h1>How Soon We Forget</h1>
 
-<div class="line"><span class="line-number">1</span> Water jumps and tumbles to the wet sand</div>
-<div class="line"><span class="line-number">2</span> splashing bare legs as a single sheet of frozen glass.</div>
+<pre>
+<span class="line-number">1</span> Water jumps and tumbles to the wet sand
+<span class="line-number">2</span> splashing bare legs as a single sheet of frozen glass.
 
-<div class="line"><span class="line-number">3</span> Tepidity abounds as the sun rejuvenates</div>
-<div class="line"><span class="line-number">4</span> the world at a molecular level with the <a href="12.31.19">promise of an aspiring year</a>.</div>
+<span class="line-number">3</span> Tepidity abounds as the sun rejuvenates
+<span class="line-number">4</span> the world at a molecular level with the promise of an aspiring year.
 
-<div class="line"><span class="line-number">5</span> Waves thrust upon the skin cut to the bone</div>
-<div class="line"><span class="line-number">6</span> with ecstasy that is cold water in premature spring.</div>
+<span class="line-number">5</span> Waves thrust upon the skin cut to the bone
+<span class="line-number">6</span> with ecstasy that is cold water in premature spring.
 
-<div class="line"><span class="line-number">7</span> The wind and the chill of the planet today help forget</div>
-<div class="line"><span class="line-number">8</span> how hot the sun burns in the coming-of-age century.</div>
+<span class="line-number">7</span> The wind and the chill of the planet today help forget
+<span class="line-number">8</span> how hot the sun burns in the coming-of-age century.
+</pre>
 
 <em>2.27.17</em>
 
