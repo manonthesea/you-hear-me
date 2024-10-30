@@ -13,8 +13,8 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            white-space: pre-wrap; /* Preserve whitespace, allow word wrap */
-            overflow-wrap: break-word; /* Break long words */
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
         }
 
         h1 {
@@ -27,8 +27,6 @@
             font-size: 1em;
             color: #c9d1d9; /* Light text color */
             padding-left: 40px; /* Space for line numbers */
-            white-space: pre-wrap; /* Allow text wrapping within <pre> */
-            word-wrap: break-word; /* Ensure long lines wrap inside the pre block */
         }
 
         a {
@@ -52,29 +50,7 @@
         .italic {
             font-style: italic; /* Italicizes text */
         }
-
-        .footnote {
-            font-size: 0.85em; /* Slightly smaller font for footnotes */
-            color: #c9d1d9;
-            margin-top: 5px; /* Less space between date and footnotes */
-            padding-left: 40px;
-            line-height: 1.2; /* Control line height for footnotes */
-            word-wrap: break-word; /* Allow text wrapping */
-        }
-
-        .footnote-number {
-            color: #2ea043; /* Green superscript for footnote references */
-            font-size: 0.75em; /* Smaller superscript */
-            vertical-align: super; /* Aligns superscript to the top of the line */
-            display: inline-block; /* Ensure proper alignment */
-            margin-top: -0.5em; /* Adjust position to align with the top of the line */
-        }
-
-        .indent {
-            padding-left: 40px; /* Indentation for indented lines */
-        }
-
-    </style>    
+    </style>
 </head>
 <body>
 
@@ -93,7 +69,7 @@
 <span class="line-number">9</span> said he'd been waiting a while to piss in the Rhine,
 <span class="line-number">10</span> and proceeded to do just that – <a href="patton-pissing.jpg">pee</a>.
     </pre>
-    <em class="date">Late 2008</em>
+    <em>Late 2008</em>
 
 </body>
 </html>
