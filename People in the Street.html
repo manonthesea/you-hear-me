@@ -9,11 +9,12 @@
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            background-color: #0d1117; /* Dark background */
-            color: #c9d1d9; /* Light text color */
+            background-color: #0d1117;
+            color: #c9d1d9;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            overflow-wrap: break-word; /* Allow line breaks on long lines */
         }
 
         /* Title styling */
@@ -29,36 +30,28 @@
             color: #c9d1d9;
             padding-left: 40px; /* Space for line numbers */
             white-space: pre; /* Preserve formatting */
-            overflow-x: auto; /* Horizontal scrolling */
-            word-wrap: normal;
+            overflow-x: auto;
         }
 
         /* Link styling for references */
         a {
-            color: #58a6ff; /* GitHub link blue */
+            color: #58a6ff;
             text-decoration: none;
         }
 
         /* Date styling */
         em {
-            color: red; /* Red color for date */
+            color: red;
         }
 
-        /* Styling for any secondary headings or special lines */
-        h2 {
-            font-size: 1em; /* Body font size */
-            font-weight: bold;
-            text-align: left;
-            padding-left: 120px; /* Align with text */
-            margin: 0;
-            margin-bottom: 5px;
-            padding-top: 10px;
-            color: #56d364; /* GitHub green */
+        /* Ellipses styling */
+        .green-ellipsis {
+            color: #56d364;
         }
 
         /* Line numbers styling */
         .line-number {
-            color: #8b949e; /* Grey color */
+            color: #8b949e;
             display: inline-block;
             width: 30px;
             text-align: right;
@@ -66,38 +59,9 @@
             left: -40px;
         }
 
-        /* Italics styling for specific words or phrases */
+        /* Italics styling */
         .italic {
             font-style: italic;
-        }
-
-        /* Footnote styling */
-        .footnote {
-            font-size: 0.85em;
-            color: #c9d1d9;
-            margin-top: 5px;
-            padding-left: 40px;
-            line-height: 1.2;
-            word-wrap: break-word;
-        }
-
-        /* Footnote superscript styling */
-        .footnote-number {
-            color: #2ea043; /* Green for superscript */
-            font-size: 0.75em;
-            vertical-align: super;
-            display: inline-block;
-            margin-top: -0.5em;
-        }
-
-        /* Indentation for indented lines */
-        .indent {
-            padding-left: 40px;
-        }
-
-        /* Ellipses styling in green */
-        .green-ellipsis {
-            color: #56d364; /* GitHub green for ellipses */
         }
     </style>
 </head>
