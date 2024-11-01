@@ -27,16 +27,14 @@
             font-size: 1em;
             color: #c9d1d9; /* Light text color */
             padding-left: 40px; /* Space for line numbers */
-            margin: 0; /* Remove default margins */
+            white-space: pre; /* Preserves formatting */
+            margin-top: 10px; /* Adds spacing above and below */
+            margin-bottom: 10px;
         }
 
         a {
             color: #58a6ff; /* GitHub link blue */
             text-decoration: none;
-        }
-
-        em {
-            color: red; /* Red color for the date */
         }
 
         .line-number {
@@ -46,6 +44,14 @@
             text-align: right; /* Aligns line numbers to the right */
             position: relative; /* Allows for absolute positioning */
             left: -40px; /* Moves line numbers to the left */
+        }
+
+        em {
+            color: red; /* Red color for the date */
+            font-size: 0.9em; /* Slightly smaller font for date */
+            display: block; /* Places date on its own line */
+            text-align: right; /* Aligns date to the right */
+            margin-top: 15px; /* Adds space above the date */
         }
     </style>
 </head>
