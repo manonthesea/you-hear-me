@@ -9,60 +9,65 @@
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: #0d1117; /* GitHub dark background */
+            color: #c9d1d9; /* Light text color */
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            overflow-wrap: break-word; /* Allow line breaks on long lines */
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow-wrap: break-word;
         }
 
         /* Title styling */
         h1 {
-            margin-bottom: 10px; /* Reduce to match exact spacing */
+            margin-bottom: 10px; /* Space below the title */
             color: #58a6ff; /* Blue color for the title */
         }
-
 
         /* Code block styling with line numbers */
         pre {
             font-family: 'Courier New', monospace;
             font-size: 1em;
-            color: #c9d1d9;
+            color: #c9d1d9; /* Light text color */
             padding-left: 40px; /* Space for line numbers */
-            white-space: pre; /* Preserve formatting */
-            overflow-x: auto;
         }
 
         /* Link styling for references */
         a {
-            color: #58a6ff;
+            color: #58a6ff; /* GitHub link blue */
             text-decoration: none;
         }
 
         /* Date styling */
         em {
-            color: red;
+            color: red; /* Red color for date */
         }
 
-        /* Ellipses styling */
-        .green-ellipsis {
-            color: #56d364;
+        /* Styling for any secondary headings or special lines */
+        h2 {
+            font-size: 1em; /* Same font size as the body */
+            font-weight: bold; /* Makes the text bold */
+            text-align: left; /* Align to the left */
+            padding-left: 120px; /* Indent with one tab */
+            margin: 0; /* Remove default margins */
+            margin-bottom: 5px; /* Space below the heading */
+            padding-top: 10px; /* Space above the heading */
+            color: #56d364; /* GitHub green */
         }
 
         /* Line numbers styling */
         .line-number {
-            color: #8b949e;
+            color: #8b949e; /* Color for line numbers */
             display: inline-block;
-            width: 30px;
-            text-align: right;
-            position: relative;
-            left: -40px;
+            width: 30px; /* Fixed width for alignment */
+            text-align: right; /* Aligns line numbers to the right */
+            position: relative; /* Allows for absolute positioning */
+            left: -40px; /* Moves line numbers to the left */
         }
 
-        /* Italics styling */
+        /* Italics styling for specific words or phrases */
         .italic {
-            font-style: italic;
+            font-style: italic; /* Italicizes text */
         }
     </style>
 </head>
