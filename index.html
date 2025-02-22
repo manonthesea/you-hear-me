@@ -1,23 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
-    <script>
-        // Prompt for password when the page loads
-        var password = prompt("Please enter the password to view this site:");
+<script>
+    let password = prompt("Enter password:");
+    if (password === "YourPassword") {
+        document.getElementById("hidden-link").style.display = "block";
+    } else {
+        document.body.innerHTML = "<h1>Access Denied</h1>";
+    }
+</script>
 
-        // If the password is incorrect, deny access and stop the redirect
-        if (password !== "4741Bird$ByTheLake") {
-            document.body.innerHTML = "Access Denied. Incorrect password.";
-        } else {
-            // If the password is correct, allow the redirect
-            window.location.href = "Make Sense.html";
-        }
-    </script>
-</head>
-<body>
-    <p>If you are not redirected, <a href="Make Sense.html">click here</a>.</p>
-</body>
-</html>
+<a id="hidden-link" href="Make Sense.html" style="display: none;">Go to the page</a>
