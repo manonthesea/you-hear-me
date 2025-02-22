@@ -4,18 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
-    <script>
-        // Prompt for password when the page loads
-        var password = prompt("Please enter the password to view this site:");
-
-        // If the password is incorrect, deny access and stop the redirect
-        if (password !== "4741Bird$ByTheLake") {
-            document.body.innerHTML = "Access Denied. Incorrect password.";
-        } else {
-            // If the password is correct, allow the redirect
-            window.location.href = "Doesn’t Make Sense at First.html";
-        }
-    </script>
+    <meta http-equiv="refresh" content="0;url=Doesn’t Make Sense at First.html">
 </head>
 <body>
     <p>If you are not redirected, <a href="Doesn’t Make Sense at First.html">click here</a>.</p>
