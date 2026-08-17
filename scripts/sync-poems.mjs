@@ -5,10 +5,13 @@
 // "Sync poems" GitHub Actions workflow (workflow_dispatch).
 //
 // Required environment:
-//   GOOGLE_SERVICE_ACCOUNT_KEY  - full JSON contents of a GCP service
-//                                 account key with read access to the
-//                                 Drive folder (see docs/POEM_SYNC.md)
-//   DRIVE_FOLDER_ID             - the shared Drive folder's file ID
+//   DRIVE_FOLDER_ID  - the shared Drive folder's file ID
+//
+// Authenticates via Application Default Credentials - in the GitHub
+// Actions workflow that's Workload Identity Federation (no static key
+// involved, see docs/POEM_SYNC.md); locally it's whatever `gcloud auth
+// application-default login` or GOOGLE_APPLICATION_CREDENTIALS points
+// to on your machine.
 //
 // Only files whose rendered content actually changed are written, so a
 // re-run with no edits in Docs produces no diff.
@@ -40,17 +43,8 @@ function escapeHtml(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-async function getAuth() {
-    const keyJson = requireEnv('GOOGLE_SERVICE_ACCOUNT_KEY');
-    let credentials;
-    try {
-        credentials = JSON.parse(keyJson);
-    } catch (err) {
-        console.error('GOOGLE_SERVICE_ACCOUNT_KEY is not valid JSON:', err.message);
-        process.exit(1);
-    }
+function getAuth() {
     return new google.auth.GoogleAuth({
-        credentials,
         scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
 }

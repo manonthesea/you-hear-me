@@ -20,20 +20,28 @@ setup and the ongoing authoring workflow.
 
 ## One-time setup
 
+The sync authenticates to Google via **Workload Identity Federation
+(WIF)** rather than a downloaded service account key — GitHub Actions
+exchanges a short-lived OIDC token for Google credentials at run time, so
+no long-lived secret ever exists to leak or rotate. This also sidesteps
+any org policy that blocks service account key creation (a policy Google
+now enforces by default on many projects).
+
 ### 1. Create a Google Cloud project and service account
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-   and create a new project (or reuse one).
-2. Enable the **Google Drive API** for that project (APIs & Services →
-   Enable APIs and Services → search "Google Drive API" → Enable).
-3. Go to **APIs & Services → Credentials → Create Credentials → Service
-   account**. Give it any name, e.g. `poem-sync`. No project roles are
-   needed — access is granted by sharing the Drive folder directly.
-4. Open the new service account → **Keys** tab → **Add Key → Create new
-   key → JSON**. This downloads a JSON key file — keep it private, it's
-   a credential.
-5. Note the service account's email address (looks like
-   `poem-sync@your-project.iam.gserviceaccount.com`).
+   and create a new project (or reuse one). The examples below use
+   `YOUR_PROJECT_ID` — substitute your actual project ID throughout.
+2. Enable the **Google Drive API**: APIs & Services → Enable APIs and
+   Services → search "Google Drive API" → Enable.
+3. Create the service account: **APIs & Services → Credentials → Create
+   Credentials → Service account**. Name it `poem-sync`. No project
+   roles are needed — access is granted by sharing the Drive folder
+   directly (step 2 below). Note its email:
+   `poem-sync@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
+
+No key is created for it — WIF lets GitHub Actions impersonate this
+service account directly.
 
 ### 2. Share the Drive folder
 
@@ -44,15 +52,56 @@ setup and the ongoing authoring workflow.
 3. Open the folder in a browser and copy its ID out of the URL:
    `https://drive.google.com/drive/folders/`**`THIS_PART_IS_THE_ID`**
 
-### 3. Add GitHub repository secrets
+### 3. Set up Workload Identity Federation
+
+Run these with the [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+(Cloud Shell, in the console, works too — no local install needed).
+Replace `YOUR_PROJECT_ID` and `manonthesea/you-hear-me` as needed.
+
+```bash
+gcloud config set project YOUR_PROJECT_ID
+
+# Create a pool to hold external (GitHub) identities
+gcloud iam workload-identity-pools create "github-pool" \
+  --location="global" \
+  --display-name="GitHub Actions Pool"
+
+# Create a provider that trusts GitHub's OIDC issuer, restricted to
+# this one repo so no other repo can use these credentials
+gcloud iam workload-identity-pools providers create-oidc "github-provider" \
+  --location="global" \
+  --workload-identity-pool="github-pool" \
+  --display-name="GitHub provider" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
+  --attribute-condition="assertion.repository=='manonthesea/you-hear-me'" \
+  --issuer-uri="https://token.actions.githubusercontent.com"
+
+# Get your project number (needed for the next command)
+gcloud projects describe YOUR_PROJECT_ID --format="value(projectNumber)"
+
+# Let that pool (scoped to this repo) impersonate the poem-sync service account
+gcloud iam service-accounts add-iam-policy-binding \
+  "poem-sync@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="principalSet://iam.googleapis.com/projects/YOUR_PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/manonthesea/you-hear-me"
+```
+
+The full provider resource name you'll need next is:
+
+```
+projects/YOUR_PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+```
+
+### 4. Add GitHub repository secrets
 
 In the repo's **Settings → Secrets and variables → Actions**, add:
 
-- `GOOGLE_SERVICE_ACCOUNT_KEY` — paste the *entire contents* of the JSON
-  key file downloaded in step 1.
+- `GCP_WORKLOAD_IDENTITY_PROVIDER` — the provider resource name from
+  step 3.
+- `GCP_SERVICE_ACCOUNT_EMAIL` — `poem-sync@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
 - `DRIVE_FOLDER_ID` — the folder ID from step 2.
 
-### 4. Populate the folder
+### 5. Populate the folder
 
 Create one Google Doc per poem in the folder, named exactly as you want
 the poem's title to appear (the Doc's file name becomes both the page
@@ -92,8 +141,11 @@ title and the output filename, e.g. a Doc named `Marsh Voices` produces
   It exports every Doc, regenerates changed pages, rebuilds the
   narrative map (`graph.html`), and pushes a commit only if something
   changed.
-- **Locally**: `npm install`, then set `GOOGLE_SERVICE_ACCOUNT_KEY` (the
-  JSON key contents) and `DRIVE_FOLDER_ID` in your shell, and run
+- **Locally**: `npm install`, run `gcloud auth application-default
+  login --impersonate-service-account=poem-sync@YOUR_PROJECT_ID.iam.gserviceaccount.com`
+  once (this needs `roles/iam.serviceAccountTokenCreator` on the
+  service account for your own user, granted separately if you want
+  local runs), set `DRIVE_FOLDER_ID` in your shell, and run
   `npm run sync`.
 
 ## Known limitations
