@@ -1,0 +1,111 @@
+/*
+ * Canonical stylesheet for "you hear me" poem pages.
+ *
+ * This is the single source of truth for the site's visual language:
+ * GitHub dark theme, Courier New for the poem body, blue titles,
+ * red dates, green ellipses. New/regenerated poem pages should link
+ * to this file rather than embedding their own <style> block, so a
+ * design change only has to happen in one place.
+ *
+ * Union of the conventions that had accumulated across individual
+ * poem pages before this file existed (line numbers, italics,
+ * indentation levels, footnotes, ellipses).
+ */
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #0d1117; /* GitHub dark background */
+    color: #c9d1d9; /* Light text color */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    white-space: pre; /* Preserve whitespace and line breaks */
+    overflow-wrap: break-word;
+}
+
+h1 {
+    margin-bottom: 10px;
+    color: #58a6ff; /* Blue color for the title */
+}
+
+h2 {
+    font-size: 1em; /* Same font size as the body */
+    font-weight: bold;
+    text-align: left;
+    padding-left: 120px; /* Indent with one tab, stanza heading */
+    margin: 0;
+    margin-bottom: 5px;
+    padding-top: 10px;
+    color: #56d364; /* GitHub green */
+}
+
+pre {
+    font-family: 'Courier New', monospace;
+    font-size: 1em;
+    color: #c9d1d9;
+    padding-left: 40px; /* Space for line numbers */
+}
+
+a {
+    color: #58a6ff; /* GitHub link blue */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+em,
+.date {
+    color: red; /* Date styling */
+    font-size: 1em;
+    display: block;
+}
+
+.line-number {
+    color: #8b949e;
+    display: inline-block;
+    width: 30px; /* Fixed width for alignment */
+    text-align: right;
+    position: relative;
+    left: -40px; /* Keeps line numbers visually secondary and out of the text flow */
+}
+
+.italic {
+    font-style: italic;
+}
+
+.indent {
+    padding-left: 40px;
+}
+
+.double-indent {
+    padding-left: 80px;
+}
+
+.fifth-indent {
+    padding-left: 200px;
+}
+
+.green-ellipsis,
+.ellipsis {
+    color: #56d364; /* Standardized ellipsis green */
+}
+
+.footnote {
+    font-size: 0.85em;
+    color: #c9d1d9;
+    margin-top: 5px;
+    padding-left: 40px;
+    line-height: 1.2;
+    word-wrap: break-word;
+}
+
+.footnote-number {
+    color: #2ea043;
+    font-size: 0.75em;
+    vertical-align: super;
+    display: inline-block;
+    margin-top: -0.5em;
+}

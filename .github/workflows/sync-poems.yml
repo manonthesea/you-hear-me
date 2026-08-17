@@ -1,0 +1,53 @@
+name: Sync poems
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  id-token: write # required to mint the OIDC token for Workload Identity Federation
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Sync poems from Google Docs
+        env:
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+        run: npm run sync
+
+      - name: Rebuild narrative map
+        run: npm run graph
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "poem-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git add -A -- '*.html' 'assets' 'templates'
+          if git diff --cached --quiet; then
+            echo "No poem changes to publish."
+            exit 0
+          fi
+          git commit -m "Sync poems from Google Docs"
+          git push
