@@ -162,6 +162,18 @@ comment would swallow the real content.
   local runs), set `DRIVE_FOLDER_ID` in your shell, and run
   `npm run sync`.
 
+## Tests
+
+`npm test` runs the conversion tests (`scripts/lib/convert.test.mjs`,
+built on Node's own test runner — no extra dependencies). They cover the
+Doc → page conversion rules (line numbering, date extraction, stanza
+headings, indent levels, italics, ellipses, link rewriting, escaping)
+and assert that a rendered page has no template placeholders left in it.
+They also run in CI on every push and pull request.
+
+They do *not* verify that real Google Docs exports match the fixtures
+they're built on, so still eyeball a poem's first sync.
+
 ## Known limitations
 
 - Native Google Docs footnotes aren't converted (see above).
