@@ -1,0 +1,47 @@
+name: Sync poems
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Sync poems from Google Docs
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+        run: npm run sync
+
+      - name: Rebuild narrative map
+        run: npm run graph
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "poem-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git add -A -- '*.html' 'assets' 'templates'
+          if git diff --cached --quiet; then
+            echo "No poem changes to publish."
+            exit 0
+          fi
+          git commit -m "Sync poems from Google Docs"
+          git push
