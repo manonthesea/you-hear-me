@@ -108,6 +108,20 @@ the poem's title to appear (the Doc's file name becomes both the page
 title and the output filename, e.g. a Doc named `Marsh Voices` produces
 `Marsh Voices.html`).
 
+## The page template
+
+`templates/poem-template.html` is the shape every generated page takes.
+It contains three placeholders that `scripts/sync-poems.mjs` fills in:
+
+- `{{TITLE}}` — the poem title, from the Doc's file name
+- `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza `<h2>`s,
+  ellipsis/italic/indent spans, cross-poem links
+- `{{DATE}}` — the poem's date line
+
+Keep those placeholder strings out of any comment or literal text in the
+template — every occurrence is substituted, so a stray mention in a
+comment would swallow the real content.
+
 ## Authoring conventions inside each Doc
 
 - **Title**: the Doc's file name *is* the title. You may optionally

@@ -106,8 +106,8 @@ async function main() {
 
             const page = template
                 .replaceAll('{{TITLE}}', escapeHtml(doc.name))
-                .replace('{{BODY}}', body)
-                .replace('{{DATE}}', escapeHtml(date));
+                .replaceAll('{{BODY}}', body)
+                .replaceAll('{{DATE}}', escapeHtml(date));
 
             let existing = null;
             try {
