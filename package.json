@@ -6,7 +6,7 @@
   "scripts": {
     "sync": "node scripts/sync-poems.mjs",
     "graph": "node scripts/build-graph.mjs",
-    "test": "node --test scripts/lib/convert.test.mjs scripts/lib/publish.test.mjs"
+    "test": "node --test scripts/lib/convert.test.mjs scripts/lib/publish.test.mjs scripts/lib/footnotes.test.mjs scripts/lib/css.test.mjs"
   },
   "dependencies": {
     "cheerio": "^1.0.0",

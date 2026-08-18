@@ -20,12 +20,24 @@ body {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    white-space: pre; /* Preserve whitespace and line breaks */
     overflow-wrap: break-word;
+    /*
+     * Deliberately NOT white-space: pre here. <pre> already preserves
+     * whitespace on its own - inheriting it onto body as well made the
+     * raw newlines/indentation *between* tags in the template (e.g.
+     * between </h1> and <pre>) render as visible blank space, inflating
+     * the title-to-verse gap well past any margin actually set below.
+     */
 }
 
 h1 {
-    margin-bottom: 10px;
+    /*
+     * Half of the ~80px gap this page used to render (measured in a
+     * real browser before/after) - the rest of that gap was the stray
+     * whitespace-preservation bug described above, not a deliberate
+     * margin, so halving the OLD number would have halved a bug.
+     */
+    margin-bottom: 37px;
     color: #58a6ff; /* Blue color for the title */
     /*
      * Line the title's first character up with the poem's first
@@ -52,6 +64,7 @@ pre {
     font-size: 1em;
     color: #c9d1d9;
     padding-left: 40px; /* Space for line numbers */
+    margin: 0; /* No reliance on the browser's default pre margin */
 }
 
 a {
@@ -77,7 +90,12 @@ em,
 }
 
 .line-number {
-    color: #8b949e;
+    /*
+     * The numeric-constant orange from GitHub's own dark syntax theme
+     * (Primer), not an arbitrary orange - it's the color GitHub itself
+     * uses for numbers in code, which is exactly what a line number is.
+     */
+    color: #ffa657;
     display: inline-block;
     width: 30px; /* Fixed width for alignment */
     text-align: right;
