@@ -24,6 +24,12 @@ import * as cheerio from 'cheerio';
 
 const ELLIPSIS_RE = /(\.\s?\.\s?\.|…)/g;
 
+// A line that is nothing but a number and a period ("1.", "2.") is a
+// section marker, not verse. The hand-made pages render these as <h2>
+// and exclude them from line numbering; matching that keeps numbering
+// consistent with the existing collection.
+const STANZA_MARKER_RE = /^\d+\.$/;
+
 function escapeHtml(str) {
     return str
         .replace(/&/g, '&amp;')
@@ -141,6 +147,26 @@ function renderInline($, node, styleMap, docIdToPath, currentDir) {
 }
 
 /**
+ * The poem's title is the Doc's first line of real text — Docs here are
+ * named by date, so the name is not the title. Section markers and blank
+ * paragraphs are skipped so a poem opening with "1." still finds it.
+ *
+ * @param {string} html - Drive files.export text/html content for the Doc.
+ * @returns {string} the first line's text, or '' if the Doc has none.
+ */
+export function extractTitle(html) {
+    const $ = cheerio.load(html);
+    for (const el of $('body').children().toArray()) {
+        const tag = el.tagName?.toLowerCase();
+        if (tag !== 'p' && tag !== 'h1') continue;
+        const text = $(el).text().trim();
+        if (!text || STANZA_MARKER_RE.test(text)) continue;
+        return text;
+    }
+    return '';
+}
+
+/**
  * @param {string} html - Drive files.export text/html content for the Doc.
  * @param {string} title - poem title (from the Drive file name).
  * @param {Map<string,string>} docIdToPath - other poem Doc IDs -> repo-relative output path, for cross-poem links.
@@ -168,6 +194,11 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
         if (tag !== 'p' && tag !== 'h1') continue;
 
         const plainText = $el.text().trim();
+
+        if (STANZA_MARKER_RE.test(plainText)) {
+            lines.push({ type: 'stanza', text: plainText });
+            continue;
+        }
 
         if (!sawFirstContent) {
             if (!plainText) continue; // skip leading blank paragraphs
@@ -213,11 +244,15 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     if (dateEntry) lines.splice(lines.lastIndexOf(dateEntry), 1);
     while (lines.length && lines[lines.length - 1].type === 'blank') lines.pop();
 
+    // Every line of the poem is numbered, blank ones included — the page
+    // is meant to read like a poem open in a code editor, where the gaps
+    // between stanzas are numbered lines too. Stanza headings are the
+    // exception: they are <h2>, not lines of the poem.
     let lineNumber = 0;
     const rendered = lines.map((l) => {
-        if (l.type === 'blank') return '';
         if (l.type === 'stanza') return `\n<h2>${escapeHtml(l.text)}</h2>\n`;
         lineNumber += 1;
+        if (l.type === 'blank') return `<span class="line-number">${lineNumber}</span>`;
         const spaced = l.html.startsWith('<span class="indent')
             ? l.html
             : ` ${l.html}`;
