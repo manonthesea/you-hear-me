@@ -10,8 +10,8 @@ setup and the ongoing authoring workflow.
   The sync walks the whole tree from `DRIVE_FOLDER_ID` down, including
   every subfolder.
 - **A poem is published only if its Doc's name ends with `(Publish)`** —
-  e.g. a Doc named `Marsh Voices (Publish)`. See below; this is the one
-  gate that matters.
+  e.g. a Doc named `6.20.4 (Publish)`. See below; this is the one gate
+  that matters.
 - Running the sync (`npm run sync`, or the "Sync poems" GitHub Action)
   exports each published Doc as HTML, converts it into the site's
   canonical template (`templates/poem-template.html` + `assets/poem.css`),
@@ -33,9 +33,8 @@ Drafts are read and then discarded; only Docs marked `(Publish)` are
 written.
 
 - **To publish**: rename the Doc to end with `(Publish)`, e.g.
-  `Marsh Voices (Publish)`. The annotation is stripped from the page
-  title and the filename — the page is `Marsh Voices.html`, titled
-  `Marsh Voices`.
+  `6.20.4 (Publish)`. The rest of the name is not used for the page —
+  the title comes from the Doc's first line.
 - **To unpublish**: remove `(Publish)` from the Doc's name. The next sync
   deletes the page.
 - Case and inner spacing are flexible (`(publish)`, `(Published)`,
@@ -145,8 +144,8 @@ In the repo's **Settings → Secrets and variables → Actions**, add:
 ### 5. Populate the folder tree
 
 Organize poems into whatever folder structure you like under the shared
-folder — the sync walks all of it. Name each Doc exactly as you want the
-poem's title to appear, and append `(Publish)` to the ones that should be
+folder — the sync walks all of it. Keep naming Docs however you already
+do (by date, here), and append `(Publish)` to the ones that should be
 live on the site:
 
 ```

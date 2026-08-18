@@ -3,18 +3,21 @@
 // templates/poem-template.html).
 //
 // Authoring conventions this relies on, in the source Google Doc:
-//   - The Doc's file name is the poem title. An optional first line that
-//     repeats the title is detected and skipped.
+//   - The poem's title is the Doc's FIRST LINE, not its file name (the
+//     Docs are named by date). The title line is stripped from the body.
 //   - The LAST non-blank paragraph is the date line (e.g. "6.20.4",
 //     "Circa 2010").
-//   - "Heading 2" paragraphs become stanza headings.
+//   - "Heading 2" paragraphs become stanza headings, as does any line
+//     that is only a number and a period ("1.", "2.").
+//   - Every line is numbered, blank ones included; runs of blank lines
+//     collapse to one.
 //   - Indent level is read from the paragraph's left margin/padding and
 //     bucketed into the site's existing .indent / .double-indent /
 //     .fifth-indent levels. This is a best-effort heuristic — spot-check
 //     indentation after the first sync of a poem.
 //   - Cross-poem links: paste a link to the target Doc directly in
 //     Google Docs. If the linked Doc is in the same synced folder, the
-//     link is rewritten to the local "<Title>.html" filename; otherwise
+//     link is rewritten to a relative path to that poem; otherwise
 //     it's left as an external link.
 //   - Native Google Docs footnotes are not converted yet — poems using
 //     footnotes stay hand-maintained until that's added.
