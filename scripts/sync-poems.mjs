@@ -21,6 +21,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertDocHtml } from './lib/convert.mjs';
+import { renderPage } from './lib/render.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -37,10 +38,6 @@ function requireEnv(name) {
 
 function sanitizeFilename(name) {
     return name.trim().replace(/[/\\:*?"<>|]/g, '');
-}
-
-function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function getAuth() {
@@ -104,10 +101,7 @@ async function main() {
             const html = await exportDocHtml(drive, doc.id);
             const { body, date } = convertDocHtml(html, doc.name, docIdToFilename);
 
-            const page = template
-                .replaceAll('{{TITLE}}', escapeHtml(doc.name))
-                .replace('{{BODY}}', body)
-                .replace('{{DATE}}', escapeHtml(date));
+            const page = renderPage(template, { title: doc.name, body, date });
 
             let existing = null;
             try {
