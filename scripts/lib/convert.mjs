@@ -19,6 +19,7 @@
 //   - Native Google Docs footnotes are not converted yet — poems using
 //     footnotes stay hand-maintained until that's added.
 
+import path from 'node:path';
 import * as cheerio from 'cheerio';
 
 const ELLIPSIS_RE = /(\.\s?\.\s?\.|…)/g;
@@ -89,12 +90,21 @@ function unwrapGoogleRedirect(href) {
     return href;
 }
 
-function resolveHref(href, docIdToFilename) {
+// Turns a link to a sibling poem's Doc into a relative path from the
+// page currently being written. With poems mirrored into folders, a link
+// from "Early Work/A.html" to "Late Work/B.html" has to become
+// "../Late Work/B.html", not a bare filename.
+export function relativeLink(fromDir, toPath) {
+    const rel = path.posix.relative(fromDir || '.', toPath);
+    return rel || toPath;
+}
+
+function resolveHref(href, docIdToPath, currentDir) {
     const real = unwrapGoogleRedirect(href);
     const docMatch = real.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
     if (docMatch) {
-        const filename = docIdToFilename.get(docMatch[1]);
-        if (filename) return filename;
+        const target = docIdToPath.get(docMatch[1]);
+        if (target) return relativeLink(currentDir, target);
     }
     return real;
 }
@@ -111,20 +121,20 @@ function wrapEllipses(text) {
 }
 
 // Renders the inline contents of a paragraph (text, italics, links) to HTML.
-function renderInline($, node, styleMap, docIdToFilename) {
+function renderInline($, node, styleMap, docIdToPath, currentDir) {
     let out = '';
     for (const child of $(node).contents().toArray()) {
         if (child.type === 'text') {
             out += wrapEllipses(child.data);
         } else if (child.type === 'tag' && child.tagName === 'a') {
-            const href = resolveHref($(child).attr('href') || '', docIdToFilename);
-            out += `<a href="${escapeHtml(href)}">${renderInline($, child, styleMap, docIdToFilename)}</a>`;
+            const href = resolveHref($(child).attr('href') || '', docIdToPath, currentDir);
+            out += `<a href="${escapeHtml(href)}">${renderInline($, child, styleMap, docIdToPath, currentDir)}</a>`;
         } else if (child.type === 'tag' && child.tagName === 'span') {
             const props = mergedProps(styleMap, $(child).attr('class'));
-            const inner = renderInline($, child, styleMap, docIdToFilename);
+            const inner = renderInline($, child, styleMap, docIdToPath, currentDir);
             out += isItalicProps(props) ? `<span class="italic">${inner}</span>` : inner;
         } else if (child.type === 'tag') {
-            out += renderInline($, child, styleMap, docIdToFilename);
+            out += renderInline($, child, styleMap, docIdToPath, currentDir);
         }
     }
     return out;
@@ -133,10 +143,11 @@ function renderInline($, node, styleMap, docIdToFilename) {
 /**
  * @param {string} html - Drive files.export text/html content for the Doc.
  * @param {string} title - poem title (from the Drive file name).
- * @param {Map<string,string>} docIdToFilename - other poem Doc IDs -> local filename, for cross-poem links.
+ * @param {Map<string,string>} docIdToPath - other poem Doc IDs -> repo-relative output path, for cross-poem links.
+ * @param {string} currentDir - repo-relative directory this page is written to, so links can be made relative to it.
  * @returns {{ body: string, date: string }}
  */
-export function convertDocHtml(html, title, docIdToFilename) {
+export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     const $ = cheerio.load(html);
     const styleMap = parseStyleMap(html);
     const blocks = $('body').children().toArray();
@@ -173,7 +184,7 @@ export function convertDocHtml(html, title, docIdToFilename) {
 
         const props = mergedProps(styleMap, $el.attr('class'));
         const indentClass = indentClassFor(props);
-        let inner = renderInline($, el, styleMap, docIdToFilename);
+        let inner = renderInline($, el, styleMap, docIdToPath, currentDir);
         if (indentClass) inner = `<span class="${indentClass}">${inner}</span>`;
 
         lines.push({ type: 'line', html: inner });

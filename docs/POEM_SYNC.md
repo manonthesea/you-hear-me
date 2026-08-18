@@ -6,17 +6,58 @@ setup and the ongoing authoring workflow.
 
 ## How it works
 
-- Each poem lives as one Google Doc in a shared Drive folder.
+- Each poem lives as one Google Doc, anywhere in a Drive folder **tree**.
+  The sync walks the whole tree from `DRIVE_FOLDER_ID` down, including
+  every subfolder.
+- **A poem is published only if its Doc's name ends with `(Publish)`** —
+  e.g. a Doc named `Marsh Voices (Publish)`. See below; this is the one
+  gate that matters.
 - Running the sync (`npm run sync`, or the "Sync poems" GitHub Action)
-  exports every Doc in that folder as HTML, converts it into the site's
-  canonical template (`templates/poem-template.html` +
-  `assets/poem.css`), and writes/updates the matching `<Title>.html` file
-  at the repo root.
+  exports each published Doc as HTML, converts it into the site's
+  canonical template (`templates/poem-template.html` + `assets/poem.css`),
+  and writes it to a path mirroring its Drive folder — so a published Doc
+  named `Marsh Voices (Publish)` inside `Early Work` becomes
+  `Early Work/Marsh Voices.html`.
 - A page is only rewritten if its rendered content actually changed, so
   re-running the sync with no edits produces no diff.
-- The sync is manual (`workflow_dispatch` in GitHub Actions) — nothing
-  publishes automatically when you edit a Doc. Run it when you want the
-  site to catch up.
+
+## What gets published — read this one
+
+**The repository is public.** Every file in it is served by GitHub Pages
+and recorded in the git history permanently. A page that nothing links to
+is still readable by anyone who guesses its URL, and deleting it later
+does not remove it from the history.
+
+So the sync will not write an unpublished poem into the repo at all.
+Drafts are read and then discarded; only Docs marked `(Publish)` are
+written.
+
+- **To publish**: rename the Doc to end with `(Publish)`, e.g.
+  `Marsh Voices (Publish)`. The annotation is stripped from the page
+  title and the filename — the page is `Marsh Voices.html`, titled
+  `Marsh Voices`.
+- **To unpublish**: remove `(Publish)` from the Doc's name. The next sync
+  deletes the page.
+- Case and inner spacing are flexible (`(publish)`, `(Published)`,
+  `( Publish )` all work), but it must be that word in parentheses.
+  A Doc merely *named* something like `Notes on Publishing` is not
+  published.
+
+Because publication state lives in the Doc's name, you can see at a
+glance which poems in a folder are live without opening any of them.
+
+## Removal
+
+The sync records the pages it generated in `.poem-sync-manifest.json`.
+On each run, any page in that manifest that the current run would no
+longer produce — because the Doc was unpublished, renamed, moved, or
+deleted — is removed from the repo.
+
+Deletion is driven strictly by that manifest, so a page the sync never
+created can never be deleted by it. The hand-made pages that predate the
+sync are not in any manifest and are never touched. If a run has any
+failures, cleanup is skipped entirely that time, so a transient Drive
+error can't be mistaken for "the author unpublished everything."
 
 ## One-time setup
 
@@ -101,19 +142,30 @@ In the repo's **Settings → Secrets and variables → Actions**, add:
 - `GCP_SERVICE_ACCOUNT_EMAIL` — `poem-sync@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
 - `DRIVE_FOLDER_ID` — the folder ID from step 2.
 
-### 5. Populate the folder
+### 5. Populate the folder tree
 
-Create one Google Doc per poem in the folder, named exactly as you want
-the poem's title to appear (the Doc's file name becomes both the page
-title and the output filename, e.g. a Doc named `Marsh Voices` produces
-`Marsh Voices.html`).
+Organize poems into whatever folder structure you like under the shared
+folder — the sync walks all of it. Name each Doc exactly as you want the
+poem's title to appear, and append `(Publish)` to the ones that should be
+live on the site:
+
+```
+GitHub Sync/                 <- DRIVE_FOLDER_ID
+  Marsh Voices (Publish)     -> Marsh Voices.html
+  Early Work/
+    Winter (Publish)         -> Early Work/Winter.html
+    Half-finished thing      -> not published, not written
+```
 
 ## The page template
 
 `templates/poem-template.html` is the shape every generated page takes.
-It contains three placeholders that `scripts/sync-poems.mjs` fills in:
+It contains the placeholders that `scripts/sync-poems.mjs` fills in:
 
-- `{{TITLE}}` — the poem title, from the Doc's file name
+- `{{TITLE}}` — the poem title, from the Doc's file name with any
+  `(Publish)` annotation removed
+- `{{CSS_PATH}}` — the path back to `assets/poem.css`, which depends on
+  how deep in the folder tree the page sits
 - `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza `<h2>`s,
   ellipsis/italic/indent spans, cross-poem links
 - `{{DATE}}` — the poem's date line
@@ -139,9 +191,11 @@ comment would swallow the real content.
   the site's green ellipsis style.
 - **Cross-poem and image links**: select text and use Google Docs'
   "Insert link" as normal.
-  - Link to **another poem** in the same folder by pasting that Doc's
-    share link — the sync rewrites it to the correct local
-    `<Title>.html` link automatically.
+  - Link to **another poem** by pasting that Doc's share link — the sync
+    rewrites it to the right relative path, across folders included (a
+    link from `Early Work/A.html` to a root-level poem becomes
+    `../Marsh Voices.html`). Links to *unpublished* Docs are left as
+    Google Docs links, since there is no page to point at.
   - Link to an **image already committed to the repo** (e.g.
     `scan0005.jpg`) by pasting its filename or full GitHub Pages URL.
   - External links (articles, photos, maps) work as-is.
@@ -192,8 +246,10 @@ have to be removed to avoid a loop.
 
 ## Tests
 
-`npm test` runs the conversion tests (`scripts/lib/convert.test.mjs`,
-built on Node's own test runner — no extra dependencies). They cover the
+`npm test` runs the tests (`scripts/lib/*.test.mjs`, built on Node's own
+test runner — no extra dependencies). `publish.test.mjs` covers the
+publish gate, the folder-to-path mapping, collisions, and which pages
+deletion may select; `convert.test.mjs` covers the
 Doc → page conversion rules (line numbering, date extraction, stanza
 headings, indent levels, italics, ellipses, link rewriting, escaping)
 and assert that a rendered page has no template placeholders left in it.
