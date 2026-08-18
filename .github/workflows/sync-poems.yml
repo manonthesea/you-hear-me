@@ -1,7 +1,14 @@
 name: Sync poems
 
 on:
+  # Manual runs stay available — this is still the way to publish a Doc
+  # edit on demand, since GitHub has no way to notice one on its own.
   workflow_dispatch: {}
+  # Publish automatically whenever something lands on main (e.g. a merged
+  # PR). The sync's own commit uses GITHUB_TOKEN, and GitHub does not
+  # re-trigger workflows from those pushes, so this cannot loop.
+  push:
+    branches: [main]
 
 permissions:
   contents: write
