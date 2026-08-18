@@ -80,24 +80,39 @@ test('blank lines are numbered too, like a file open in an editor', () => {
     );
 });
 
-test('stanza headings are not numbered', () => {
-    // They are <h2>, not lines of the poem.
+test('stanza markers are numbered lines like any other', () => {
     const html = docExport(
         [p('Before'), '<h2 class="c5"><span>x</span></h2>', p('After'), p('1.1.11')].join('')
     );
     const { body } = convertDocHtml(html, 'T', new Map());
 
-    assert.match(body, /line-number">2<\/span> After/);
+    assert.match(body, /line-number">2<\/span> <span class="stanza">x<\/span>/);
+    assert.match(body, /line-number">3<\/span> After/);
 });
 
-test('Heading 2 becomes a stanza heading and does not take a line number', () => {
+test('a bare "1." line is detected as a stanza marker', () => {
+    // The poem opens on its marker: line 1 is "1.", line 2 the blank
+    // after it, line 3 the first line of verse.
     const html = docExport(
-        [p('Before'), '<h2 class="c5"><span>1.</span></h2>', p('After'), p('1.1.11')].join('')
+        [p('1.'), blank, p('Weeping willows acknowledge spring'), p('3.22.9')].join('')
+    );
+    const { body } = convertDocHtml(html, 'Scenes from the Park', new Map());
+
+    assert.equal(
+        body,
+        '<span class="line-number">1</span> <span class="stanza">1.</span>\n' +
+            '<span class="line-number">2</span>\n' +
+            '<span class="line-number">3</span> Weeping willows acknowledge spring'
+    );
+});
+
+test('no <h2> is emitted into the poem body any more', () => {
+    const html = docExport(
+        [p('1.'), '<h2 class="c5"><span>2.</span></h2>', p('Verse'), p('1.1.11')].join('')
     );
     const { body } = convertDocHtml(html, 'T', new Map());
 
-    assert.match(body, /<h2>1\.<\/h2>/);
-    assert.match(body, /line-number">2<\/span> After/, 'heading must not increment numbering');
+    assert.doesNotMatch(body, /<h2>/);
 });
 
 test('maps indent levels onto the site indent classes', () => {

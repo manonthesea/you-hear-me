@@ -7,10 +7,11 @@
 //     Docs are named by date). The title line is stripped from the body.
 //   - The LAST non-blank paragraph is the date line (e.g. "6.20.4",
 //     "Circa 2010").
-//   - "Heading 2" paragraphs become stanza headings, as does any line
-//     that is only a number and a period ("1.", "2.").
-//   - Every line is numbered, blank ones included; runs of blank lines
-//     collapse to one.
+//   - "Heading 2" paragraphs are stanza markers, as is any line that is
+//     only a number and a period ("1.", "2."). They render as numbered
+//     lines styled green, not as headings.
+//   - Every line is numbered, blank lines and stanza markers included;
+//     runs of blank lines collapse to one.
 //   - Indent level is read from the paragraph's left margin/padding and
 //     bucketed into the site's existing .indent / .double-indent /
 //     .fifth-indent levels. This is a best-effort heuristic — spot-check
@@ -28,9 +29,8 @@ import * as cheerio from 'cheerio';
 const ELLIPSIS_RE = /(\.\s?\.\s?\.|…)/g;
 
 // A line that is nothing but a number and a period ("1.", "2.") is a
-// section marker, not verse. The hand-made pages render these as <h2>
-// and exclude them from line numbering; matching that keeps numbering
-// consistent with the existing collection.
+// section marker. It is still a line of the poem — numbered like any
+// other — and only the green .stanza styling sets it apart.
 const STANZA_MARKER_RE = /^\d+\.$/;
 
 function escapeHtml(str) {
@@ -190,7 +190,10 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
 
         if (tag === 'h2' || tag === 'h3') {
             const text = $el.text().trim();
-            if (text) lines.push({ type: 'stanza', text });
+            if (text) {
+                lines.push({ type: 'stanza', text });
+                sawFirstContent = true;
+            }
             continue;
         }
 
@@ -200,6 +203,10 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
 
         if (STANZA_MARKER_RE.test(plainText)) {
             lines.push({ type: 'stanza', text: plainText });
+            // A marker is content: without this, a blank line right after
+            // a poem-opening marker is mistaken for a leading blank and
+            // trimmed away.
+            sawFirstContent = true;
             continue;
         }
 
@@ -247,19 +254,19 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     if (dateEntry) lines.splice(lines.lastIndexOf(dateEntry), 1);
     while (lines.length && lines[lines.length - 1].type === 'blank') lines.pop();
 
-    // Every line of the poem is numbered, blank ones included — the page
-    // is meant to read like a poem open in a code editor, where the gaps
-    // between stanzas are numbered lines too. Stanza headings are the
-    // exception: they are <h2>, not lines of the poem.
+    // Every line of the poem is numbered — blank lines and stanza markers
+    // included. The page is meant to read like a poem open in a code
+    // editor, where every line has a number.
     let lineNumber = 0;
     const rendered = lines.map((l) => {
-        if (l.type === 'stanza') return `\n<h2>${escapeHtml(l.text)}</h2>\n`;
         lineNumber += 1;
-        if (l.type === 'blank') return `<span class="line-number">${lineNumber}</span>`;
-        const spaced = l.html.startsWith('<span class="indent')
-            ? l.html
-            : ` ${l.html}`;
-        return `<span class="line-number">${lineNumber}</span>${spaced}`;
+        const number = `<span class="line-number">${lineNumber}</span>`;
+        if (l.type === 'blank') return number;
+        if (l.type === 'stanza') {
+            return `${number} <span class="stanza">${escapeHtml(l.text)}</span>`;
+        }
+        const spaced = l.html.startsWith('<span class="indent') ? l.html : ` ${l.html}`;
+        return `${number}${spaced}`;
     });
 
     return { body: rendered.join('\n'), date };
