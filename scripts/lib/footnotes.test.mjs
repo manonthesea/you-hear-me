@@ -420,5 +420,5 @@ test('an empty {{FOOTNOTES}} substitution leaves exactly one blank line, not a s
 
     const page = renderPage(template, { title: 'T', body, date, footnotesHtml });
 
-    assert.match(page, /<\/pre>\n\n<\/body>/);
+    assert.match(page, /<\/pre>\n\n<\/div>/);
 });
