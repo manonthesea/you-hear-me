@@ -68,6 +68,12 @@ em,
     color: red; /* Date styling */
     font-size: 1em;
     display: block;
+    /*
+     * Line the date up with the title and the verse. It already sits at
+     * pre's 40px padding, so it needs the rest of the offset: the 30px
+     * line-number gutter plus the space that follows the number.
+     */
+    padding-left: calc(30px + 0.6rem);
 }
 
 .line-number {
