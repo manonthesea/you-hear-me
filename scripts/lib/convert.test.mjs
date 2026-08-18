@@ -59,6 +59,17 @@ test('keeps a first line that merely resembles the title', () => {
     assert.match(body, /<span class="line-number">1<\/span> Marsh Voices carry far/);
 });
 
+test('a blank paragraph after a skipped title line does not open a gap', () => {
+    // Docs commonly repeat the title, then leave an empty line before the
+    // poem. That blank used to survive as a leading newline, pushing the
+    // first line away from the <h1>.
+    const html = docExport([p('Marsh Voices'), blank, p('Chit chat.'), p('6.20.4')].join(''));
+    const { body } = convertDocHtml(html, 'Marsh Voices', new Map());
+
+    assert.ok(!body.startsWith('\n'), 'body must not begin with a blank line');
+    assert.match(body, /^<span class="line-number">1<\/span> Chit chat\./);
+});
+
 test('blank paragraphs become stanza breaks without consuming a line number', () => {
     const html = docExport([p('One'), blank, p('Two'), p('1.1.11')].join(''));
     const { body } = convertDocHtml(html, 'T', new Map());
@@ -164,6 +175,19 @@ test('renders a complete page with no placeholders left behind', async () => {
     assert.match(page, /<h1>x\.x\.test<\/h1>/);
     assert.match(page, /<em>8\.17\.26<\/em>/);
     assert.match(page, /<link rel="stylesheet" href="assets\/poem\.css">/);
+});
+
+test('page spacing matches the hand-made pages', async () => {
+    const template = await readFile(TEMPLATE_PATH, 'utf8');
+    const html = docExport([p('A line'), p('Last line'), p('8.17.26')].join(''));
+    const { body, date } = convertDocHtml(html, 'x.x.test', new Map());
+
+    const page = renderPage(template, { title: 'x.x.test', body, date });
+
+    // No blank line between <pre> and the first numbered line...
+    assert.match(page, /<pre>\n<span class="line-number">1<\/span>/);
+    // ...but one blank line before the date, as in Marsh Voices.html et al.
+    assert.match(page, /Last line\n\n<em>8\.17\.26<\/em>/);
 });
 
 test('the template contains each placeholder exactly once', async () => {

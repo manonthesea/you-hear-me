@@ -179,6 +179,11 @@ export function convertDocHtml(html, title, docIdToFilename) {
         lines.push({ type: 'line', html: inner });
     }
 
+    // Drop leading blanks: a Doc that repeats its title on the first line
+    // usually follows it with an empty paragraph, which would otherwise
+    // open the poem with a stray blank line under the title.
+    while (lines.length && lines[0].type === 'blank') lines.shift();
+
     // Trim trailing blank lines, then the last "line" is the date.
     while (lines.length && lines[lines.length - 1].type === 'blank') lines.pop();
     const dateEntry = [...lines].reverse().find((l) => l.type === 'line');
