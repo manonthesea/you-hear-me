@@ -6,7 +6,7 @@
 //   - The poem's title is the Doc's FIRST LINE, not its file name (the
 //     Docs are named by date). The title line is stripped from the body.
 //   - The LAST non-blank paragraph is the date line (e.g. "6.20.4",
-//     "Circa 2010").
+//     "Circa 2010", "Circa College").
 //   - "Heading 2" paragraphs are stanza markers, as is any line that is
 //     only a number and a period ("1.", "2."). They render as numbered
 //     lines styled green, not as headings.
@@ -21,13 +21,22 @@
 //     link is rewritten to a relative path to that poem; otherwise
 //     it's left as an external link.
 //   - The LAST non-blank line is the date ONLY if it looks like one
-//     (n.n.nn, nn.nn.nn, or "Circa YYYY"). Anything else is left as a
+//     (n.n.nn, nn.nn.nn, or "Circa ..."). Anything else is left as a
 //     normal line, and the date is empty.
 //   - Native Google Docs footnotes: a reference link to "#ftntN" becomes
 //     a numbered superscript, and the matching "id=\"ftntN\"" footnote
 //     body is rendered as a <p class="footnote"> after the poem. This is
 //     a best-effort match to Google's export shape — verify a footnoted
 //     poem's first sync.
+//
+// A note on reading the export's formatting: which of several shapes a
+// Drive export uses for italics is not something this repo can pin down
+// (there are no credentials in a test run, so the only evidence is the
+// published pages). Every plausible shape is therefore accepted at once
+// — CSS classes, grouped selectors, multiple <style> blocks, inline
+// style="..." attributes, and plain <i>/<em> tags. Missing one of them
+// costs a poem its italics silently, which is the failure this is
+// written to avoid.
 
 import path from 'node:path';
 import * as cheerio from 'cheerio';
@@ -39,11 +48,14 @@ const ELLIPSIS_RE = /(\.\s?\.\s?\.|…)/g;
 // other — and only the green .stanza styling sets it apart.
 const STANZA_MARKER_RE = /^\d+\.$/;
 
-// The standardized date shapes: n.n.nn / nn.nn.nn, or "Circa YYYY". A
-// last line that doesn't match either is verse, not a date - without
-// this, the last line of a dateless poem would be silently swallowed
-// into <em> as if it were one.
-const DATE_RE = /^(\d{1,2}\.\d{1,2}\.\d{1,4}|circa\s+\d{3,4})$/i;
+// The standardized date shapes: n.n.nn / nn.nn.nn, or a "Circa ..."
+// line. Circa is deliberately open-ended rather than "Circa YYYY": the
+// Docs use "Circa 2003" but also "Circa College" and "Circa Before
+// Time", and requiring a year left those poems undated, with the date
+// stranded as a last line of verse. A last line that matches neither
+// shape is verse, not a date — without that check, the last line of a
+// dateless poem would be silently swallowed into <em> as if it were one.
+const DATE_RE = /^(\d{1,2}\.\d{1,2}\.\d{1,4}|circa\s+\S.{0,38})$/i;
 
 // A footnote reference in Google Docs' export is a link to "#ftnt1"
 // (not "#ftnt_ref1", which is the backlink the other direction). The
@@ -57,6 +69,9 @@ const FOOTNOTE_ID_RE = /^ftnt(\d+)$/i;
 // because a Doc's title is commonly styled Heading 2 or 3.
 const BLOCK_TAGS = ['p', 'h1', 'h2', 'h3'];
 
+// Tags that mean italic on their own, whatever the stylesheet says.
+const ITALIC_TAGS = new Set(['i', 'em']);
+
 // Plain text of a rendered segment, for the blank / marker / title checks.
 function plainText(segmentHtml) {
     return cheerio.load(`<div>${segmentHtml}</div>`)('div').text().trim();
@@ -69,34 +84,81 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;');
 }
 
-function parseStyleMap(html) {
-    const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-    const map = new Map();
-    if (!styleMatch) return map;
-    const ruleRe = /\.(c\d+)\s*\{([^}]*)\}/g;
-    let m;
-    while ((m = ruleRe.exec(styleMatch[1])) !== null) {
-        const [, className, body] = m;
-        const props = {};
-        for (const decl of body.split(';')) {
-            const [k, v] = decl.split(':');
-            if (k && v) props[k.trim().toLowerCase()] = v.trim().toLowerCase();
-        }
-        map.set(className, props);
-    }
-    return map;
-}
-
-function mergedProps(styleMap, classAttr) {
+// One "prop: value" list, from a <style> rule body or a style="..."
+// attribute. Split on the FIRST colon only — font-family:"Arial", and
+// any url(...) value, contain colons of their own.
+function parseDeclarations(cssText) {
     const props = {};
-    for (const cls of (classAttr || '').split(/\s+/).filter(Boolean)) {
-        Object.assign(props, styleMap.get(cls));
+    for (const decl of (cssText || '').split(';')) {
+        const idx = decl.indexOf(':');
+        if (idx === -1) continue;
+        const key = decl.slice(0, idx).trim().toLowerCase();
+        if (key) props[key] = decl.slice(idx + 1).trim().toLowerCase();
     }
     return props;
 }
 
-function isItalicProps(props) {
-    return props['font-style'] === 'italic';
+// Maps class name -> declarations, for every <style> block in the export.
+//
+// Deliberately permissive: it reads every <style> block rather than only
+// the first, accepts grouped selectors (".c3,.c9{...}"), and accepts any
+// class name rather than only Docs' "cN" convention.
+function parseStyleMap(html) {
+    const map = new Map();
+    const styleRe = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+    let block;
+    while ((block = styleRe.exec(html)) !== null) {
+        const ruleRe = /([^{}]+)\{([^{}]*)\}/g;
+        let rule;
+        while ((rule = ruleRe.exec(block[1])) !== null) {
+            const props = parseDeclarations(rule[2]);
+            if (Object.keys(props).length === 0) continue;
+            for (const selector of rule[1].split(',')) {
+                const cls = selector.trim().match(/^\.([\w-]+)$/);
+                if (!cls) continue;
+                map.set(cls[1], { ...map.get(cls[1]), ...props });
+            }
+        }
+    }
+    return map;
+}
+
+// Every declaration block that applies to one element: its classes'
+// rules first, then its own style="..." attribute.
+function styleSources($, el, styleMap) {
+    const sources = [];
+    for (const cls of ($(el).attr('class') || '').split(/\s+/).filter(Boolean)) {
+        const props = styleMap.get(cls);
+        if (props) sources.push(props);
+    }
+    const inline = $(el).attr('style');
+    if (inline) sources.push(parseDeclarations(inline));
+    return sources;
+}
+
+function mergedProps(sources) {
+    return Object.assign({}, ...sources);
+}
+
+// True when ANY block applying to the element sets the property, rather
+// than only whichever one happens to win the merge.
+//
+// Docs describes a run by handing it every class it needs and never uses
+// a later class to cancel an earlier one, so "any source says italic" is
+// what the export means — and it doesn't depend on guessing the cascade
+// order from the order of names in a class attribute.
+function anyDeclares(sources, prop, value) {
+    return sources.some((props) => props[prop] === value);
+}
+
+function isItalicEl($, el, styleMap) {
+    if (ITALIC_TAGS.has(el.tagName?.toLowerCase())) return true;
+    return anyDeclares(styleSources($, el, styleMap), 'font-style', 'italic');
+}
+
+function isSuperscriptEl($, el, styleMap) {
+    if (el.tagName?.toLowerCase() === 'sup') return true;
+    return anyDeclares(styleSources($, el, styleMap), 'vertical-align', 'super');
 }
 
 function toPx(value) {
@@ -162,13 +224,31 @@ function wrapEllipses(text) {
         .join('');
 }
 
+// A superscript run that is just a number is a footnote reference the
+// poet typed by hand (Docs' own footnotes are <a href="#ftntN"> and are
+// handled before this). It's normalized to the same marker those get, so
+// both kinds look alike. A superscript that is not a bare number - the
+// "st" in "1st" - stays an ordinary <sup>.
+function wrapSuperscript(part, footnoteRefs) {
+    if (!part) return part;
+    if (part.includes('footnote-number')) return part; // already a reference
+    const match = plainText(part).match(/^\[?(\d{1,3})\]?$/);
+    if (!match) return `<sup>${part}</sup>`;
+    footnoteRefs.push(match[1]);
+    return `<sup class="footnote-number">${match[1]}</sup>`;
+}
+
 // Renders a paragraph's inline contents into one or more lines.
 //
 // A soft line break in Google Docs (Shift+Enter) exports as <br> inside
 // the paragraph, so one <p> can hold a whole stanza. Each <br> starts a
 // new line. Wrapper elements are re-applied per segment, so a break
 // inside an italic run or a link cannot split a tag across lines.
-function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs) {
+//
+// `inItalic` says an enclosing element already opened an italic run, so
+// a nested italic element does not open a redundant second one.
+function renderSegments($, node, ctx, inItalic = false) {
+    const { styleMap, docIdToPath, currentDir, unresolved, footnoteRefs } = ctx;
     const segments = [''];
     const append = (str) => {
         segments[segments.length - 1] += str;
@@ -206,7 +286,7 @@ function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved, 
                 continue;
             }
 
-            const inner = renderSegments($, child, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs);
+            const inner = renderSegments($, child, ctx, inItalic);
             const href = resolveHref(rawHref, docIdToPath, currentDir);
             if (href === null) {
                 // Keep the words, drop the link.
@@ -219,27 +299,49 @@ function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved, 
             continue;
         }
 
-        const inner = renderSegments($, child, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs);
+        const superscript = isSuperscriptEl($, child, styleMap);
+        const italic = !inItalic && !superscript && isItalicEl($, child, styleMap);
+        const inner = renderSegments($, child, ctx, inItalic || italic);
 
-        if (tag === 'span' && isItalicProps(mergedProps(styleMap, $(child).attr('class')))) {
+        if (superscript) {
+            appendAll(inner, (part) => wrapSuperscript(part, footnoteRefs));
+        } else if (italic) {
             appendAll(inner, (part) => (part ? `<span class="italic">${part}</span>` : part));
-            continue;
+        } else {
+            appendAll(inner, (part) => part);
         }
-
-        appendAll(inner, (part) => part);
     }
     return segments;
+}
+
+// True when this element, or something inside it, is a footnote body's
+// anchor - i.e. where the NEXT footnote starts.
+function holdsFootnoteId($, el) {
+    return $(el)
+        .find('[id]')
+        .addBack('[id]')
+        .toArray()
+        .some((node) => FOOTNOTE_ID_RE.test($(node).attr('id') || ''));
 }
 
 // Finds footnote body definitions anywhere in the Doc (the id that a
 // "#ftnt1" reference points at) and renders each one's content, minus
 // the self-referencing "[1]" backlink Docs repeats at the start of it.
 //
+// A footnote is not always one paragraph. Pressing Enter inside a Doc
+// footnote exports as a second <p> beside the first, carrying no id of
+// its own — so reading only the paragraph that holds the backlink
+// truncated every footnote at its first line break. That is what
+// severed each citation from the passage quoted under it, publishing
+// "Fussell, Paul. ... 1977." with the quotation silently dropped: the
+// quote lived in a paragraph nothing ever looked at. Each footnote
+// therefore claims its own block plus every following sibling block up
+// to where the next footnote begins.
+//
 // Returns a Map<number-as-string, renderedHtml>, and the set of raw DOM
 // nodes used as containers so the main loop can skip them - otherwise a
 // footnote living in a top-level <p> would also be read as a poem line.
-function extractFootnotes($, styleMap, docIdToPath, currentDir, unresolved) {
-    const scratchRefs = [];
+function extractFootnotes($, ctx) {
     const footnotes = new Map();
     const containerNodes = new Set();
 
@@ -249,19 +351,29 @@ function extractFootnotes($, styleMap, docIdToPath, currentDir, unresolved) {
         if (!match) return;
 
         const tag = el.tagName?.toLowerCase();
-        const $container = ['p', 'div'].includes(tag) ? $(el) : $(el).closest('p, div');
-        if (!$container.length) return;
+        const $start = ['p', 'div'].includes(tag) ? $(el) : $(el).closest('p, div');
+        if (!$start.length) return;
 
-        containerNodes.add($container.get(0));
+        const blocks = [$start.get(0)];
+        for (const sibling of $start.nextAll().toArray()) {
+            const siblingTag = sibling.tagName?.toLowerCase();
+            if (!['p', 'div'].includes(siblingTag)) break;
+            if (holdsFootnoteId($, sibling)) break; // the next footnote's own block
+            blocks.push(sibling);
+        }
 
-        const $clone = $container.clone();
-        $clone.find(`[id="${id}"]`).remove();
-        let text = renderSegments($, $clone.get(0), styleMap, docIdToPath, currentDir, unresolved, scratchRefs)
-            .join(' ')
-            .trim();
+        const parts = [];
+        for (const block of blocks) {
+            containerNodes.add(block);
+            const $clone = $(block).clone();
+            $clone.find(`[id="${id}"]`).remove();
+            const rendered = renderSegments($, $clone.get(0), ctx).join(' ').trim();
+            if (rendered) parts.push(rendered);
+        }
+
         // Some Docs versions leave the visible "[1]"/"1." marker as plain
         // text rather than inside the removable backlink; strip it too.
-        text = text.replace(/^(\[\d+\]|\d+\.)\s*/, '');
+        const text = parts.join(' ').trim().replace(/^(\[\d+\]|\d+\.)\s*/, '');
         if (text) footnotes.set(match[1], text);
     });
 
@@ -311,13 +423,13 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     const footnoteRefs = []; // footnote numbers actually referenced in the text
     let sawFirstContent = false;
 
-    const { footnotes, containerNodes } = extractFootnotes(
-        $,
-        styleMap,
-        docIdToPath,
-        currentDir,
-        unresolved
-    );
+    const ctx = { styleMap, docIdToPath, currentDir, unresolved, footnoteRefs };
+    const { footnotes, containerNodes } = extractFootnotes($, {
+        ...ctx,
+        // A number typed into a footnote body is part of the citation,
+        // not a reference to another footnote.
+        footnoteRefs: [],
+    });
 
     for (const el of blocks) {
         const $el = $(el);
@@ -328,14 +440,14 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
         // A heading in a Doc is either the poem's title or a section
         // marker; which one depends only on whether it comes first.
         const isHeading = tag !== 'p';
-        const props = mergedProps(styleMap, $el.attr('class'));
-        const indentClass = indentClassFor(props);
+        const sources = styleSources($, el, styleMap);
+        const indentClass = indentClassFor(mergedProps(sources));
         // When a whole line is italic, Google Docs commonly puts
         // font-style on the PARAGRAPH's own class rather than an inner
         // <span> - there is nothing left inside the paragraph for the
-        // per-span italic check in renderSegments to ever see.
-        const isBlockItalic = isItalicProps(props);
-        const segments = renderSegments($, el, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs);
+        // per-element italic check in renderSegments to ever see.
+        const isBlockItalic = isItalicEl($, el, styleMap);
+        const segments = renderSegments($, el, ctx, isBlockItalic);
 
         for (const segment of segments) {
             const text = plainText(segment);
