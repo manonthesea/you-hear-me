@@ -167,7 +167,7 @@ It contains the placeholders that `scripts/sync-poems.mjs` fills in:
 - `{{TITLE}}` — the poem title, taken from the Doc's first line
 - `{{CSS_PATH}}` — the path back to `assets/poem.css`, which depends on
   how deep in the folder tree the page sits
-- `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza `<h2>`s,
+- `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza markers,
   ellipsis/italic/indent spans, cross-poem links
 - `{{DATE}}` — the poem's date line
 
@@ -187,18 +187,17 @@ comment would swallow the real content.
     instead. Each sync logs the title it chose for every poem, so check
     the run log after a first sync.
 - **Stanza / section markers**: a line that is only a number and a period
-  (`1.`, `2.`) is detected as a section heading automatically — rendered
-  as an `<h2>` and excluded from line numbering, matching the hand-made
-  pages.
+  (`1.`, `2.`) is detected automatically and styled green and indented
+  (`.stanza`). It is still a numbered line of the poem like any other —
+  only the styling sets it apart.
 - **Date**: the **last non-blank line** in the Doc is treated as the
   date (e.g. `6.20.4`, `Circa 2010`).
-- **Other stanza headings**: apply the *Heading 2* paragraph style in
-  Google Docs to any line that should be a heading but isn't a bare
-  `1.`-style marker.
-- **Line numbering**: every line of the poem is numbered, blank lines
-  included — the page is meant to read like a poem open in a code
-  editor. Stanza headings are the exception, since they are headings
-  rather than lines of the poem.
+- **Other stanza markers**: apply the *Heading 2* paragraph style in
+  Google Docs to any line that should get the same green treatment but
+  isn't a bare `1.`-style marker.
+- **Line numbering**: every line of the poem is numbered — blank lines
+  and stanza markers included. The page is meant to read like a poem
+  open in a code editor, where every line carries a number.
 - **Blank lines**: a run of consecutive blank lines (a page break in a
   Doc exports as dozens of empty paragraphs) collapses to a single
   numbered blank line.

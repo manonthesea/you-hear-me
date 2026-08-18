@@ -93,6 +93,19 @@ em,
     color: #56d364; /* Standardized ellipsis green */
 }
 
+/*
+ * Stanza / section markers ("1.", "2."). These are numbered lines of the
+ * poem like any other, not headings outside the numbering — the green
+ * and the indent are all that set them apart. The 80px matches where the
+ * old h2 treatment sat relative to the poem text (h2 was 120px from the
+ * body edge; the poem starts at pre's 40px).
+ */
+.stanza {
+    color: #56d364; /* GitHub green */
+    font-weight: bold;
+    padding-left: 80px;
+}
+
 .footnote {
     font-size: 0.85em;
     color: #c9d1d9;
