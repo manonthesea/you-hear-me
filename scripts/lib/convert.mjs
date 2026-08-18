@@ -108,12 +108,16 @@ export function relativeLink(fromDir, toPath) {
     return rel || toPath;
 }
 
+// Returns the href to emit, or null when the link points at a Doc that
+// is not published. Emitting the docs.google.com URL in that case would
+// put a private Doc's address on a public page and hand readers a link
+// that only opens a permission wall.
 function resolveHref(href, docIdToPath, currentDir) {
     const real = unwrapGoogleRedirect(href);
     const docMatch = real.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
     if (docMatch) {
         const target = docIdToPath.get(docMatch[1]);
-        if (target) return relativeLink(currentDir, target);
+        return target ? relativeLink(currentDir, target) : null;
     }
     return real;
 }
@@ -130,20 +134,27 @@ function wrapEllipses(text) {
 }
 
 // Renders the inline contents of a paragraph (text, italics, links) to HTML.
-function renderInline($, node, styleMap, docIdToPath, currentDir) {
+function renderInline($, node, styleMap, docIdToPath, currentDir, unresolved) {
     let out = '';
     for (const child of $(node).contents().toArray()) {
         if (child.type === 'text') {
             out += wrapEllipses(child.data);
         } else if (child.type === 'tag' && child.tagName === 'a') {
             const href = resolveHref($(child).attr('href') || '', docIdToPath, currentDir);
-            out += `<a href="${escapeHtml(href)}">${renderInline($, child, styleMap, docIdToPath, currentDir)}</a>`;
+            const inner = renderInline($, child, styleMap, docIdToPath, currentDir, unresolved);
+            if (href === null) {
+                // Keep the words, drop the link.
+                unresolved.push($(child).text().trim());
+                out += inner;
+            } else {
+                out += `<a href="${escapeHtml(href)}">${inner}</a>`;
+            }
         } else if (child.type === 'tag' && child.tagName === 'span') {
             const props = mergedProps(styleMap, $(child).attr('class'));
-            const inner = renderInline($, child, styleMap, docIdToPath, currentDir);
+            const inner = renderInline($, child, styleMap, docIdToPath, currentDir, unresolved);
             out += isItalicProps(props) ? `<span class="italic">${inner}</span>` : inner;
         } else if (child.type === 'tag') {
-            out += renderInline($, child, styleMap, docIdToPath, currentDir);
+            out += renderInline($, child, styleMap, docIdToPath, currentDir, unresolved);
         }
     }
     return out;
@@ -174,7 +185,7 @@ export function extractTitle(html) {
  * @param {string} title - poem title (from the Drive file name).
  * @param {Map<string,string>} docIdToPath - other poem Doc IDs -> repo-relative output path, for cross-poem links.
  * @param {string} currentDir - repo-relative directory this page is written to, so links can be made relative to it.
- * @returns {{ body: string, date: string }}
+ * @returns {{ body: string, date: string, unresolved: string[] }}
  */
 export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     const $ = cheerio.load(html);
@@ -182,6 +193,7 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     const blocks = $('body').children().toArray();
 
     const lines = []; // { type: 'stanza', text } | { type: 'line', html } | { type: 'blank' }
+    const unresolved = []; // link texts pointing at unpublished poems
     let sawFirstContent = false;
 
     for (const el of blocks) {
@@ -225,7 +237,7 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
 
         const props = mergedProps(styleMap, $el.attr('class'));
         const indentClass = indentClassFor(props);
-        let inner = renderInline($, el, styleMap, docIdToPath, currentDir);
+        let inner = renderInline($, el, styleMap, docIdToPath, currentDir, unresolved);
         if (indentClass) inner = `<span class="${indentClass}">${inner}</span>`;
 
         lines.push({ type: 'line', html: inner });
@@ -269,5 +281,5 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
         return `${number}${spaced}`;
     });
 
-    return { body: rendered.join('\n'), date };
+    return { body: rendered.join('\n'), date, unresolved };
 }

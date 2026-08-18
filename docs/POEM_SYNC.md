@@ -212,8 +212,17 @@ comment would swallow the real content.
   - Link to **another poem** by pasting that Doc's share link — the sync
     rewrites it to the right relative path, across folders included (a
     link from `Early Work/A.html` to a root-level poem becomes
-    `../Marsh Voices.html`). Links to *unpublished* Docs are left as
-    Google Docs links, since there is no page to point at.
+    `../Marsh Voices.html`).
+  - Because links are stored as **Doc IDs**, not filenames, they survive
+    retitling and moving: rename a poem and every link to it is
+    regenerated correctly on the next sync. (The hand-made pages use
+    literal filenames, which is why several of them ended up pointing at
+    a page that no longer existed.)
+  - A link to an **unpublished** Doc has no page to point at. The words
+    are kept and the link is dropped — the `docs.google.com` URL is
+    never written to the public page. The sync log notes each one, so
+    the run log tells you which links are still waiting on a poem to be
+    published.
   - Link to an **image already committed to the repo** (e.g.
     `scan0005.jpg`) by pasting its filename or full GitHub Pages URL.
   - External links (articles, photos, maps) work as-is.
