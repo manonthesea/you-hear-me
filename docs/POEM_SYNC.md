@@ -151,16 +151,44 @@ comment would swallow the real content.
 
 ## Running a sync
 
+- **Automatically on merge**: any push to `main` (a merged PR, say) runs
+  the sync. The sync's own commit is pushed with `GITHUB_TOKEN`, and
+  GitHub does not re-trigger workflows from those pushes, so it cannot
+  loop.
 - **From GitHub**: Actions tab → "Sync poems" workflow → Run workflow.
   It exports every Doc, regenerates changed pages, rebuilds the
   narrative map (`graph.html`), and pushes a commit only if something
-  changed.
+  changed. This stays the way to publish a **Doc edit**: nothing on
+  GitHub can detect that you edited a poem in Drive, so a manual run (or
+  a scheduled one, if ever added) is the only thing that picks it up.
 - **Locally**: `npm install`, run `gcloud auth application-default
   login --impersonate-service-account=poem-sync@YOUR_PROJECT_ID.iam.gserviceaccount.com`
   once (this needs `roles/iam.serviceAccountTokenCreator` on the
   service account for your own user, granted separately if you want
   local runs), set `DRIVE_FOLDER_ID` in your shell, and run
   `npm run sync`.
+
+## Branch protection and the sync's push
+
+If `main` is protected with a required status check, that protection
+applies to **direct pushes too**, not just pull requests — and the
+sync pushes its commit straight to `main`. A freshly pushed commit has
+no checks on it yet, so the push is rejected and the sync fails at its
+last step.
+
+To run both, the rule needs a bypass for the workflow's identity. Use a
+**ruleset** (Settings → Rules → Rulesets) rather than classic branch
+protection, since only rulesets support bypass actors:
+
+1. New branch ruleset, targeting `main`.
+2. Enable **Require status checks to pass** → add `test`.
+3. Under **Bypass list**, add the **GitHub Actions** app.
+
+That leaves pull requests gated on the tests while the sync can still
+publish. If the bypass isn't available, the alternative is to push with
+a personal access token instead of `GITHUB_TOKEN` — but note that a PAT
+push *does* re-trigger workflows, so the `push: main` trigger would then
+have to be removed to avoid a loop.
 
 ## Tests
 
