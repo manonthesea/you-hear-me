@@ -19,13 +19,14 @@ export function cssPathFor(dir) {
 
 /**
  * @param {string} template - contents of templates/poem-template.html
- * @param {{ title: string, body: string, date: string, dir?: string }} poem
+ * @param {{ title: string, body: string, date: string, dir?: string, footnotesHtml?: string }} poem
  * @returns {string} the finished page
  */
-export function renderPage(template, { title, body, date, dir = '' }) {
+export function renderPage(template, { title, body, date, dir = '', footnotesHtml = '' }) {
     return template
         .replaceAll('{{TITLE}}', escapeHtml(title))
         .replaceAll('{{CSS_PATH}}', cssPathFor(dir))
         .replaceAll('{{BODY}}', body)
-        .replaceAll('{{DATE}}', escapeHtml(date));
+        .replaceAll('{{DATE}}', escapeHtml(date))
+        .replaceAll('{{FOOTNOTES}}', footnotesHtml);
 }

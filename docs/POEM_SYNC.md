@@ -171,7 +171,10 @@ It contains the placeholders that `scripts/sync-poems.mjs` fills in:
   how deep in the folder tree the page sits
 - `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza markers,
   ellipsis/italic/indent spans, cross-poem links
-- `{{DATE}}` — the poem's date line
+- `{{DATE}}` — the poem's date line, empty if the last line isn't
+  date-shaped
+- `{{FOOTNOTES}}` — any footnote citations, rendered as
+  `<p class="footnote">` blocks; empty if the poem has none
 
 Keep those placeholder strings out of any comment or literal text in the
 template — every occurrence is substituted, so a stray mention in a
@@ -198,7 +201,11 @@ comment would swallow the real content.
   (`.stanza`). It is still a numbered line of the poem like any other —
   only the styling sets it apart.
 - **Date**: the **last non-blank line** in the Doc is treated as the
-  date (e.g. `6.20.4`, `Circa 2010`).
+  date, but only if it's shaped like one — `n.n.nn` / `nn.nn.nn`
+  (`6.20.4`, `12.31.19`) or `Circa YYYY` (`Circa 2010`, case-insensitive).
+  A last line that doesn't match either shape is left as an ordinary
+  line of verse, and the date is simply empty — it is never guessed at
+  or swallowed.
 - **Other stanza markers**: apply the *Heading 2* paragraph style in
   Google Docs to any line that should get the same green treatment but
   isn't a bare `1.`-style marker.
@@ -208,7 +215,10 @@ comment would swallow the real content.
 - **Blank lines**: a run of consecutive blank lines (a page break in a
   Doc exports as dozens of empty paragraphs) collapses to a single
   numbered blank line.
-- **Italics**: use Google Docs' italic formatting as normal.
+- **Italics**: use Google Docs' italic formatting as normal — a run
+  within a line, or a whole line at once. Both are recognized; Google
+  exports a fully-italic line differently (the styling sits on the line
+  itself rather than a run inside it), and both shapes are handled.
 - **Indentation**: use Google Docs' "Increase indent" — one level maps
   to a small indent, two levels to a larger one. This is a best-effort
   conversion; spot-check indentation after a poem's first sync.
@@ -233,9 +243,20 @@ comment would swallow the real content.
   - Link to an **image already committed to the repo** (e.g.
     `scan0005.jpg`) by pasting its filename or full GitHub Pages URL.
   - External links (articles, photos, maps) work as-is.
-- **Footnotes**: native Google Docs footnotes are not converted yet.
-  Poems that need footnotes (like `SNAFU.html`) should stay
-  hand-maintained outside the synced folder for now.
+- **Footnotes**: use Google Docs' native "Insert footnote" as normal.
+  The in-text marker becomes a numbered superscript
+  (`.footnote-number`), and the citation itself is rendered as a
+  `<p class="footnote">` after the poem — the same convention the
+  hand-made pages already use. Links and italics inside a footnote's
+  text are preserved.
+  - This is a best-effort match to Google's export shape, the same
+    caveat as indentation above — spot-check a footnoted poem's first
+    sync.
+  - If a citation's text doesn't come through (an export shape this
+    doesn't recognize), the numbered marker still appears in the poem,
+    but the sync log for that run notes exactly which footnote number
+    is missing its text, rather than silently publishing a marker that
+    points at nothing.
 
 ## Running a sync
 
@@ -294,7 +315,8 @@ they're built on, so still eyeball a poem's first sync.
 
 ## Known limitations
 
-- Native Google Docs footnotes aren't converted (see above).
+- Footnote conversion is a best-effort match to Google's export shape
+  (see above) — spot-check a footnoted poem's first sync.
 - Indentation level detection is heuristic, not exact.
 - Images aren't pulled from Drive — they're expected to already exist in
   the repo (or be linked externally) and referenced by filename/URL from

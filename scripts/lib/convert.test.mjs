@@ -230,6 +230,7 @@ test('the template contains each placeholder exactly once', async () => {
     // poem, leaving a literal "{{BODY}}" on the published page.
     assert.equal(template.match(/\{\{BODY\}\}/g).length, 1);
     assert.equal(template.match(/\{\{DATE\}\}/g).length, 1);
+    assert.equal(template.match(/\{\{FOOTNOTES\}\}/g).length, 1);
     assert.equal(template.match(/\{\{TITLE\}\}/g).length, 2, 'once in <title>, once in <h1>');
 });
 

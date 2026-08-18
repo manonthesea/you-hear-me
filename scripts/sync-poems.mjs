@@ -216,12 +216,19 @@ async function main() {
     // Pass 2: render and write.
     for (const doc of exported) {
         try {
-            const { body, date, unresolved } = convertDocHtml(
+            const { body, date, unresolved, footnotesHtml, orphanFootnoteRefs } = convertDocHtml(
                 doc.html,
                 doc.title,
                 docIdToPath,
                 doc.dir
             );
+
+            for (const number of orphanFootnoteRefs) {
+                console.warn(
+                    `  note: "${doc.title}" references footnote ${number} but its citation ` +
+                        "text didn't come through — check the Doc's footnote"
+                );
+            }
 
             for (const text of unresolved) {
                 console.warn(
@@ -235,6 +242,7 @@ async function main() {
                 body,
                 date,
                 dir: doc.dir,
+                footnotesHtml,
             });
 
             const outputPath = path.join(REPO_ROOT, doc.filePath);

@@ -20,8 +20,14 @@
 //     Google Docs. If the linked Doc is in the same synced folder, the
 //     link is rewritten to a relative path to that poem; otherwise
 //     it's left as an external link.
-//   - Native Google Docs footnotes are not converted yet — poems using
-//     footnotes stay hand-maintained until that's added.
+//   - The LAST non-blank line is the date ONLY if it looks like one
+//     (n.n.nn, nn.nn.nn, or "Circa YYYY"). Anything else is left as a
+//     normal line, and the date is empty.
+//   - Native Google Docs footnotes: a reference link to "#ftntN" becomes
+//     a numbered superscript, and the matching "id=\"ftntN\"" footnote
+//     body is rendered as a <p class="footnote"> after the poem. This is
+//     a best-effort match to Google's export shape — verify a footnoted
+//     poem's first sync.
 
 import path from 'node:path';
 import * as cheerio from 'cheerio';
@@ -32,6 +38,20 @@ const ELLIPSIS_RE = /(\.\s?\.\s?\.|…)/g;
 // section marker. It is still a line of the poem — numbered like any
 // other — and only the green .stanza styling sets it apart.
 const STANZA_MARKER_RE = /^\d+\.$/;
+
+// The standardized date shapes: n.n.nn / nn.nn.nn, or "Circa YYYY". A
+// last line that doesn't match either is verse, not a date - without
+// this, the last line of a dateless poem would be silently swallowed
+// into <em> as if it were one.
+const DATE_RE = /^(\d{1,2}\.\d{1,2}\.\d{1,4}|circa\s+\d{3,4})$/i;
+
+// A footnote reference in Google Docs' export is a link to "#ftnt1"
+// (not "#ftnt_ref1", which is the backlink the other direction). The
+// number comes straight from the fragment, so it doesn't matter whether
+// Docs wraps the visible "[1]" in a <sup>, brackets, or plain text.
+const FOOTNOTE_REF_RE = /^#ftnt(\d+)$/i;
+// A footnote's own id ("ftnt1") - the target of the reference above.
+const FOOTNOTE_ID_RE = /^ftnt(\d+)$/i;
 
 // Block elements that can hold a line of the poem. Headings are included
 // because a Doc's title is commonly styled Heading 2 or 3.
@@ -148,7 +168,7 @@ function wrapEllipses(text) {
 // the paragraph, so one <p> can hold a whole stanza. Each <br> starts a
 // new line. Wrapper elements are re-applied per segment, so a break
 // inside an italic run or a link cannot split a tag across lines.
-function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved) {
+function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs) {
     const segments = [''];
     const append = (str) => {
         segments[segments.length - 1] += str;
@@ -173,10 +193,21 @@ function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved) 
             continue;
         }
 
-        const inner = renderSegments($, child, styleMap, docIdToPath, currentDir, unresolved);
-
         if (tag === 'a') {
-            const href = resolveHref($(child).attr('href') || '', docIdToPath, currentDir);
+            const rawHref = $(child).attr('href') || '';
+            const footnoteRef = rawHref.match(FOOTNOTE_REF_RE);
+            if (footnoteRef) {
+                // The visible marker (however Docs formatted it - "[1]",
+                // a bracketless number, a <sup>) is discarded and
+                // replaced with our own, so the styling is consistent
+                // regardless of how the source happened to format it.
+                footnoteRefs.push(footnoteRef[1]);
+                append(`<sup class="footnote-number">${footnoteRef[1]}</sup>`);
+                continue;
+            }
+
+            const inner = renderSegments($, child, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs);
+            const href = resolveHref(rawHref, docIdToPath, currentDir);
             if (href === null) {
                 // Keep the words, drop the link.
                 unresolved.push($(child).text().trim());
@@ -188,6 +219,8 @@ function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved) 
             continue;
         }
 
+        const inner = renderSegments($, child, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs);
+
         if (tag === 'span' && isItalicProps(mergedProps(styleMap, $(child).attr('class')))) {
             appendAll(inner, (part) => (part ? `<span class="italic">${part}</span>` : part));
             continue;
@@ -196,6 +229,43 @@ function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved) 
         appendAll(inner, (part) => part);
     }
     return segments;
+}
+
+// Finds footnote body definitions anywhere in the Doc (the id that a
+// "#ftnt1" reference points at) and renders each one's content, minus
+// the self-referencing "[1]" backlink Docs repeats at the start of it.
+//
+// Returns a Map<number-as-string, renderedHtml>, and the set of raw DOM
+// nodes used as containers so the main loop can skip them - otherwise a
+// footnote living in a top-level <p> would also be read as a poem line.
+function extractFootnotes($, styleMap, docIdToPath, currentDir, unresolved) {
+    const scratchRefs = [];
+    const footnotes = new Map();
+    const containerNodes = new Set();
+
+    $('[id]').each((_, el) => {
+        const id = $(el).attr('id') || '';
+        const match = id.match(FOOTNOTE_ID_RE);
+        if (!match) return;
+
+        const tag = el.tagName?.toLowerCase();
+        const $container = ['p', 'div'].includes(tag) ? $(el) : $(el).closest('p, div');
+        if (!$container.length) return;
+
+        containerNodes.add($container.get(0));
+
+        const $clone = $container.clone();
+        $clone.find(`[id="${id}"]`).remove();
+        let text = renderSegments($, $clone.get(0), styleMap, docIdToPath, currentDir, unresolved, scratchRefs)
+            .join(' ')
+            .trim();
+        // Some Docs versions leave the visible "[1]"/"1." marker as plain
+        // text rather than inside the removable backlink; strip it too.
+        text = text.replace(/^(\[\d+\]|\d+\.)\s*/, '');
+        if (text) footnotes.set(match[1], text);
+    });
+
+    return { footnotes, containerNodes };
 }
 
 /**
@@ -229,7 +299,7 @@ export function extractTitle(html) {
  * @param {string} title - the poem's title; the line matching it is dropped from the body.
  * @param {Map<string,string>} docIdToPath - other poem Doc IDs -> repo-relative output path, for cross-poem links.
  * @param {string} currentDir - repo-relative directory this page is written to, so links can be made relative to it.
- * @returns {{ body: string, date: string, unresolved: string[] }}
+ * @returns {{ body: string, date: string, unresolved: string[], footnotesHtml: string, orphanFootnoteRefs: string[] }}
  */
 export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     const $ = cheerio.load(html);
@@ -238,11 +308,21 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
 
     const lines = []; // { type: 'stanza', text } | { type: 'line', html } | { type: 'blank' }
     const unresolved = []; // link texts pointing at unpublished poems
+    const footnoteRefs = []; // footnote numbers actually referenced in the text
     let sawFirstContent = false;
+
+    const { footnotes, containerNodes } = extractFootnotes(
+        $,
+        styleMap,
+        docIdToPath,
+        currentDir,
+        unresolved
+    );
 
     for (const el of blocks) {
         const $el = $(el);
         const tag = el.tagName?.toLowerCase();
+        if (containerNodes.has(el)) continue; // a footnote body, not a poem line
         if (!BLOCK_TAGS.includes(tag)) continue;
 
         // A heading in a Doc is either the poem's title or a section
@@ -250,7 +330,12 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
         const isHeading = tag !== 'p';
         const props = mergedProps(styleMap, $el.attr('class'));
         const indentClass = indentClassFor(props);
-        const segments = renderSegments($, el, styleMap, docIdToPath, currentDir, unresolved);
+        // When a whole line is italic, Google Docs commonly puts
+        // font-style on the PARAGRAPH's own class rather than an inner
+        // <span> - there is nothing left inside the paragraph for the
+        // per-span italic check in renderSegments to ever see.
+        const isBlockItalic = isItalicProps(props);
+        const segments = renderSegments($, el, styleMap, docIdToPath, currentDir, unresolved, footnoteRefs);
 
         for (const segment of segments) {
             const text = plainText(segment);
@@ -273,10 +358,9 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
                 continue;
             }
 
-            lines.push({
-                type: 'line',
-                html: indentClass ? `<span class="${indentClass}">${segment}</span>` : segment,
-            });
+            let inner = isBlockItalic ? `<span class="italic">${segment}</span>` : segment;
+            if (indentClass) inner = `<span class="${indentClass}">${inner}</span>`;
+            lines.push({ type: 'line', html: inner });
         }
     }
 
@@ -296,12 +380,19 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     // open the poem with a stray blank line under the title.
     while (lines.length && lines[0].type === 'blank') lines.shift();
 
-    // Trim trailing blank lines, then the last "line" is the date.
+    // Trim trailing blanks, then the last "line" is the date - but only
+    // if it actually looks like one. A poem with no date convention line
+    // would otherwise have its final line of real verse silently
+    // swallowed into <em> as though it were a date.
     while (lines.length && lines[lines.length - 1].type === 'blank') lines.pop();
-    const dateEntry = [...lines].reverse().find((l) => l.type === 'line');
-    const date = dateEntry ? $('<div>').html(dateEntry.html).text() : '';
-    if (dateEntry) lines.splice(lines.lastIndexOf(dateEntry), 1);
-    while (lines.length && lines[lines.length - 1].type === 'blank') lines.pop();
+    const lastLineEntry = [...lines].reverse().find((l) => l.type === 'line');
+    const lastLineText = lastLineEntry ? plainText(lastLineEntry.html) : '';
+    const hasDate = Boolean(lastLineEntry) && DATE_RE.test(lastLineText);
+    const date = hasDate ? lastLineText : '';
+    if (hasDate) {
+        lines.splice(lines.lastIndexOf(lastLineEntry), 1);
+        while (lines.length && lines[lines.length - 1].type === 'blank') lines.pop();
+    }
 
     // Every line of the poem is numbered — blank lines and stanza markers
     // included. The page is meant to read like a poem open in a code
@@ -318,5 +409,16 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
         return `${number}${spaced}`;
     });
 
-    return { body: rendered.join('\n'), date, unresolved };
+    const footnotesHtml = [...footnotes.entries()]
+        .sort((a, b) => Number(a[0]) - Number(b[0]))
+        .map(([number, text]) => `<p class="footnote"><sup class="footnote-number">${number}</sup> ${text}</p>`)
+        .join('\n');
+
+    // A "#ftnt3" reference with no matching "id=\"ftnt3\"" body means a
+    // footnote's citation text did not survive the export - worth
+    // surfacing rather than silently publishing a numbered marker with
+    // nothing at the bottom of the page for it to point at.
+    const orphanFootnoteRefs = [...new Set(footnoteRefs)].filter((n) => !footnotes.has(n));
+
+    return { body: rendered.join('\n'), date, unresolved, footnotesHtml, orphanFootnoteRefs };
 }
