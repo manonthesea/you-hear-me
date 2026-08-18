@@ -202,8 +202,10 @@ comment would swallow the real content.
   only the styling sets it apart.
 - **Date**: the **last non-blank line** in the Doc is treated as the
   date, but only if it's shaped like one — `n.n.nn` / `nn.nn.nn`
-  (`6.20.4`, `12.31.19`) or `Circa YYYY` (`Circa 2010`, case-insensitive).
-  A last line that doesn't match either shape is left as an ordinary
+  (`6.20.4`, `12.31.19`) or a line starting with `Circa`
+  (case-insensitive). `Circa` doesn't have to name a year: `Circa
+  College` and `Circa Before Time` are dates the same way `Circa 2010`
+  is. A last line that doesn't match either shape is left as an ordinary
   line of verse, and the date is simply empty — it is never guessed at
   or swallowed.
 - **Other stanza markers**: apply the *Heading 2* paragraph style in
@@ -219,6 +221,17 @@ comment would swallow the real content.
   within a line, or a whole line at once. Both are recognized; Google
   exports a fully-italic line differently (the styling sits on the line
   itself rather than a run inside it), and both shapes are handled.
+  Because the export can express italics several ways and there is no
+  way to pin down which one a given Doc will use, the sync accepts all
+  of them — stylesheet classes (including grouped selectors and a
+  second `<style>` block), inline `style` attributes, and `<i>`/`<em>`
+  tags. If a poem ever comes back without its italics, that list is the
+  place to add a shape.
+- **Superscripts**: a number formatted as superscript becomes a footnote
+  marker (`.footnote-number`), the same one Docs' own footnotes get, so
+  a citation numbered by hand looks like a native one. A superscript
+  that isn't a bare number — the `st` in `1st` — stays an ordinary
+  superscript.
 - **Indentation**: use Google Docs' "Increase indent" — one level maps
   to a small indent, two levels to a larger one. This is a best-effort
   conversion; spot-check indentation after a poem's first sync.
@@ -249,6 +262,12 @@ comment would swallow the real content.
   `<p class="footnote">` after the poem — the same convention the
   hand-made pages already use. Links and italics inside a footnote's
   text are preserved.
+  - A footnote may run to **several paragraphs** — press Enter inside
+    the footnote as normal. A citation followed by the passage it
+    quotes is the usual case, and the whole thing lands in one
+    `<p class="footnote">`. (Only the first paragraph used to be read,
+    so every such citation published truncated at its line break, with
+    the quotation silently dropped.)
   - This is a best-effort match to Google's export shape, the same
     caveat as indentation above — spot-check a footnoted poem's first
     sync.
