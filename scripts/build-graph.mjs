@@ -30,12 +30,35 @@ function normalizeForMatch(str) {
         .toLowerCase();
 }
 
-async function listRepoFiles() {
-    const entries = await readdir(REPO_ROOT, { withFileTypes: true });
-    return entries.filter((e) => e.isFile()).map((e) => e.name);
+// Directories that hold machinery rather than poems.
+const SKIP_DIRS = new Set([
+    '.git',
+    '.github',
+    'node_modules',
+    'assets',
+    'templates',
+    'scripts',
+    'docs',
+]);
+
+// Poems now mirror their Drive folders, so pages live at any depth.
+// Returns repo-relative POSIX paths.
+async function listRepoFiles(dir = '') {
+    const entries = await readdir(path.join(REPO_ROOT, dir), { withFileTypes: true });
+    const files = [];
+    for (const entry of entries) {
+        const rel = dir ? path.posix.join(dir, entry.name) : entry.name;
+        if (entry.isDirectory()) {
+            if (SKIP_DIRS.has(entry.name)) continue;
+            files.push(...(await listRepoFiles(rel)));
+        } else if (entry.isFile()) {
+            files.push(rel);
+        }
+    }
+    return files;
 }
 
-function resolveTarget(rawHref, poemFiles, poemMatchIndex, imageFiles) {
+function resolveTarget(rawHref, poemFiles, poemMatchIndex, imageFiles, fromDir) {
     if (!rawHref) return { type: 'broken', target: rawHref };
     if (/^(mailto:|javascript:|#)/i.test(rawHref)) return { type: 'skip' };
 
@@ -50,7 +73,7 @@ function resolveTarget(rawHref, poemFiles, poemMatchIndex, imageFiles) {
         return { type: 'external', target: rawHref };
     }
 
-    if (EXCLUDED_PAGES.has(decodeURIComponent(href.split('#')[0].split('?')[0]))) {
+    if (EXCLUDED_PAGES.has(path.posix.basename(decodeURIComponent(href.split('#')[0].split('?')[0])))) {
         return { type: 'skip' };
     }
 
@@ -62,13 +85,18 @@ function resolveTarget(rawHref, poemFiles, poemMatchIndex, imageFiles) {
     }
     decoded = decoded.split('#')[0].split('?')[0];
 
-    if (imageFiles.has(decoded)) return { type: 'image', target: decoded };
+    // A link is relative to the page that contains it, so "../B.html" in
+    // "Early/A.html" has to resolve to "B.html" at the root.
+    const resolved = path.posix.normalize(
+        fromDir ? path.posix.join(fromDir, decoded) : decoded
+    );
 
-    const withHtml = decoded.toLowerCase().endsWith('.html') ? decoded : `${decoded}.html`;
+    if (imageFiles.has(resolved)) return { type: 'image', target: resolved };
+
+    const withHtml = resolved.toLowerCase().endsWith('.html') ? resolved : `${resolved}.html`;
     if (poemFiles.has(withHtml)) return { type: 'poem', target: withHtml };
 
-    const normalized = normalizeForMatch(withHtml);
-    const fuzzyMatch = poemMatchIndex.get(normalized);
+    const fuzzyMatch = poemMatchIndex.get(normalizeForMatch(withHtml));
     if (fuzzyMatch) return { type: 'poem', target: fuzzyMatch };
 
     return { type: 'broken', target: rawHref };
@@ -101,7 +129,13 @@ async function main() {
 
         $('a[href]').each((_, el) => {
             const href = $(el).attr('href');
-            const resolved = resolveTarget(href, poemFiles, poemMatchIndex, imageFiles);
+            const resolved = resolveTarget(
+                href,
+                poemFiles,
+                poemMatchIndex,
+                imageFiles,
+                path.posix.dirname(file) === '.' ? '' : path.posix.dirname(file)
+            );
             if (resolved.type === 'poem' && resolved.target !== file) {
                 node.outPoems.add(resolved.target);
             } else if (resolved.type === 'image') {
