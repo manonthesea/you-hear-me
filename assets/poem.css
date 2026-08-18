@@ -59,6 +59,20 @@ h2 {
     color: #56d364; /* GitHub green */
 }
 
+/*
+ * The poem's real width. <pre> does not wrap, so the longest line is
+ * what actually sets it - wider than the 800px body when a line is
+ * long, narrower when every line is short. Sizing this wrapper to that
+ * content gives the footnotes something to measure against, so a
+ * citation wraps at the same right edge the verse ends at instead of at
+ * the edge of the screen. min-width keeps it from collapsing narrower
+ * than the body on a short poem.
+ */
+.poem {
+    width: max-content;
+    min-width: 100%;
+}
+
 pre {
     font-family: 'Courier New', monospace;
     font-size: 1em;
@@ -141,9 +155,24 @@ em,
     font-size: 0.85em;
     color: #c9d1d9;
     margin-top: 5px;
-    padding-left: 40px;
+    /*
+     * Same left edge as the title, the verse and the date - pre's 40px
+     * padding, the 30px line-number gutter, and the space after the
+     * number. In px and rem rather than em so the 0.85em type above
+     * doesn't shrink the offset and pull the citations out of line.
+     */
+    padding-left: calc(40px + 30px + 0.6rem);
     line-height: 1.2;
     word-wrap: break-word;
+    /*
+     * Wrap where the verse ends, not where the viewport does. width:0
+     * keeps a long citation from being what makes .poem wide - left to
+     * itself it would stretch to its longest unbroken run - and
+     * min-width then fills whatever width the verse settled on.
+     */
+    box-sizing: border-box;
+    width: 0;
+    min-width: 100%;
 }
 
 .footnote-number {

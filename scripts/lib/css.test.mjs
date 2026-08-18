@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CSS_PATH = path.join(__dirname, '..', '..', 'assets', 'poem.css');
+const TEMPLATE_PATH = path.join(__dirname, '..', '..', 'templates', 'poem-template.html');
 
 // The stylesheet's own explanatory comments mention the exact property
 // strings these tests check for (that's the point of the comments), so
@@ -50,4 +51,43 @@ test('the title still lines up with the verse (unchanged from the alignment fix)
     const h1Rule = css.match(/\bh1\s*\{([^}]*)\}/s)?.[1] ?? '';
 
     assert.match(h1Rule, /padding-left\s*:\s*calc\(40px \+ 30px \+ 0\.6rem\)/);
+});
+
+test('footnotes share the left edge of the title and the verse', async () => {
+    // The same offset h1 uses above. In px/rem, never em - .footnote
+    // sets font-size: 0.85em, so an em offset would shrink with the type
+    // and pull the citations left of everything else on the page.
+    const css = stripComments(await readFile(CSS_PATH, 'utf8'));
+    const rule = css.match(/\.footnote\s*\{([^}]*)\}/s)?.[1] ?? '';
+
+    assert.match(rule, /padding-left\s*:\s*calc\(40px \+ 30px \+ 0\.6rem\)/);
+});
+
+test('footnotes fill the poem width without being what defines it', async () => {
+    // width:0 + min-width:100% is load-bearing as a pair. Drop width:0
+    // and a long citation becomes the widest thing in .poem, stretching
+    // the page to its longest unbroken run; drop min-width and the
+    // citation collapses instead of spanning the verse.
+    const css = stripComments(await readFile(CSS_PATH, 'utf8'));
+    const rule = css.match(/\.footnote\s*\{([^}]*)\}/s)?.[1] ?? '';
+
+    assert.match(rule, /box-sizing\s*:\s*border-box/);
+    assert.match(rule, /\bwidth\s*:\s*0/);
+    assert.match(rule, /min-width\s*:\s*100%/);
+});
+
+test('the poem wrapper is sized by its longest line, with the body as a floor', async () => {
+    const css = stripComments(await readFile(CSS_PATH, 'utf8'));
+    const rule = css.match(/\.poem\s*\{([^}]*)\}/s)?.[1] ?? '';
+
+    assert.match(rule, /width\s*:\s*max-content/);
+    assert.match(rule, /min-width\s*:\s*100%/);
+});
+
+test('the template keeps the wrapper the footnote width depends on', async () => {
+    // .poem is what <pre> and the citations are measured against; if the
+    // template ever loses the div, the CSS above silently does nothing.
+    const template = await readFile(TEMPLATE_PATH, 'utf8');
+
+    assert.match(template, /<div class="poem">/);
 });
