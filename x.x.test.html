@@ -1,18 +1,3 @@
-<!--
-  Canonical poem page template.
-
-  This is the target shape used by scripts/sync-poems.mjs when it
-  regenerates a poem page from its Google Doc source. Placeholders:
-
-    x.x.test       poem title (from the Doc's file name)
-    
-<span class="line-number">1</span> This is a test. 
-<span class="line-number">2</span> Can anyone hear this?         poem body: numbered <pre> lines, stanza <h2>s,
-                    ellipsis/italic/indent spans, cross-poem links
-    8.17.26        the poem's date line
-
-  Content changes per poem; this structure and assets/poem.css do not.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,8 +10,10 @@
 
     <h1>x.x.test</h1>
     <pre>
-{{BODY}}
-<em>{{DATE}}</em>
+
+<span class="line-number">1</span> This is a test. 
+<span class="line-number">2</span> Can anyone hear this? 
+<em>8.17.26</em>
     </pre>
 
 </body>
