@@ -199,3 +199,14 @@ test('the template contains each placeholder exactly once', async () => {
     assert.equal(template.match(/\{\{DATE\}\}/g).length, 1);
     assert.equal(template.match(/\{\{TITLE\}\}/g).length, 2, 'once in <title>, once in <h1>');
 });
+
+test('a run of blank paragraphs collapses to one stanza break', () => {
+    // A page break in a Doc exports as dozens of empty paragraphs; the
+    // first real sync produced 24 blank lines mid-poem.
+    const gap = blank.repeat(24);
+    const html = docExport([p('One'), gap, p('Two'), p('1.1.11')].join(''));
+    const { body } = convertDocHtml(html, 'T', new Map());
+
+    assert.match(body, /line-number">1<\/span> One\n\n<span class="line-number">2<\/span> Two/);
+    assert.doesNotMatch(body, /\n\n\n/, 'no run of more than one blank line');
+});

@@ -190,6 +190,17 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
         lines.push({ type: 'line', html: inner });
     }
 
+    // Collapse runs of blank paragraphs to a single blank line. A page
+    // break or a spacer gap in a Doc can produce dozens of empty
+    // paragraphs in the export; reproduced literally they tear the poem
+    // apart on the page. One blank line is the stanza break the hand-made
+    // pages use.
+    for (let i = lines.length - 1; i > 0; i--) {
+        if (lines[i].type === 'blank' && lines[i - 1].type === 'blank') {
+            lines.splice(i, 1);
+        }
+    }
+
     // Drop leading blanks: a Doc that repeats its title on the first line
     // usually follows it with an empty paragraph, which would otherwise
     // open the poem with a stray blank line under the title.
