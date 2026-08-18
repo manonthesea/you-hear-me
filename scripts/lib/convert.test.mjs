@@ -13,7 +13,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { convertDocHtml } from './convert.mjs';
+import { convertDocHtml, extractTitle } from './convert.mjs';
 import { renderPage } from './render.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -245,4 +245,99 @@ test('a run of blank paragraphs collapses to one stanza break', () => {
         body,
         /line-number">1<\/span> One\n<span class="line-number">2<\/span>\n<span class="line-number">3<\/span> Two/
     );
+});
+
+// --- regressions from the first real bulk sync -----------------------
+//
+// Six of twelve poems published with a line of verse as their <h1> and
+// filename, and their stanzas mashed into single lines. Two causes, both
+// reproduced below.
+
+test('a soft line break (<br>) starts a new numbered line', () => {
+    // Shift+Enter in Docs exports as <br> inside one <p>, so a whole
+    // stanza arrives as a single paragraph. Treating that paragraph as
+    // one line concatenated the verse with no separator at all:
+    // "Chit chat.Slow deliberate chit chat.White cranes..."
+    const html = docExport(
+        '<p class="c5"><span>Chit chat.<br>Slow deliberate chit chat.<br>' +
+            'White cranes chit chat among reeds,</span></p>' +
+            p('6.20.4')
+    );
+    const { body } = convertDocHtml(html, 'Marsh Voices', new Map());
+
+    assert.equal(
+        body,
+        '<span class="line-number">1</span> Chit chat.\n' +
+            '<span class="line-number">2</span> Slow deliberate chit chat.\n' +
+            '<span class="line-number">3</span> White cranes chit chat among reeds,'
+    );
+});
+
+test('a <br> inside an italic run does not split the tag across lines', () => {
+    const html = docExport(
+        '<p class="c5"><span class="c3">first italic<br>second italic</span></p>' + p('1.1.11')
+    );
+    const { body } = convertDocHtml(html, 'T', new Map());
+
+    assert.match(body, /<span class="italic">first italic<\/span>/);
+    assert.match(body, /<span class="italic">second italic<\/span>/);
+    // Each line must carry its own complete span, never a dangling one.
+    assert.equal((body.match(/<span class="italic">/g) || []).length, 2);
+    assert.equal((body.match(/<\/span>/g) || []).length, 4); // 2 italic + 2 line-number
+});
+
+test('a title styled as a heading is the title, not a stanza marker', () => {
+    // Real Docs style the title Heading 2. extractTitle used to look only
+    // at <p> and <h1>, so it promoted the first line of verse to the
+    // title and rendered the real title as a green stanza marker.
+    const html = docExport(
+        '<h2 class="c5"><span>Paegus Trip</span></h2>' +
+            p('Dry fish flake on the riverbed.') +
+            p('4.27.9')
+    );
+
+    assert.equal(extractTitle(html), 'Paegus Trip');
+
+    const { body } = convertDocHtml(html, extractTitle(html), new Map());
+    assert.doesNotMatch(body, /Paegus Trip/, 'the title belongs in the <h1>, not the body');
+    assert.doesNotMatch(body, /class="stanza"/, 'the title is not a section marker');
+    assert.match(body, /^<span class="line-number">1<\/span> Dry fish flake on the riverbed\.$/);
+});
+
+test('a heading after the title is still a stanza marker', () => {
+    const html = docExport(
+        '<h2 class="c5"><span>The Title</span></h2>' +
+            p('verse') +
+            '<h2 class="c5"><span>II</span></h2>' +
+            p('more verse') +
+            p('1.1.11')
+    );
+    const { body } = convertDocHtml(html, 'The Title', new Map());
+
+    assert.match(body, /<span class="stanza">II<\/span>/);
+});
+
+test('the first line of verse is never promoted to the title', () => {
+    // The failure that produced filenames like
+    // "Chit chat.Slow deliberate chit chat.White cranes...html".
+    const html = docExport(
+        '<h2 class="c5"><span>Marsh Voices</span></h2>' +
+            '<p class="c5"><span>Chit chat.<br>Slow deliberate chit chat.</span></p>' +
+            p('6.20.4')
+    );
+
+    const title = extractTitle(html);
+    assert.equal(title, 'Marsh Voices');
+    assert.ok(!title.includes('Chit chat'), 'no verse may leak into the title');
+});
+
+test('only the first segment of a paragraph can be the title', () => {
+    // Without <br> awareness, extractTitle read the whole paragraph and
+    // returned every line of the stanza joined together.
+    const html = docExport(
+        '<p class="c5"><span>Real Title<br>first line of verse<br>second line</span></p>' +
+            p('1.1.11')
+    );
+
+    assert.equal(extractTitle(html), 'Real Title');
 });

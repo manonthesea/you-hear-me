@@ -173,3 +173,24 @@ test('an empty run orphans everything the manifest listed', () => {
     const orphans = selectOrphans(['A.html', 'B.html'], []);
     assert.deepEqual(orphans, ['A.html', 'B.html']);
 });
+
+// --- the filename comes from the Doc's name --------------------------
+
+test('the output path comes from the Doc name, never the poem text', () => {
+    // A content-derived filename produced pages like
+    // "Chit chat.Slow deliberate chit chat.White cranes...html" when the
+    // title detection misfired. Deriving it from the Doc's name means the
+    // URL is whatever the Doc is called in Drive, full stop.
+    const { title, published } = parseDocName('Pagus Trip (Publish)');
+
+    assert.equal(published, true);
+    assert.deepEqual(outputPathFor(['$Pre-2010'], title), {
+        dir: '$Pre-2010',
+        filePath: '$Pre-2010/Pagus Trip.html',
+    });
+});
+
+test('the Doc name survives dots and punctuation intact', () => {
+    assert.equal(parseDocName('12.31.19 (Publish)').title, '12.31.19');
+    assert.equal(outputPathFor([], '12.31.19').filePath, '12.31.19.html');
+});
