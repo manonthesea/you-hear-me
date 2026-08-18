@@ -70,11 +70,24 @@ test('a blank paragraph after a skipped title line does not open a gap', () => {
     assert.match(body, /^<span class="line-number">1<\/span> Chit chat\./);
 });
 
-test('blank paragraphs become stanza breaks without consuming a line number', () => {
+test('blank lines are numbered too, like a file open in an editor', () => {
     const html = docExport([p('One'), blank, p('Two'), p('1.1.11')].join(''));
     const { body } = convertDocHtml(html, 'T', new Map());
 
-    assert.match(body, /line-number">1<\/span> One\n\n<span class="line-number">2<\/span> Two/);
+    assert.match(
+        body,
+        /line-number">1<\/span> One\n<span class="line-number">2<\/span>\n<span class="line-number">3<\/span> Two/
+    );
+});
+
+test('stanza headings are not numbered', () => {
+    // They are <h2>, not lines of the poem.
+    const html = docExport(
+        [p('Before'), '<h2 class="c5"><span>x</span></h2>', p('After'), p('1.1.11')].join('')
+    );
+    const { body } = convertDocHtml(html, 'T', new Map());
+
+    assert.match(body, /line-number">2<\/span> After/);
 });
 
 test('Heading 2 becomes a stanza heading and does not take a line number', () => {
@@ -207,6 +220,9 @@ test('a run of blank paragraphs collapses to one stanza break', () => {
     const html = docExport([p('One'), gap, p('Two'), p('1.1.11')].join(''));
     const { body } = convertDocHtml(html, 'T', new Map());
 
-    assert.match(body, /line-number">1<\/span> One\n\n<span class="line-number">2<\/span> Two/);
-    assert.doesNotMatch(body, /\n\n\n/, 'no run of more than one blank line');
+    // One numbered blank stands in for the whole run.
+    assert.match(
+        body,
+        /line-number">1<\/span> One\n<span class="line-number">2<\/span>\n<span class="line-number">3<\/span> Two/
+    );
 });
