@@ -33,6 +33,15 @@ const ELLIPSIS_RE = /(\.\s?\.\s?\.|…)/g;
 // other — and only the green .stanza styling sets it apart.
 const STANZA_MARKER_RE = /^\d+\.$/;
 
+// Block elements that can hold a line of the poem. Headings are included
+// because a Doc's title is commonly styled Heading 2 or 3.
+const BLOCK_TAGS = ['p', 'h1', 'h2', 'h3'];
+
+// Plain text of a rendered segment, for the blank / marker / title checks.
+function plainText(segmentHtml) {
+    return cheerio.load(`<div>${segmentHtml}</div>`)('div').text().trim();
+}
+
 function escapeHtml(str) {
     return str
         .replace(/&/g, '&amp;')
@@ -133,37 +142,71 @@ function wrapEllipses(text) {
         .join('');
 }
 
-// Renders the inline contents of a paragraph (text, italics, links) to HTML.
-function renderInline($, node, styleMap, docIdToPath, currentDir, unresolved) {
-    let out = '';
+// Renders a paragraph's inline contents into one or more lines.
+//
+// A soft line break in Google Docs (Shift+Enter) exports as <br> inside
+// the paragraph, so one <p> can hold a whole stanza. Each <br> starts a
+// new line. Wrapper elements are re-applied per segment, so a break
+// inside an italic run or a link cannot split a tag across lines.
+function renderSegments($, node, styleMap, docIdToPath, currentDir, unresolved) {
+    const segments = [''];
+    const append = (str) => {
+        segments[segments.length - 1] += str;
+    };
+    const appendAll = (parts, wrap) => {
+        parts.forEach((part, i) => {
+            if (i > 0) segments.push('');
+            append(wrap(part));
+        });
+    };
+
     for (const child of $(node).contents().toArray()) {
         if (child.type === 'text') {
-            out += wrapEllipses(child.data);
-        } else if (child.type === 'tag' && child.tagName === 'a') {
+            append(wrapEllipses(child.data));
+            continue;
+        }
+        if (child.type !== 'tag') continue;
+
+        const tag = child.tagName?.toLowerCase();
+        if (tag === 'br') {
+            segments.push('');
+            continue;
+        }
+
+        const inner = renderSegments($, child, styleMap, docIdToPath, currentDir, unresolved);
+
+        if (tag === 'a') {
             const href = resolveHref($(child).attr('href') || '', docIdToPath, currentDir);
-            const inner = renderInline($, child, styleMap, docIdToPath, currentDir, unresolved);
             if (href === null) {
                 // Keep the words, drop the link.
                 unresolved.push($(child).text().trim());
-                out += inner;
+                appendAll(inner, (part) => part);
             } else {
-                out += `<a href="${escapeHtml(href)}">${inner}</a>`;
+                const safe = escapeHtml(href);
+                appendAll(inner, (part) => (part ? `<a href="${safe}">${part}</a>` : part));
             }
-        } else if (child.type === 'tag' && child.tagName === 'span') {
-            const props = mergedProps(styleMap, $(child).attr('class'));
-            const inner = renderInline($, child, styleMap, docIdToPath, currentDir, unresolved);
-            out += isItalicProps(props) ? `<span class="italic">${inner}</span>` : inner;
-        } else if (child.type === 'tag') {
-            out += renderInline($, child, styleMap, docIdToPath, currentDir, unresolved);
+            continue;
         }
+
+        if (tag === 'span' && isItalicProps(mergedProps(styleMap, $(child).attr('class')))) {
+            appendAll(inner, (part) => (part ? `<span class="italic">${part}</span>` : part));
+            continue;
+        }
+
+        appendAll(inner, (part) => part);
     }
-    return out;
+    return segments;
 }
 
 /**
- * The poem's title is the Doc's first line of real text — Docs here are
- * named by date, so the name is not the title. Section markers and blank
- * paragraphs are skipped so a poem opening with "1." still finds it.
+ * The poem's title is the first line of real text in the Doc. Docs here
+ * are named by date, so the name is not the title.
+ *
+ * Headings count: a title is often styled Heading 2 or 3 rather than
+ * left as plain text, and skipping those promoted a line of verse to the
+ * title instead. Section markers and blanks are skipped so a poem
+ * opening with "1." still finds its title, and only the first segment of
+ * a paragraph is considered, since a <br> means the rest is another line.
  *
  * @param {string} html - Drive files.export text/html content for the Doc.
  * @returns {string} the first line's text, or '' if the Doc has none.
@@ -172,8 +215,9 @@ export function extractTitle(html) {
     const $ = cheerio.load(html);
     for (const el of $('body').children().toArray()) {
         const tag = el.tagName?.toLowerCase();
-        if (tag !== 'p' && tag !== 'h1') continue;
-        const text = $(el).text().trim();
+        if (!['p', 'h1', 'h2', 'h3'].includes(tag)) continue;
+        const firstSegment = $(el).html()?.split(/<br\s*\/?>/i)[0] ?? '';
+        const text = cheerio.load(`<div>${firstSegment}</div>`)('div').text().trim();
         if (!text || STANZA_MARKER_RE.test(text)) continue;
         return text;
     }
@@ -182,7 +226,7 @@ export function extractTitle(html) {
 
 /**
  * @param {string} html - Drive files.export text/html content for the Doc.
- * @param {string} title - poem title (from the Drive file name).
+ * @param {string} title - the poem's title; the line matching it is dropped from the body.
  * @param {Map<string,string>} docIdToPath - other poem Doc IDs -> repo-relative output path, for cross-poem links.
  * @param {string} currentDir - repo-relative directory this page is written to, so links can be made relative to it.
  * @returns {{ body: string, date: string, unresolved: string[] }}
@@ -199,48 +243,41 @@ export function convertDocHtml(html, title, docIdToPath, currentDir = '') {
     for (const el of blocks) {
         const $el = $(el);
         const tag = el.tagName?.toLowerCase();
+        if (!BLOCK_TAGS.includes(tag)) continue;
 
-        if (tag === 'h2' || tag === 'h3') {
-            const text = $el.text().trim();
-            if (text) {
-                lines.push({ type: 'stanza', text });
-                sawFirstContent = true;
-            }
-            continue;
-        }
-
-        if (tag !== 'p' && tag !== 'h1') continue;
-
-        const plainText = $el.text().trim();
-
-        if (STANZA_MARKER_RE.test(plainText)) {
-            lines.push({ type: 'stanza', text: plainText });
-            // A marker is content: without this, a blank line right after
-            // a poem-opening marker is mistaken for a leading blank and
-            // trimmed away.
-            sawFirstContent = true;
-            continue;
-        }
-
-        if (!sawFirstContent) {
-            if (!plainText) continue; // skip leading blank paragraphs
-            sawFirstContent = true;
-            if (tag === 'h1' || plainText.toLowerCase() === title.trim().toLowerCase()) {
-                continue; // redundant title line
-            }
-        }
-
-        if (!plainText) {
-            lines.push({ type: 'blank' });
-            continue;
-        }
-
+        // A heading in a Doc is either the poem's title or a section
+        // marker; which one depends only on whether it comes first.
+        const isHeading = tag !== 'p';
         const props = mergedProps(styleMap, $el.attr('class'));
         const indentClass = indentClassFor(props);
-        let inner = renderInline($, el, styleMap, docIdToPath, currentDir, unresolved);
-        if (indentClass) inner = `<span class="${indentClass}">${inner}</span>`;
+        const segments = renderSegments($, el, styleMap, docIdToPath, currentDir, unresolved);
 
-        lines.push({ type: 'line', html: inner });
+        for (const segment of segments) {
+            const text = plainText(segment);
+
+            if (!sawFirstContent) {
+                if (!text) continue; // leading blanks are not part of the poem
+                sawFirstContent = true;
+                if (text.toLowerCase() === title.trim().toLowerCase()) {
+                    continue; // this is the title; it becomes the <h1>
+                }
+            }
+
+            if (!text) {
+                lines.push({ type: 'blank' });
+                continue;
+            }
+
+            if (isHeading || STANZA_MARKER_RE.test(text)) {
+                lines.push({ type: 'stanza', text });
+                continue;
+            }
+
+            lines.push({
+                type: 'line',
+                html: indentClass ? `<span class="${indentClass}">${segment}</span>` : segment,
+            });
+        }
     }
 
     // Collapse runs of blank paragraphs to a single blank line. A page

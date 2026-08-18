@@ -15,9 +15,9 @@ setup and the ongoing authoring workflow.
 - Running the sync (`npm run sync`, or the "Sync poems" GitHub Action)
   exports each published Doc as HTML, converts it into the site's
   canonical template (`templates/poem-template.html` + `assets/poem.css`),
-  and writes it to a path mirroring its Drive folder — so a published Doc
-  inside `Early Work` whose first line is `Marsh Voices` becomes
-  `Early Work/Marsh Voices.html`.
+  and writes it to a path mirroring its Drive folder, named after the
+  Doc — so a Doc called `Marsh Voices (Publish)` inside `Early Work`
+  becomes `Early Work/Marsh Voices.html`.
 - A page is only rewritten if its rendered content actually changed, so
   re-running the sync with no edits produces no diff.
 
@@ -33,8 +33,8 @@ Drafts are read and then discarded; only Docs marked `(Publish)` are
 written.
 
 - **To publish**: rename the Doc to end with `(Publish)`, e.g.
-  `6.20.4 (Publish)`. The rest of the name is not used for the page —
-  the title comes from the Doc's first line.
+  `Marsh Voices (Publish)`. The rest of the name becomes the page's
+  filename; the `<h1>` comes from the Doc's first line.
 - **To unpublish**: remove `(Publish)` from the Doc's name. The next sync
   deletes the page.
 - Case and inner spacing are flexible (`(publish)`, `(Published)`,
@@ -149,22 +149,24 @@ do (by date, here), and append `(Publish)` to the ones that should be
 live on the site:
 
 ```
-GitHub Sync/                 <- DRIVE_FOLDER_ID
-  6.20.4 (Publish)           -> Marsh Voices.html      (title from line 1)
+GitHub Sync/                    <- DRIVE_FOLDER_ID
+  Marsh Voices (Publish)        -> Marsh Voices.html
   Early Work/
-    12.11.18 (Publish)       -> Early Work/Winter.html (title from line 1)
-    3.4.19                   -> not published, not written
+    Pagus Trip (Publish)        -> Early Work/Pagus Trip.html
+    Half-finished thing         -> not published, not written
 ```
 
-The Doc name carries the date and the `(Publish)` flag; the poem's title
-comes from its first line.
+The Doc's name gives the page its filename and URL. The poem's title —
+the `<h1>` — is the Doc's first line, which may be plain text or a
+Heading. Nothing inside the poem can change its URL.
 
 ## The page template
 
 `templates/poem-template.html` is the shape every generated page takes.
 It contains the placeholders that `scripts/sync-poems.mjs` fills in:
 
-- `{{TITLE}}` — the poem title, taken from the Doc's first line
+- `{{TITLE}}` — the poem title, taken from the Doc's first line (the
+  filename comes from the Doc's *name*, not this)
 - `{{CSS_PATH}}` — the path back to `assets/poem.css`, which depends on
   how deep in the folder tree the page sits
 - `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza markers,
@@ -177,15 +179,20 @@ comment would swallow the real content.
 
 ## Authoring conventions inside each Doc
 
-- **Title**: the **first line of the Doc** is the poem's title. It sets
-  the `<h1>`, the browser title, and the output filename, and it is not
-  repeated in the poem body. The Doc's *name* is only used for the
-  `(Publish)` annotation — these Docs are named by date, so the name is
-  not the title.
+- **Filename**: the page's path comes from the **Doc's name** (minus the
+  `(Publish)` annotation). A Doc called `Pagus Trip (Publish)` publishes
+  to `Pagus Trip.html`. Nothing inside the poem can change its URL.
+- **Title**: the **first line of the Doc** is the poem's title, and sets
+  the `<h1>` and the browser title. It is not repeated in the body. The
+  title may be plain text or styled *Heading 2 / Heading 3* — both are
+  recognised.
   - If the first line is implausibly long (over 80 characters) it is
     assumed to be verse rather than a title, and the Doc's name is used
-    instead. Each sync logs the title it chose for every poem, so check
-    the run log after a first sync.
+    for the `<h1>` instead. Each sync logs the title it chose for every
+    poem, so check the run log after a first sync.
+- **Line breaks**: soft line breaks (Shift+Enter) and separate paragraphs
+  are both honoured — each becomes its own numbered line. A stanza
+  written as one paragraph of soft-broken lines comes through intact.
 - **Stanza / section markers**: a line that is only a number and a period
   (`1.`, `2.`) is detected automatically and styled green and indented
   (`.stanza`). It is still a numbered line of the poem like any other —

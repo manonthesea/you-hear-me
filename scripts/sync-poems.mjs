@@ -17,10 +17,9 @@
 // Two rules govern what reaches the site:
 //   - Only Docs whose name is annotated "(Publish)" are written at all.
 //     The repo is public, so an unpublished poem must never land in it.
-//   - The poem's title is its Doc's FIRST LINE, not the Doc's name: the
-//     Docs here are named by date. The title drives both the <h1> and the
-//     output filename, so titles have to be known before any page is
-//     written — hence the two passes below.
+//   - The output filename comes from the Doc's NAME, so the page's URL
+//     is whatever the Doc is called in Drive and never depends on the
+//     poem's text. The <h1> comes from the title written inside the Doc.
 //   - Folder structure is mirrored into the URLs, and pages this script
 //     generated previously but no longer would (unpublished, renamed,
 //     deleted, or moved Docs) are removed.
@@ -58,7 +57,8 @@ function requireEnv(name) {
 // A Doc that doesn't open with its title would otherwise donate its
 // first line of verse as one. Nothing can detect that reliably, but an
 // implausibly long "title" is a good signal, and falling back to the
-// Doc's name keeps the page identifiable either way.
+// Doc's name keeps the <h1> sensible. Only the <h1> is at stake here —
+// the filename comes from the Doc's name regardless.
 const MAX_TITLE_LENGTH = 80;
 
 function chooseTitle(firstLine, docName) {
@@ -165,7 +165,9 @@ async function main() {
     // state and the clean title both come from parsing it.
     const parsed = allDocs.map((doc) => {
         const { title, published } = parseDocName(doc.name);
-        return { ...doc, title, published };
+        // The path comes from the Doc's name, so it is known before any
+        // Doc is opened and cannot be changed by editing the poem.
+        return { ...doc, docTitle: title, published, ...outputPathFor(doc.folderPath, title) };
     });
 
     const published = parsed.filter((d) => d.published);
@@ -180,30 +182,30 @@ async function main() {
     let unchanged = 0;
     let failed = 0;
 
-    // Pass 1: export each published Doc and read its title, so every
-    // poem's final path is known before any page is rendered. Cross-poem
-    // links depend on paths that pass 2 has not reached yet.
+    // Pass 1: export each published Doc and read the title written
+    // inside it. Paths are already known from the Doc names, but the
+    // exports are gathered here so pass 2 renders with every poem's path
+    // available for cross-poem links.
     const exported = [];
     for (const doc of published) {
         try {
             const html = await exportDocHtml(drive, doc.id);
-            const title = chooseTitle(extractTitle(html), doc.title);
-            exported.push({ ...doc, html, title, ...outputPathFor(doc.folderPath, title) });
-            console.log(`"${doc.name}" -> "${title}"`);
+            const title = chooseTitle(extractTitle(html), doc.docTitle);
+            exported.push({ ...doc, html, title });
+            console.log(`${doc.filePath}  <-  "${doc.name}"  title: "${title}"`);
         } catch (err) {
             failed += 1;
             console.error(`Failed to export "${doc.name}" (${doc.id}):`, err.message);
         }
     }
 
-    // Titles come from content, so collisions can only be checked now.
     const collisions = findCollisions(exported);
     if (collisions.length > 0) {
         console.error('Output path collisions — two poems would write the same file:');
         for (const { filePath, names } of collisions) {
             console.error(`  ${filePath} <- ${names.join(', ')}`);
         }
-        console.error('Retitle one of each pair, then re-run.');
+        console.error('Rename one Doc of each pair, then re-run.');
         process.exit(1);
     }
 
