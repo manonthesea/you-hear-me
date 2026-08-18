@@ -214,7 +214,19 @@ async function main() {
     // Pass 2: render and write.
     for (const doc of exported) {
         try {
-            const { body, date } = convertDocHtml(doc.html, doc.title, docIdToPath, doc.dir);
+            const { body, date, unresolved } = convertDocHtml(
+                doc.html,
+                doc.title,
+                docIdToPath,
+                doc.dir
+            );
+
+            for (const text of unresolved) {
+                console.warn(
+                    `  note: "${doc.title}" links to an unpublished poem ("${text}") — ` +
+                        'link dropped, words kept'
+                );
+            }
 
             const page = renderPage(template, {
                 title: doc.title,

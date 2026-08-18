@@ -169,14 +169,19 @@ test('unwraps Google redirects but leaves genuinely external links external', ()
     assert.match(body, /<a href="https:\/\/www\.poetryfoundation\.org\/poems\/47311">/);
 });
 
-test('leaves an unknown Doc link alone rather than inventing a filename', () => {
+test('a link to an unpublished poem keeps its words but drops the link', () => {
+    // Emitting the docs.google.com URL would put a private Doc's address
+    // on a public page and give readers a permission wall.
     const href = 'https://docs.google.com/document/d/UNKNOWN/edit';
     const html = docExport(
-        [`<p class="c5"><a href="${href}"><span>elsewhere</span></a></p>`, p('1.1.11')].join('')
+        [`<p class="c5"><span>see </span><a href="${href}"><span>elsewhere</span></a></p>`, p('1.1.11')].join('')
     );
-    const { body } = convertDocHtml(html, 'T', new Map([['DOC123', 'Other.html']]));
+    const { body, unresolved } = convertDocHtml(html, 'T', new Map([['DOC123', 'Other.html']]));
 
-    assert.match(body, /href="https:\/\/docs\.google\.com\/document\/d\/UNKNOWN\/edit"/);
+    assert.doesNotMatch(body, /docs\.google\.com/, 'no Google Docs URL may reach the page');
+    assert.doesNotMatch(body, /<a /, 'the anchor is dropped entirely');
+    assert.match(body, /see elsewhere/, 'the words survive');
+    assert.deepEqual(unresolved, ['elsewhere'], 'and it is reported for the sync log');
 });
 
 test('escapes HTML-significant characters in the poem text', () => {
