@@ -17,6 +17,10 @@
 // Two rules govern what reaches the site:
 //   - Only Docs whose name is annotated "(Publish)" are written at all.
 //     The repo is public, so an unpublished poem must never land in it.
+//   - The poem's title is its Doc's FIRST LINE, not the Doc's name: the
+//     Docs here are named by date. The title drives both the <h1> and the
+//     output filename, so titles have to be known before any page is
+//     written — hence the two passes below.
 //   - Folder structure is mirrored into the URLs, and pages this script
 //     generated previously but no longer would (unpublished, renamed,
 //     deleted, or moved Docs) are removed.
@@ -28,7 +32,7 @@ import { google } from 'googleapis';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { convertDocHtml } from './lib/convert.mjs';
+import { convertDocHtml, extractTitle } from './lib/convert.mjs';
 import { findCollisions, outputPathFor, parseDocName, selectOrphans } from './lib/paths.mjs';
 import { renderPage } from './lib/render.mjs';
 
@@ -49,6 +53,17 @@ function requireEnv(name) {
         process.exit(1);
     }
     return value;
+}
+
+// A Doc that doesn't open with its title would otherwise donate its
+// first line of verse as one. Nothing can detect that reliably, but an
+// implausibly long "title" is a good signal, and falling back to the
+// Doc's name keeps the page identifiable either way.
+const MAX_TITLE_LENGTH = 80;
+
+function chooseTitle(firstLine, docName) {
+    if (firstLine && firstLine.length <= MAX_TITLE_LENGTH) return firstLine;
+    return docName;
 }
 
 function getAuth() {
@@ -150,26 +165,12 @@ async function main() {
     // state and the clean title both come from parsing it.
     const parsed = allDocs.map((doc) => {
         const { title, published } = parseDocName(doc.name);
-        return { ...doc, title, published, ...outputPathFor(doc.folderPath, title) };
+        return { ...doc, title, published };
     });
 
     const published = parsed.filter((d) => d.published);
     const drafts = parsed.length - published.length;
 
-    // Only published Docs can collide: drafts never get written.
-    const collisions = findCollisions(published);
-    if (collisions.length > 0) {
-        console.error('Output path collisions — two Docs would write the same file:');
-        for (const { filePath, names } of collisions) {
-            console.error(`  ${filePath} <- ${names.join(', ')}`);
-        }
-        console.error('Rename or move one of each pair, then re-run.');
-        process.exit(1);
-    }
-
-    // Cross-poem links resolve against published poems only; a link to a
-    // draft would otherwise point at a page that does not exist.
-    const docIdToPath = new Map(published.map((d) => [d.id, d.filePath]));
     const template = await readFile(TEMPLATE_PATH, 'utf8');
     const previousPages = await readManifest();
 
@@ -179,10 +180,41 @@ async function main() {
     let unchanged = 0;
     let failed = 0;
 
+    // Pass 1: export each published Doc and read its title, so every
+    // poem's final path is known before any page is rendered. Cross-poem
+    // links depend on paths that pass 2 has not reached yet.
+    const exported = [];
     for (const doc of published) {
         try {
             const html = await exportDocHtml(drive, doc.id);
-            const { body, date } = convertDocHtml(html, doc.title, docIdToPath, doc.dir);
+            const title = chooseTitle(extractTitle(html), doc.title);
+            exported.push({ ...doc, html, title, ...outputPathFor(doc.folderPath, title) });
+            console.log(`"${doc.name}" -> "${title}"`);
+        } catch (err) {
+            failed += 1;
+            console.error(`Failed to export "${doc.name}" (${doc.id}):`, err.message);
+        }
+    }
+
+    // Titles come from content, so collisions can only be checked now.
+    const collisions = findCollisions(exported);
+    if (collisions.length > 0) {
+        console.error('Output path collisions — two poems would write the same file:');
+        for (const { filePath, names } of collisions) {
+            console.error(`  ${filePath} <- ${names.join(', ')}`);
+        }
+        console.error('Retitle one of each pair, then re-run.');
+        process.exit(1);
+    }
+
+    // Cross-poem links resolve against published poems only; a link to a
+    // draft would otherwise point at a page that does not exist.
+    const docIdToPath = new Map(exported.map((d) => [d.id, d.filePath]));
+
+    // Pass 2: render and write.
+    for (const doc of exported) {
+        try {
+            const { body, date } = convertDocHtml(doc.html, doc.title, docIdToPath, doc.dir);
 
             const page = renderPage(template, {
                 title: doc.title,
@@ -217,7 +249,7 @@ async function main() {
             }
         } catch (err) {
             failed += 1;
-            console.error(`Failed to sync "${doc.name}" (${doc.id}):`, err.message);
+            console.error(`Failed to write "${doc.title}" (${doc.id}):`, err.message);
         }
     }
 

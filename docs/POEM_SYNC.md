@@ -10,13 +10,13 @@ setup and the ongoing authoring workflow.
   The sync walks the whole tree from `DRIVE_FOLDER_ID` down, including
   every subfolder.
 - **A poem is published only if its Doc's name ends with `(Publish)`** —
-  e.g. a Doc named `Marsh Voices (Publish)`. See below; this is the one
-  gate that matters.
+  e.g. a Doc named `6.20.4 (Publish)`. See below; this is the one gate
+  that matters.
 - Running the sync (`npm run sync`, or the "Sync poems" GitHub Action)
   exports each published Doc as HTML, converts it into the site's
   canonical template (`templates/poem-template.html` + `assets/poem.css`),
   and writes it to a path mirroring its Drive folder — so a published Doc
-  named `Marsh Voices (Publish)` inside `Early Work` becomes
+  inside `Early Work` whose first line is `Marsh Voices` becomes
   `Early Work/Marsh Voices.html`.
 - A page is only rewritten if its rendered content actually changed, so
   re-running the sync with no edits produces no diff.
@@ -33,9 +33,8 @@ Drafts are read and then discarded; only Docs marked `(Publish)` are
 written.
 
 - **To publish**: rename the Doc to end with `(Publish)`, e.g.
-  `Marsh Voices (Publish)`. The annotation is stripped from the page
-  title and the filename — the page is `Marsh Voices.html`, titled
-  `Marsh Voices`.
+  `6.20.4 (Publish)`. The rest of the name is not used for the page —
+  the title comes from the Doc's first line.
 - **To unpublish**: remove `(Publish)` from the Doc's name. The next sync
   deletes the page.
 - Case and inner spacing are flexible (`(publish)`, `(Published)`,
@@ -145,25 +144,27 @@ In the repo's **Settings → Secrets and variables → Actions**, add:
 ### 5. Populate the folder tree
 
 Organize poems into whatever folder structure you like under the shared
-folder — the sync walks all of it. Name each Doc exactly as you want the
-poem's title to appear, and append `(Publish)` to the ones that should be
+folder — the sync walks all of it. Keep naming Docs however you already
+do (by date, here), and append `(Publish)` to the ones that should be
 live on the site:
 
 ```
 GitHub Sync/                 <- DRIVE_FOLDER_ID
-  Marsh Voices (Publish)     -> Marsh Voices.html
+  6.20.4 (Publish)           -> Marsh Voices.html      (title from line 1)
   Early Work/
-    Winter (Publish)         -> Early Work/Winter.html
-    Half-finished thing      -> not published, not written
+    12.11.18 (Publish)       -> Early Work/Winter.html (title from line 1)
+    3.4.19                   -> not published, not written
 ```
+
+The Doc name carries the date and the `(Publish)` flag; the poem's title
+comes from its first line.
 
 ## The page template
 
 `templates/poem-template.html` is the shape every generated page takes.
 It contains the placeholders that `scripts/sync-poems.mjs` fills in:
 
-- `{{TITLE}}` — the poem title, from the Doc's file name with any
-  `(Publish)` annotation removed
+- `{{TITLE}}` — the poem title, taken from the Doc's first line
 - `{{CSS_PATH}}` — the path back to `assets/poem.css`, which depends on
   how deep in the folder tree the page sits
 - `{{BODY}}` — the poem body: numbered `<pre>` lines, stanza `<h2>`s,
@@ -176,13 +177,31 @@ comment would swallow the real content.
 
 ## Authoring conventions inside each Doc
 
-- **Title**: the Doc's file name *is* the title. You may optionally
-  repeat it as the first line of the Doc — the sync detects and skips a
-  redundant first line matching the title.
+- **Title**: the **first line of the Doc** is the poem's title. It sets
+  the `<h1>`, the browser title, and the output filename, and it is not
+  repeated in the poem body. The Doc's *name* is only used for the
+  `(Publish)` annotation — these Docs are named by date, so the name is
+  not the title.
+  - If the first line is implausibly long (over 80 characters) it is
+    assumed to be verse rather than a title, and the Doc's name is used
+    instead. Each sync logs the title it chose for every poem, so check
+    the run log after a first sync.
+- **Stanza / section markers**: a line that is only a number and a period
+  (`1.`, `2.`) is detected as a section heading automatically — rendered
+  as an `<h2>` and excluded from line numbering, matching the hand-made
+  pages.
 - **Date**: the **last non-blank line** in the Doc is treated as the
   date (e.g. `6.20.4`, `Circa 2010`).
-- **Stanza headings**: apply the *Heading 2* paragraph style in Google
-  Docs to a line to make it a stanza heading.
+- **Other stanza headings**: apply the *Heading 2* paragraph style in
+  Google Docs to any line that should be a heading but isn't a bare
+  `1.`-style marker.
+- **Line numbering**: every line of the poem is numbered, blank lines
+  included — the page is meant to read like a poem open in a code
+  editor. Stanza headings are the exception, since they are headings
+  rather than lines of the poem.
+- **Blank lines**: a run of consecutive blank lines (a page break in a
+  Doc exports as dozens of empty paragraphs) collapses to a single
+  numbered blank line.
 - **Italics**: use Google Docs' italic formatting as normal.
 - **Indentation**: use Google Docs' "Increase indent" — one level maps
   to a small indent, two levels to a larger one. This is a best-effort
