@@ -47,14 +47,18 @@ jobs:
         run: |
           git config user.name "poem-sync-bot"
           git config user.email "actions@users.noreply.github.com"
-          if git diff --quiet && git diff --cached --quiet; then
-            echo "No changes to publish."
-            exit 0
-          fi
-          git add -A -- '*.html' 'assets' 'templates'
+          # Stage first, then ask the index whether anything changed.
+          # `git diff` ignores untracked files, so testing it beforehand
+          # missed brand-new pages and the manifest entirely.
+          #
+          # The exclude is belt-and-braces with .gitignore: the auth step
+          # writes gha-creds-*.json into this workspace, and the repo is
+          # public.
+          git add -A -- . ':(exclude)gha-creds-*.json'
           if git diff --cached --quiet; then
             echo "No poem changes to publish."
             exit 0
           fi
+          git status --short
           git commit -m "Sync poems from Google Docs"
           git push
