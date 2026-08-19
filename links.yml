@@ -66,6 +66,17 @@ poems:
   you-and-i:                                 { doc: 16hPP2pblEzTSyVOIfwbI8TWQ10krsjS_akzQ2NDmOmg, title: You and I }
   your-song-in-the-morning:                  { doc: 1Efw9AEjmMOwLmnw2hqXPmb0fGbGJ3qNLpBbYC9jSQag, title: Your Song in the Morning }
 
+# Per-image plates. Every image linked from a poem gets a black page of
+# its own where clicking returns the reader to the poem they came from;
+# this section only says how a particular one should differ.
+assets:
+  "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
+    title: Who Goes with Fergus?
+    overlay:
+      image: Yeats.png
+      alt: Yeats
+      href: index.html
+
 links:
   - { from: 12-31-19, phrase: "final hours", to: you-and-i }
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }

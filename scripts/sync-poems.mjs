@@ -35,6 +35,7 @@ import { convertDocHtml, extractTitle } from './lib/convert.mjs';
 import { existsSync } from 'node:fs';
 import { linkPhraseAcross } from './lib/anchor.mjs';
 import { hrefFor, parseLedger, resolveLedger } from './lib/ledger.mjs';
+import { platePath, plateSlug, renderPlate } from './lib/plate.mjs';
 import { generatedPaths, manifestBody, parseManifest } from './lib/manifest.mjs';
 import { findCollisions, outputPathFor, parseDocName, selectOrphans } from './lib/paths.mjs';
 import {
@@ -250,8 +251,14 @@ async function main() {
     let ledgerLinks = new Map();
     let ledgerPending = [];
     let ledgerMissingAssets = [];
+    let ledgerAssets = new Map();
+    // Resolves an overlay's "to:" slug to the page it was published at.
+    let pathForSlug = () => undefined;
+    const plates = new Map();
     if (existsSync(LEDGER_PATH)) {
         const ledger = parseLedger(await readFile(LEDGER_PATH, 'utf8'));
+        ledgerAssets = ledger.assets;
+        pathForSlug = (slug) => docIdToPath.get(ledger.poems.get(slug)?.doc);
         const resolved = resolveLedger(ledger, {
             pathForDoc: (docId) => docIdToPath.get(docId),
             assetExists: (rel) => existsSync(path.join(REPO_ROOT, rel)),
@@ -259,6 +266,22 @@ async function main() {
         ledgerLinks = resolved.bySource;
         ledgerPending = resolved.pending;
         ledgerMissingAssets = resolved.missingAssets;
+
+        // Every image linked from a poem gets a plate: a black page
+        // holding just that image, so it can be clicked. The link in the
+        // poem points at the plate rather than the bare file.
+        for (const [sourcePath, links] of resolved.bySource) {
+            for (const link of links) {
+                if (link.target.kind !== 'asset') continue;
+                const asset = link.target.path;
+                if (!plates.has(asset)) {
+                    // The way back, for a reader with no scripting: the
+                    // first poem that links this image.
+                    plates.set(asset, { asset, back: sourcePath });
+                }
+                link.target = { kind: 'plate', path: platePath(plateSlug(asset)) };
+            }
+        }
         console.log(`Ledger: ${ledger.links.length} link(s) across ${ledger.poems.size} poem(s).`);
     }
     const anchorFailures = [];
@@ -360,6 +383,41 @@ async function main() {
             console.error(`Failed to write "${doc.title}" (${doc.id}):`, err.message);
         }
     }
+
+    // Plates are written after the poems, so a plate's way back always
+    // points at a page this run actually produced.
+    const plateEntries = [];
+    for (const { asset, back } of plates.values()) {
+        const config = ledgerAssets.get(asset) ?? {};
+        const overlay = config.overlay
+            ? {
+                  image: config.overlay.image,
+                  alt: config.overlay.alt ?? 'Go to the front page',
+                  href: config.overlay.to ? pathForSlug(config.overlay.to) : config.overlay.href,
+              }
+            : null;
+        const platePathFor = platePath(plateSlug(asset));
+        const page = renderPlate({
+            asset,
+            title: config.title ?? path.posix.basename(asset),
+            back,
+            overlay,
+        });
+        const outputPath = path.join(REPO_ROOT, platePathFor);
+        let existing = null;
+        try {
+            existing = await readFile(outputPath, 'utf8');
+        } catch {
+            // no plate for this image yet
+        }
+        plateEntries.push({ id: `plate:${asset}`, path: platePathFor, permalink: null });
+        if (existing !== page) {
+            await mkdir(path.dirname(outputPath), { recursive: true });
+            await writeFile(outputPath, page, 'utf8');
+            console.log(`${existing === null ? 'Created' : 'Updated'} ${platePathFor}  (${asset})`);
+        }
+    }
+    publishedEntries.push(...plateEntries);
 
     // A failed export would otherwise look like an unpublished poem and
     // get its page deleted. Leave the previous state alone instead.
