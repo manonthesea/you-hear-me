@@ -4,9 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0;url=make-sense-at-first.html">
+    <!--
+      The site's front door. It points at the Drive-synced page, not the
+      hand-made one it used to name - those are being retired, and this
+      was the only link standing between the collection and a 404 at its
+      own root.
+
+      The space in "1. Winter" is percent-encoded because a raw space in
+      a meta refresh URL is not reliably parsed. location.replace runs
+      first where scripting is available, so the redirect does not leave
+      an entry in the reader's history to trip Back on.
+    -->
+    <link rel="canonical" href="2020-2021/1.%20Winter/2.4.21.html">
+    <meta http-equiv="refresh" content="0;url=2020-2021/1.%20Winter/2.4.21.html">
+    <script>location.replace('2020-2021/1.%20Winter/2.4.21.html');</script>
 </head>
 <body>
-    <p>If you are not redirected, <a href="make-sense-at-first.html">click here</a>.</p>
+    <p>If you are not redirected, <a href="2020-2021/1.%20Winter/2.4.21.html">click here</a>.</p>
 </body>
 </html>
