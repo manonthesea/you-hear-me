@@ -32,6 +32,9 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertDocHtml, extractTitle } from './lib/convert.mjs';
+import { existsSync } from 'node:fs';
+import { linkPhraseAcross } from './lib/anchor.mjs';
+import { hrefFor, parseLedger, resolveLedger } from './lib/ledger.mjs';
 import { generatedPaths, manifestBody, parseManifest } from './lib/manifest.mjs';
 import { findCollisions, outputPathFor, parseDocName, selectOrphans } from './lib/paths.mjs';
 import {
@@ -48,6 +51,8 @@ const TEMPLATE_PATH = path.join(REPO_ROOT, 'templates', 'poem-template.html');
 // Records the pages this script generated, so orphans can be removed
 // without ever touching the hand-made pages that predate the sync.
 const MANIFEST_PATH = path.join(REPO_ROOT, '.poem-sync-manifest.json');
+// The web of cross-poem links, kept here rather than inside the Docs.
+const LEDGER_PATH = path.join(REPO_ROOT, 'links.yml');
 
 const DOC_MIME = 'application/vnd.google-apps.document';
 const FOLDER_MIME = 'application/vnd.google-apps.folder';
@@ -238,6 +243,26 @@ async function main() {
     // draft would otherwise point at a page that does not exist.
     const docIdToPath = new Map(exported.map((d) => [d.id, d.filePath]));
 
+    // A mistake IN the ledger - an unknown slug, a link with nowhere to
+    // point - is a typo in a version-controlled file and stops the run
+    // before anything is written. A poem that is merely unpublished is
+    // not a mistake, and is reported further down instead.
+    let ledgerLinks = new Map();
+    let ledgerPending = [];
+    let ledgerMissingAssets = [];
+    if (existsSync(LEDGER_PATH)) {
+        const ledger = parseLedger(await readFile(LEDGER_PATH, 'utf8'));
+        const resolved = resolveLedger(ledger, {
+            pathForDoc: (docId) => docIdToPath.get(docId),
+            assetExists: (rel) => existsSync(path.join(REPO_ROOT, rel)),
+        });
+        ledgerLinks = resolved.bySource;
+        ledgerPending = resolved.pending;
+        ledgerMissingAssets = resolved.missingAssets;
+        console.log(`Ledger: ${ledger.links.length} link(s) across ${ledger.poems.size} poem(s).`);
+    }
+    const anchorFailures = [];
+
     // Pass 2: render and write.
     for (const doc of exported) {
         try {
@@ -262,12 +287,31 @@ async function main() {
                 );
             }
 
+            // Apply the ledger's links to this poem. An anchor that no
+            // longer matches is collected rather than thrown: the poem's
+            // words are still correct, only a link is missing, and
+            // blocking the whole sync would let one stale phrase stop an
+            // unrelated poem from publishing.
+            // Both the verse and the footnotes: a citation is as
+            // linkable as a line, and the hand-made pages linked inside
+            // one.
+            let regions = { body, footnotes: footnotesHtml };
+            for (const link of ledgerLinks.get(doc.filePath) ?? []) {
+                const href = hrefFor(link.target, doc.dir);
+                const result = linkPhraseAcross(regions, link.phrase, href);
+                if (result.ok) {
+                    regions = result.regions;
+                } else {
+                    anchorFailures.push({ ...link, poem: doc.title, reason: result.reason });
+                }
+            }
+
             const page = renderPage(template, {
                 title: doc.title,
-                body,
+                body: regions.body,
                 date,
                 dir: doc.dir,
-                footnotesHtml,
+                footnotesHtml: regions.footnotes,
             });
 
             const outputPath = path.join(REPO_ROOT, doc.filePath);
@@ -327,11 +371,35 @@ async function main() {
         console.error('\nSkipping orphan cleanup because some Docs failed to sync.');
     }
 
+    // Links the ledger could not place. Pages are already written -
+    // the poem's words are correct either way - but the run goes red so
+    // the failure arrives as an email rather than as a reader's dead
+    // link months later.
+    for (const link of ledgerPending) {
+        console.warn(`  note: link "${link.phrase}" is waiting — ${link.why}`);
+    }
+    for (const link of ledgerMissingAssets) {
+        console.error(`  ledger: ${link.where} — ${link.why}`);
+    }
+    for (const failure of anchorFailures) {
+        console.error(
+            `  ledger: "${failure.poem}" has no unique anchor for "${failure.phrase}" ` +
+                `(${failure.reason})`
+        );
+    }
+
+    const ledgerProblems = ledgerMissingAssets.length + anchorFailures.length;
     console.log(
         `\nSync complete: ${created} created, ${updated} updated, ${unchanged} unchanged, ` +
             `${removed} removed, ${drafts} draft(s) skipped, ${failed} failed.`
     );
-    if (failed > 0) process.exitCode = 1;
+    if (ledgerPending.length > 0 || ledgerProblems > 0) {
+        console.log(
+            `Ledger: ${ledgerPending.length} link(s) waiting on an unpublished poem, ` +
+                `${ledgerProblems} needing attention.`
+        );
+    }
+    if (failed > 0 || ledgerProblems > 0) process.exitCode = 1;
 }
 
 main().catch((err) => {

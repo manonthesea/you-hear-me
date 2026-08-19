@@ -68,6 +68,66 @@ Each entry records the poem's Drive Doc ID alongside its path, so the
 sync knows not just where a poem was published but which poem it is —
 identity that survives every rename, retitle and move.
 
+## The link ledger
+
+Cross-poem links live in `links.yml` at the repo root, not inside the
+Docs. Two sections: what the poems are called, and what links to what.
+
+```yaml
+poems:
+  snafu:         { doc: 1BxiMVs0XRA5nFMdKvBd..., title: SNAFU }
+  march-25-1945: { doc: 1Cy7dK2mPqR8vN4xTgHj..., title: "March 25th, 1945" }
+
+links:
+  - { from: snafu,  phrase: repetitive repetition, to: march-25-1945 }
+  - { from: snafu,  phrase: "Fussel, Paul.", href: "https://en.wikipedia.org/wiki/Paul_Fussell" }
+  - { from: osiris, phrase: Black mud sound, asset: scan0005.jpg }
+```
+
+A link has exactly one destination: `to` a poem, `href` an external URL,
+or `asset` a file in the repo. Poem and asset paths are stored
+root-relative and made relative to each page at build time, because pages
+sit at different depths.
+
+Run `npm run poems:ids` to print the `poems:` block ready to paste — it
+reads the manifest and the published pages, so it needs no Drive
+credentials.
+
+### Anchors
+
+The `phrase` is found in the poem's rendered text — the verse *and* its
+footnotes, since a citation is as linkable as a line.
+
+- **Whole words.** `her` does not match inside `whether`.
+- **Exact case.** `rains` does not match `Rains too long in coming`.
+- **Curly quotes fold.** `men's` in the ledger finds `men’s` in the poem.
+- Everything else is literal. No patterns, no fuzzy fallback: a near miss
+  fails and says so.
+
+A phrase must occur **exactly once** in the poem. If it occurs twice,
+lengthen it until it's unique — never number the occurrence, because a
+number keeps working while silently pointing somewhere new after an edit.
+
+An anchor may span several elements (a quoted stanza is one italic run
+per line). The link is reopened around each fragment rather than wrapped
+across a tag boundary, which renders as one continuous link.
+
+### When something doesn't fit
+
+Two failures, treated differently on purpose:
+
+- **A mistake in the file** — unknown slug, no destination, two slugs
+  bound to one Doc — stops the run before anything is written. It's a
+  typo in a version-controlled file, and the error names the entry.
+- **A poem that isn't published yet** is a normal state. The link waits,
+  the words stay, and the run reports it. That's what lets the whole
+  ledger be written before every poem exists.
+
+An anchor that no longer matches, or an asset that's missing, does **not**
+block publishing: the poem's words are still correct and only a link is
+absent. Pages are written and the run then exits non-zero, so the failure
+arrives as a red build rather than as a reader's dead link months later.
+
 ## Permanent links
 
 A poem's readable path comes from its Doc's name, so it changes whenever
