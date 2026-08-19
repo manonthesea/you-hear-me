@@ -71,13 +71,14 @@ links:
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: by-the-numbers, phrase: "pagus borderlands", href: "https://www.earthwidemoth.com/blog/2006/07/27/vitanza-seeing/" }
   - { from: by-the-numbers, phrase: "polis", to: pagus-trip }
-  - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" }
+  - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }
   - { from: desert-morning-chill, phrase: "outside lamp", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: fertile-ground, phrase: "fertile", to: osiris-brings-the-drip-drop-drip }
   - { from: fertile-ground, phrase: "maggots", to: snafu }
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", href: "https://www.ww2online.org/image/kamikaze-plane-falling-out-flak-filled-sky-coast-okinawa-japan-1945" }
+  - { from: floating-chrysanthemums, phrase: "swim", to: how-soon-we-forget }
   - { from: how-soon-we-forget, phrase: "promise of an aspiring year", to: 12-31-19 }
   - { from: i-write-poems-written-for-my-loves, phrase: "burning flame-red", to: quantum-nothingness }
   - { from: in-and-out-of-consciousness, phrase: "in front of a screen", to: clack-clack-clack }
@@ -92,16 +93,16 @@ links:
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "puppies", to: nostalgia }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "semblance", to: madness-at-hand }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "the scene becomes a stage", to: scenes-from-the-park }
+  - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", href: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg" }
   - { from: le-maison-du-ren-magritte, phrase: "creation", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: le-maison-du-ren-magritte, phrase: "her", to: your-song-in-the-morning }
-  - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", href: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg" }
   - { from: madness-at-hand, phrase: "the devil", to: trouble-sleeping-as-a-child }
   - { from: marsh-voices, phrase: "black", to: osiris-brings-the-drip-drop-drip }
   - { from: masquerade, phrase: "Sleep grips you", to: in-and-out-of-consciousness }
   - { from: muddled-soup, phrase: "dead-end loops", to: its-okay-if-it-doesnt-make-sense-at-firs }
+  - { from: nostalgia, phrase: "Solstices", to: on-the-shortest-night }
   - { from: nostalgia, phrase: "blue moon", to: the-eleventh-hour }
   - { from: nostalgia, phrase: "rascally dog", asset: "E9E151FD-4C88-49A7-A860-780A8DE38977.jpeg" }
-  - { from: nostalgia, phrase: "Solstices", to: on-the-shortest-night }
   - { from: on-sunday, phrase: "godforsaken", to: transcendent-meaning-in-a-flooded-city }
   - { from: on-the-shortest-night, phrase: "John 3:16", to: on-sunday }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Black mud sound", asset: "scan0005.jpg" }
@@ -109,8 +110,8 @@ links:
   - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", href: "https://www.poetryfoundation.org/poems/47311/the-waste-land" }
   - { from: pagus-trip, phrase: "Dry fish flake on the riverbed", to: the-end-of-the-line }
   - { from: pagus-trip, phrase: "polis", href: "https://www.reuters.com/resizer/v2/LDFMSPUH65JIPJIAHDOMVOIE4Q.jpg?auth=10fb814d80290adf8fb2a9bbe471061daffd57c50701d52aa9ed583f616adad5&width=1920&quality=80" }
-  - { from: paris, phrase: "apparition", href: "https://www.poetryfoundation.org/poetrymagazine/poems/12675/in-a-station-of-the-metro" }
   - { from: paris, phrase: "Butte Chaumont", to: scenes-from-the-park }
+  - { from: paris, phrase: "apparition", href: "https://www.poetryfoundation.org/poetrymagazine/poems/12675/in-a-station-of-the-metro" }
   - { from: paris, phrase: "first days at the turn of the century", to: how-soon-we-forget }
   - { from: paris, phrase: "spring lover", to: quite-like-my-love-for-you }
   - { from: people-in-the-street, phrase: "constructs of purchased meaning", to: clack-clack-clack }
@@ -126,8 +127,8 @@ links:
   - { from: scenes-from-the-park, phrase: "willows acknowledge", to: in-and-out-of-consciousness }
   - { from: shooting-marbles, phrase: "History is still made", to: pissing-diptych }
   - { from: snafu, phrase: "Fussell, Paul.", href: "https://en.wikipedia.org/wiki/Paul_Fussell" }
-  - { from: snafu, phrase: "repetitive repetition", to: pissing-diptych }
   - { from: snafu, phrase: "Sledge, E. B.", href: "https://en.wikipedia.org/wiki/Eugene_Sledge" }
+  - { from: snafu, phrase: "repetitive repetition", to: pissing-diptych }
   - { from: summer-storm, phrase: "cool breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: summer-storm, phrase: "quantum profound", to: quantum-nothingness }
   - { from: summer-storm, phrase: "snap-fire", to: snafu }
@@ -144,10 +145,10 @@ links:
   - { from: time-in-love, phrase: "cry aloud", to: floating-chrysanthemums }
   - { from: time-in-love, phrase: "my lips feel your warm breath", to: masquerade }
   - { from: time-in-love, phrase: "seems", to: madness-at-hand }
-  - { from: transcendent-meaning-in-a-flooded-city, phrase: "a soothing horn plays", to: cryptic-word }
-  - { from: transcendent-meaning-in-a-flooded-city, phrase: "Checkpoint Charlie’s on Decatur", href: "https://www.google.com/maps/@29.96212,-90.0579835,3a,75y,90t/data=!3m7!1e1!3m5!1sDV3NwYqqmNVfrvm05fiuBQ!2e0!6shttps://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=0&panoid=DV3NwYqqmNVfrvm05fiuBQ&yaw=0!7i16384!8i8192?coh=205410&entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw==" }
-  - { from: transcendent-meaning-in-a-flooded-city, phrase: "transcendent meaning", to: people-in-the-street }
+  - { from: transcendent-meaning-in-a-flooded-city, phrase: "Checkpoint Charlie’s on Decatur", href: "https://www.offbeat.com/news/check-point-charlie-this-is-not-a-joke/" }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "We circle", to: snafu }
+  - { from: transcendent-meaning-in-a-flooded-city, phrase: "a soothing horn plays", to: cryptic-word }
+  - { from: transcendent-meaning-in-a-flooded-city, phrase: "transcendent meaning", to: people-in-the-street }
   - { from: trouble-sleeping-as-a-child, phrase: "red devil", to: floating-chrysanthemums }
   - { from: you-and-i, phrase: "you and I", to: on-the-shortest-night }
   - { from: your-song-in-the-morning, phrase: "my silent question", to: the-eleventh-hour }
