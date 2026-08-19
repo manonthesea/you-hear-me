@@ -6,10 +6,12 @@
   "scripts": {
     "sync": "node scripts/sync-poems.mjs",
     "graph": "node scripts/build-graph.mjs",
-    "test": "node --test scripts/lib/convert.test.mjs scripts/lib/publish.test.mjs scripts/lib/footnotes.test.mjs scripts/lib/css.test.mjs scripts/lib/site.test.mjs"
+    "test": "node --test scripts/lib/convert.test.mjs scripts/lib/publish.test.mjs scripts/lib/footnotes.test.mjs scripts/lib/css.test.mjs scripts/lib/site.test.mjs scripts/lib/manifest.test.mjs scripts/lib/permalink.test.mjs scripts/lib/anchor.test.mjs scripts/lib/ledger.test.mjs",
+    "poems:ids": "node scripts/ledger-ids.mjs"
   },
   "dependencies": {
     "cheerio": "^1.0.0",
-    "googleapis": "^144.0.0"
+    "googleapis": "^144.0.0",
+    "yaml": "^2.9.0"
   }
 }
