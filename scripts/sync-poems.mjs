@@ -32,7 +32,14 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertDocHtml, extractTitle } from './lib/convert.mjs';
+import { generatedPaths, manifestBody, parseManifest } from './lib/manifest.mjs';
 import { findCollisions, outputPathFor, parseDocName, selectOrphans } from './lib/paths.mjs';
+import {
+    findPermalinkCollisions,
+    permalinkId,
+    permalinkPath,
+    renderPermalink,
+} from './lib/permalink.mjs';
 import { renderPage } from './lib/render.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -122,28 +129,35 @@ async function exportDocHtml(drive, fileId) {
 }
 
 async function readManifest() {
+    let raw;
     try {
-        const raw = await readFile(MANIFEST_PATH, 'utf8');
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed.pages) ? parsed.pages : [];
-    } catch {
-        return []; // first run, or manifest removed
+        raw = await readFile(MANIFEST_PATH, 'utf8');
+    } catch (err) {
+        if (err.code === 'ENOENT') return []; // first run, or manifest removed
+        throw err;
     }
+    // A parse failure deliberately propagates: see parseManifest.
+    return parseManifest(raw);
 }
 
-async function writeManifest(pages) {
-    const body = { pages: [...pages].sort() };
+async function writeManifest(entries) {
+    const body = manifestBody(entries);
     await writeFile(MANIFEST_PATH, `${JSON.stringify(body, null, 2)}\n`, 'utf8');
 }
 
 // Removes pages that a previous sync generated but this one did not.
 // Selection lives in paths.mjs so it can be tested directly — this is
 // the only code that deletes anything.
-async function removeOrphans(previousPages, currentPages) {
-    const orphans = selectOrphans(previousPages, currentPages);
+async function removeOrphans(previousEntries, currentEntries) {
+    const orphans = selectOrphans(generatedPaths(previousEntries), generatedPaths(currentEntries));
     for (const orphan of orphans) {
         await rm(path.join(REPO_ROOT, orphan), { force: true });
         console.log(`Removed ${orphan} (no longer published)`);
+        // A permalink is its own directory; leave nothing behind but
+        // never touch a directory that still holds something.
+        if (orphan.startsWith('p/')) {
+            await rm(path.join(REPO_ROOT, path.dirname(orphan)), { force: true }).catch(() => {});
+        }
     }
     return orphans.length;
 }
@@ -174,9 +188,9 @@ async function main() {
     const drafts = parsed.length - published.length;
 
     const template = await readFile(TEMPLATE_PATH, 'utf8');
-    const previousPages = await readManifest();
+    const previousEntries = await readManifest();
 
-    const publishedPages = [];
+    const publishedEntries = [];
     let created = 0;
     let updated = 0;
     let unchanged = 0;
@@ -197,6 +211,17 @@ async function main() {
             failed += 1;
             console.error(`Failed to export "${doc.name}" (${doc.id}):`, err.message);
         }
+    }
+
+    // Two poems sharing a permalink would leave one unreachable by its
+    // permanent URL, decided by write order. Refuse rather than pick.
+    const permalinkCollisions = findPermalinkCollisions(exported);
+    if (permalinkCollisions.length > 0) {
+        console.error('Permalink collisions — two poems would share one permanent URL:');
+        for (const { permalink, filePaths } of permalinkCollisions) {
+            console.error(`  p/${permalink}/ <- ${filePaths.join(', ')}`);
+        }
+        process.exit(1);
     }
 
     const collisions = findCollisions(exported);
@@ -253,21 +278,38 @@ async function main() {
                 // file doesn't exist yet
             }
 
-            publishedPages.push(doc.filePath);
+            const linkId = permalinkId(doc.id);
+            const linkPath = permalinkPath(linkId);
+            publishedEntries.push({ id: doc.id, path: doc.filePath, permalink: linkPath });
 
             if (existing === page) {
                 unchanged += 1;
-                continue;
+            } else {
+                if (doc.dir) await mkdir(path.dirname(outputPath), { recursive: true });
+                await writeFile(outputPath, page, 'utf8');
+                if (existing === null) {
+                    created += 1;
+                    console.log(`Created ${doc.filePath}`);
+                } else {
+                    updated += 1;
+                    console.log(`Updated ${doc.filePath}`);
+                }
             }
 
-            if (doc.dir) await mkdir(path.dirname(outputPath), { recursive: true });
-            await writeFile(outputPath, page, 'utf8');
-            if (existing === null) {
-                created += 1;
-                console.log(`Created ${doc.filePath}`);
-            } else {
-                updated += 1;
-                console.log(`Updated ${doc.filePath}`);
+            // The permalink redirects to wherever the poem currently
+            // lives, so it is rewritten whenever that path changes.
+            const stub = renderPermalink({ id: doc.id, title: doc.title, filePath: doc.filePath });
+            const stubPath = path.join(REPO_ROOT, linkPath);
+            let existingStub = null;
+            try {
+                existingStub = await readFile(stubPath, 'utf8');
+            } catch {
+                // no permalink for this poem yet
+            }
+            if (existingStub !== stub) {
+                await mkdir(path.dirname(stubPath), { recursive: true });
+                await writeFile(stubPath, stub, 'utf8');
+                console.log(`${existingStub === null ? 'Created' : 'Updated'} ${linkPath}  (${doc.title})`);
             }
         } catch (err) {
             failed += 1;
@@ -279,8 +321,8 @@ async function main() {
     // get its page deleted. Leave the previous state alone instead.
     let removed = 0;
     if (failed === 0) {
-        removed = await removeOrphans(previousPages, publishedPages);
-        await writeManifest(publishedPages);
+        removed = await removeOrphans(previousEntries, publishedEntries);
+        await writeManifest(publishedEntries);
     } else {
         console.error('\nSkipping orphan cleanup because some Docs failed to sync.');
     }

@@ -58,6 +58,42 @@ sync are not in any manifest and are never touched. If a run has any
 failures, cleanup is skipped entirely that time, so a transient Drive
 error can't be mistaken for "the author unpublished everything."
 
+A manifest that can't be parsed **fails the sync** rather than being read
+as empty. An empty manifest is a legitimate state meaning "nothing has
+been generated yet", so treating a corrupt file that way would make every
+published page look like an orphan and delete the whole site in one
+commit. Only a *missing* manifest counts as empty.
+
+Each entry records the poem's Drive Doc ID alongside its path, so the
+sync knows not just where a poem was published but which poem it is —
+identity that survives every rename, retitle and move.
+
+## Permanent links
+
+A poem's readable path comes from its Doc's name, so it changes whenever
+the Doc is renamed or moved. That has happened more than twenty times,
+and each time it silently broke every link anyone had shared.
+
+Every published poem therefore also gets a permanent URL at
+`p/<id>/`, where `<id>` is derived from the Drive Doc ID. It redirects to
+wherever the poem currently lives, and the sync rewrites it whenever that
+changes. The readable path stays canonical — this is an addition, not a
+replacement.
+
+- The identifier is a **hash** of the Doc ID, not the ID itself. The repo
+  is public and Drive identifiers don't belong on public pages. Hashing
+  also keeps it a pure function of the Doc, so there's no registry file
+  to maintain and the same poem always gets the same URL.
+- **The identifier is a published URL.** Changing how it's derived breaks
+  every link already shared, so it's pinned by a test with a literal
+  expected value. If that test fails, the fix is to restore the old
+  derivation, not to update the expected value.
+- Two poems resolving to one identifier fails the sync rather than
+  letting write order decide which becomes unreachable.
+- Unpublished poems get no permalink, the same as they get no page.
+- A permalink whose poem is unpublished is cleaned up by the same
+  manifest rule that removes the page itself.
+
 ## One-time setup
 
 The sync authenticates to Google via **Workload Identity Federation
