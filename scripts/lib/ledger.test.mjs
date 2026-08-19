@@ -254,3 +254,37 @@ test('an external URL is passed through, escaped but not re-encoded', () => {
         'https://example.org/a%20b?x=1&amp;y=2'
     );
 });
+
+// --- YAML shapes that bite ----------------------------------------------
+
+test('a phrase containing a comma survives a flow mapping', () => {
+    // Inside { }, a comma separates entries. An unquoted "Fussell, Paul."
+    // parses as phrase "Fussell" plus a stray key - and because "Fussell"
+    // occurs exactly once in that poem, it validated and linked the wrong,
+    // shorter text. Silently. Exactly the failure this design exists to
+    // prevent, so it gets a test of its own.
+    const ledger = parseLedger(
+        'poems:\n  a: { doc: d }\n' +
+            'links:\n  - { from: a, phrase: "Fussell, Paul.", href: "https://e" }\n' +
+            '  - { from: a, phrase: "Sledge, E. B.", href: "https://f" }'
+    );
+
+    assert.deepEqual(
+        ledger.links.map((l) => l.phrase),
+        ['Fussell, Paul.', 'Sledge, E. B.']
+    );
+});
+
+test('a phrase with a colon, braces or a leading indicator survives', () => {
+    const ledger = parseLedger(
+        'poems:\n  a: { doc: d }\n' +
+            'links:\n  - { from: a, phrase: "of it all: the", to: a }\n' +
+            '  - { from: a, phrase: "- a dash", to: a }\n' +
+            '  - { from: a, phrase: "#hash {brace}", to: a }'
+    );
+
+    assert.deepEqual(
+        ledger.links.map((l) => l.phrase),
+        ['of it all: the', '- a dash', '#hash {brace}']
+    );
+});
