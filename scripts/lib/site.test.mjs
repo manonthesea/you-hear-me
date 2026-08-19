@@ -20,7 +20,11 @@ const MANIFEST_PATH = path.join(REPO_ROOT, '.poem-sync-manifest.json');
 
 async function syncedPages() {
     const raw = await readFile(MANIFEST_PATH, 'utf8');
-    return new Set(JSON.parse(raw).pages);
+    // Entries carry identity now ({id, path, permalink}); the bare-path
+    // shape still appears in a manifest written before that.
+    return new Set(
+        JSON.parse(raw).pages.map((entry) => (typeof entry === 'string' ? entry : entry.path))
+    );
 }
 
 // Every URL the page points at, decoded back to a repo path.
