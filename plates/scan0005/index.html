@@ -17,6 +17,17 @@
             position: relative;
             overflow: hidden;
         }
+        /*
+         * Shrink-wraps the image, so anything positioned against it is
+         * placed relative to the picture rather than the window.
+         */
+        .stage {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            max-width: 100%;
+            max-height: 100%;
+        }
         .plate {
             display: block;
             max-width: 100%;
@@ -29,25 +40,29 @@
             width: auto;
             height: auto;
         }
+
         /*
-         * Off-centre right, and sized against the viewport so it holds
-         * its proportion on a phone as well as a desktop.
+         * Over the right-hand side of the picture. Both numbers are
+         * percentages of the image's width, so the composition holds on a
+         * phone as well as a desktop.
          */
         .overlay {
             position: absolute;
             top: 50%;
-            right: 8vw;
+            right: 0%;
             transform: translateY(-50%);
-            width: min(28vw, 30vh);
+            width: 34%;
         }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
     </style>
 </head>
 <body>
-    <a class="plate" id="back" href="../../$Pre-2010/Circa%202010.html">
-        <img src="../../scan0005.jpg" alt="scan0005.jpg">
-    </a>
+    <div class="stage">
+        <a class="plate" id="back" href="../../$Pre-2010/Circa%202010.html">
+            <img src="../../scan0005.jpg" alt="scan0005.jpg">
+        </a>
+    </div>
     <script>
         // Prefer wherever the reader actually came from, but only within
         // this site - an off-site referrer must not become the way back.
@@ -58,6 +73,7 @@
                 document.getElementById('back').href = from;
             }
         } catch (e) { /* keep the static fallback */ }
+
     </script>
 </body>
 </html>
