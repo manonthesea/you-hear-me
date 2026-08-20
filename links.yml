@@ -70,6 +70,14 @@ poems:
 # its own where clicking returns the reader to the poem they came from;
 # this section only says how a particular one should differ.
 assets:
+  # Landed on half way down and magnified: the detail, not the whole frame.
+  # Clicking leads to SNAFU rather than back to Pissing Diptych.
+  "patton-pissing.jpg":
+    title: Patton on the Rhine
+    zoom: 3
+    scroll: 0.5
+    to: snafu
+
   "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
     title: Who Goes with Fergus?
     overlay:

@@ -67,3 +67,59 @@ test('a title with markup characters cannot break out', () => {
 
     assert.match(page, /<title>A &amp; &lt;b&gt;<\/title>/);
 });
+
+// --- zoom, scroll, and a pinned destination -----------------------------
+
+const zoomPlate = (over = {}) =>
+    renderPlate({
+        asset: 'patton-pissing.jpg',
+        title: 'Patton on the Rhine',
+        back: '$Pre-2010/11.26.10.html',
+        pinned: true,
+        zoom: 3,
+        scroll: 0.75,
+        ...over,
+    });
+
+test('a zoomed plate draws the image larger than the screen and scrolls', () => {
+    const page = zoomPlate();
+
+    assert.match(page, /width: calc\(100vw \* 3\)/);
+    assert.match(page, /body \{ display: block; overflow: auto; \}/);
+});
+
+test('a zoomed plate opens part-way down, and centred across', () => {
+    const page = zoomPlate();
+
+    assert.match(page, /scrollHeight - window\.innerHeight\) \* 0\.75/);
+    assert.match(page, /scrollWidth - window\.innerWidth\) \/ 2/);
+});
+
+test('placement waits for the image, so it never measures a bare page', () => {
+    const page = zoomPlate();
+
+    assert.match(page, /image\.complete/);
+    assert.match(page, /addEventListener\('load', place\)/);
+});
+
+test('a pinned destination is not overridden by the referrer', () => {
+    // The default plate follows the reader back; this one always leads
+    // where it was told to.
+    const page = zoomPlate();
+
+    assert.doesNotMatch(page, /document\.referrer/);
+    assert.match(page, /href="\.\.\/\.\.\/\$Pre-2010\/11\.26\.10\.html"/);
+});
+
+test('an unpinned plate still follows the reader back', () => {
+    const page = renderPlate({ asset: 'scan0005.jpg', title: 'x', back: 'a.html' });
+
+    assert.match(page, /document\.referrer/);
+});
+
+test('zoom of 1 or less leaves the plate fitted to the screen', () => {
+    for (const zoom of [null, 1, 0.5]) {
+        const page = renderPlate({ asset: 'a.jpg', title: 'x', back: 'b.html', zoom, scroll: 0.5 });
+        assert.doesNotMatch(page, /calc\(100vw \*/, `zoom ${zoom} should not magnify`);
+    }
+});

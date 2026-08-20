@@ -397,10 +397,15 @@ async function main() {
               }
             : null;
         const platePathFor = platePath(plateSlug(asset));
+        // A pinned destination beats the poem the reader arrived from.
+        const pinnedTo = config.to ? pathForSlug(config.to) : config.href ?? null;
         const page = renderPlate({
             asset,
             title: config.title ?? path.posix.basename(asset),
-            back,
+            back: pinnedTo ?? back,
+            pinned: Boolean(pinnedTo),
+            zoom: config.zoom ?? null,
+            scroll: config.scroll ?? null,
             overlay,
         });
         const outputPath = path.join(REPO_ROOT, platePathFor);

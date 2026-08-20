@@ -59,22 +59,42 @@ function attrHref(fromDir, toPath) {
  * @param {{
  *   asset: string,            // repo-relative path of the image
  *   title: string,            // used for the page title and alt text
- *   back: string|null,        // repo-relative page to return to
+ *   back: string|null,        // repo-relative page the image click leads to
+ *   pinned?: boolean,         // true when that destination was chosen, not inferred
+ *   zoom?: number|null,       // magnification, 1 being fit-to-screen
+ *   scroll?: number|null,     // 0..1, how far down to open the view
  *   overlay?: { image: string, href: string, alt: string } | null,
  * }} plate
  * @returns {string} the finished page.
  */
-export function renderPlate({ asset, title, back, overlay = null }) {
+export function renderPlate({
+    asset,
+    title,
+    back,
+    pinned = false,
+    zoom = null,
+    scroll = null,
+    overlay = null,
+}) {
     const dir = path.posix.dirname(platePath(plateSlug(asset)));
     const src = attrHref(dir, asset);
     const safeTitle = escapeHtml(title);
     const backHref = back ? attrHref(dir, back) : attrHref(dir, 'index.html');
 
+    // A zoomed plate is a detail view: the image is drawn larger than the
+    // screen and the page scrolls, rather than being fitted into it.
+    const zoomed = typeof zoom === 'number' && zoom > 1;
+    // Positioned against the image rather than the window, so the amount
+    // of overlap stays the same whatever size the screen is. Percentages
+    // are of the image's own width: right:0 sits the overlay flush inside
+    // the right edge, a negative value hangs it off.
+    const overlayWidth = overlay?.width ?? 34;
+    const overlayRight = overlay?.right ?? 0;
     const overlayHtml = overlay
         ? `
-    <a class="overlay" href="${attrHref(dir, overlay.href)}" aria-label="${escapeHtml(overlay.alt)}">
-        <img src="${attrHref(dir, overlay.image)}" alt="${escapeHtml(overlay.alt)}">
-    </a>`
+        <a class="overlay" href="${attrHref(dir, overlay.href)}" aria-label="${escapeHtml(overlay.alt)}">
+            <img src="${attrHref(dir, overlay.image)}" alt="${escapeHtml(overlay.alt)}">
+        </a>`
         : '';
 
     return `<!DOCTYPE html>
@@ -96,6 +116,17 @@ export function renderPlate({ asset, title, back, overlay = null }) {
             position: relative;
             overflow: hidden;
         }
+        /*
+         * Shrink-wraps the image, so anything positioned against it is
+         * placed relative to the picture rather than the window.
+         */
+        .stage {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            max-width: 100%;
+            max-height: 100%;
+        }
         .plate {
             display: block;
             max-width: 100%;
@@ -108,27 +139,41 @@ export function renderPlate({ asset, title, back, overlay = null }) {
             width: auto;
             height: auto;
         }
+${zoomed ? `
+        /* Zoomed: fill beyond the viewport and let the page scroll. */
+        body { display: block; overflow: auto; }
+        .stage { max-width: none; max-height: none; }
+        .plate, .plate img {
+            max-width: none;
+            max-height: none;
+            width: calc(100vw * ${zoom});
+            height: auto;
+        }` : ''}
         /*
-         * Off-centre right, and sized against the viewport so it holds
-         * its proportion on a phone as well as a desktop.
+         * Over the right-hand side of the picture. Both numbers are
+         * percentages of the image's width, so the composition holds on a
+         * phone as well as a desktop.
          */
         .overlay {
             position: absolute;
             top: 50%;
-            right: 8vw;
+            right: ${overlayRight}%;
             transform: translateY(-50%);
-            width: min(28vw, 30vh);
+            width: ${overlayWidth}%;
         }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
     </style>
 </head>
 <body>
-    <a class="plate" id="back" href="${backHref}">
-        <img src="${src}" alt="${safeTitle}">
-    </a>${overlayHtml}
+    <div class="stage">
+        <a class="plate" id="back" href="${backHref}">
+            <img src="${src}" alt="${safeTitle}">
+        </a>${overlayHtml}
+    </div>
     <script>
-        // Prefer wherever the reader actually came from, but only within
+${pinned ? `        // This plate's destination was chosen deliberately, so the
+        // referrer must not override it.` : `        // Prefer wherever the reader actually came from, but only within
         // this site - an off-site referrer must not become the way back.
         try {
             const from = document.referrer;
@@ -136,7 +181,22 @@ export function renderPlate({ asset, title, back, overlay = null }) {
                 && new URL(from).pathname !== location.pathname) {
                 document.getElementById('back').href = from;
             }
-        } catch (e) { /* keep the static fallback */ }
+        } catch (e) { /* keep the static fallback */ }`}
+${zoomed && scroll !== null ? `        // Open part-way down the image rather than at its top edge, and
+        // centred across, so the reader lands on the detail. Waiting for
+        // the image keeps the measurement off a zero-height page.
+        (function () {
+            const image = document.querySelector('.plate img');
+            const place = function () {
+                const root = document.documentElement;
+                window.scrollTo(
+                    (root.scrollWidth - window.innerWidth) / 2,
+                    (root.scrollHeight - window.innerHeight) * ${scroll}
+                );
+            };
+            if (image.complete) place();
+            else image.addEventListener('load', place);
+        })();` : ''}
     </script>
 </body>
 </html>
