@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Who Goes with Fergus?</title>
+    <title>The Tomb of the Wrestlers</title>
     <style>
         /* Black, edge to edge: the image is the whole page. */
         html, body { height: 100%; }
@@ -61,23 +61,13 @@
 </head>
 <body>
     <div class="stage">
-        <a class="plate" id="back" href="../../2020-2021/3.%20Summer/10.19.20.html">
-            <img src="../../DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" alt="Who Goes with Fergus?">
-        </a>
-        <a class="overlay" href="../../index.html" aria-label="Yeats">
-            <img src="../../Yeats.png" alt="Yeats">
+        <a class="plate" id="back" href="../../$Pre-2010/Circa%202003.html">
+            <img src="https://www.renemagritte.org/assets/img/paintings/the-tomb-of-the-wrestlers.jpg" alt="The Tomb of the Wrestlers" referrerpolicy="no-referrer">
         </a>
     </div>
     <script>
-        // Prefer wherever the reader actually came from, but only within
-        // this site - an off-site referrer must not become the way back.
-        try {
-            const from = document.referrer;
-            if (from && new URL(from).origin === location.origin
-                && new URL(from).pathname !== location.pathname) {
-                document.getElementById('back').href = from;
-            }
-        } catch (e) { /* keep the static fallback */ }
+        // This plate's destination was chosen deliberately, so the
+        // referrer must not override it.
 
 
     </script>
