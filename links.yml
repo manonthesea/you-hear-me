@@ -14,6 +14,7 @@
 
 poems:
   12-31-19:                                  { doc: 1Pfd450stzwB0ObaW58m-MKmtpJoRdZVL7a7dXqilfP0, title: 12.31.19 }
+  anxious-sounding-trees:                    { doc: 1SGWXbWjBmoeRPXiMpHx8qIz3zxr-Bo0b6xUkxoIz_Wc, title: Anxious Sounding Trees }
   at-the-card-table-saturday-night:          { doc: 1fi4X2aufSgpQBwB25-oDZQSh4vwV91b2j1wTqEzOMiI, title: At the card table Saturday night, }
   by-the-numbers:                            { doc: 1DJVhMxIYAFUXkbmi9eWHThMoosS7JtFfT2Qm8mx-4MU, title: By the Numbers }
   clack-clack-clack:                         { doc: 12SlHOZgCUMJV_BgNaSORjtuDe6Di_RiuDhwWqDs2PgA, title: Clack Clack Clack }
@@ -29,11 +30,12 @@ poems:
   in-spring:                                 { doc: 1R-is1_zgezEhkwYVL2n3kZ571uDzR_zTQTrnHu6XHGI, title: In Spring }
   inside-a-fishs-belly:                      { doc: 1I5sMCA-1ybdHcGPJ4907he9T88OhJJW5AbjF0CYteVk, title: "Inside a Fish’s Belly" }
   its-okay-if-it-doesnt-make-sense-at-firs:  { doc: 13Uc6kiJz_7i0NXlTnoh5ARYDun3nIIuSSRPXSkpTdCw, title: "It’s Okay if it Doesn’t Make Sense at First" }
+  language-makes-more-sense:                 { doc: 1KY3vM0t67o2TBgh5oo1PfHoW8PiKo0frOSk1qJZZSSE, title: Language Makes More Sense }
   le-maison-du-ren-magritte:                 { doc: 1y6WJaTSUXf0JNRsx-YNjI7n9Xlb3UDng3psTQogw4GQ, title: "Le Maison du René Magritte" }
   looking-back-after-a-friend-dies:          { doc: 1luh5Q5RXHhei-lLxH7fOKdjHqUJ1-7VWWv4KXNfEB0c, title: Looking Back After a Friend Dies }
   madness-at-hand:                           { doc: 1112_ND-vGDGjsjHvcLAJTyu_PHYWsThMT9CZE38ArvU, title: Madness At-Hand }
-  marked-by-water:                           { doc: 1G5itt7gjCwCZkm0fLAPKIOklXGCTAa5simr0sN623Ic, title: Marked by Water }
   making-up-after-decades-together:           { doc: 1G-HhPkxSII5uOmmEafedMdVs1yVj2Isoyu0dCoECRpo, title: Making Up After Decades Together }
+  marked-by-water:                           { doc: 1G5itt7gjCwCZkm0fLAPKIOklXGCTAa5simr0sN623Ic, title: Marked by Water }
   marsh-voices:                              { doc: 1Nvh9h8fgyLUrn9MPO_e_fdM29oMuJjHZeEnxUIHfClE, title: Marsh Voices }
   masquerade:                                { doc: 10QQDcAu6DKA9IeB8NSfvHmx9KWuLw-Z-sqHl7eTGeJ4, title: Masquerade }
   minds-deep:                                { doc: 14GQBA2zTiF2N_7pfNhq3Krtl3-C1PcQ2O1s50Zb0Fw4, title: "Mind’s Deep" }
@@ -56,16 +58,18 @@ poems:
   the-age-of-old-men-loitering:              { doc: 1A16eM8Ip5sTrUZ8m1fNgVhFoP520j-maBugU5xf0RY8, title: The Age of Old Men Loitering }
   the-bard-sings:                            { doc: 1dCFEDcX9xgCON6OpB1FWHCJ6if6v262kgFB34aSvwfY, title: The Bard Sings }
   the-birth-of-tragedy:                      { doc: 1P16YY6UP1mPak9BuY9PZ8upOSwezsKhdJ_yoFyDRWAs, title: The Birth of Tragedy }
+  the-drift:                                 { doc: 1VB9i6am3Makp-RP1i-InJiaDr2HNqmJ60pOGHB4JtOI, title: The Drift }
   the-eleventh-hour:                         { doc: 1VNWnGydnAxpo_o2Sn63vC2mraJCe0vtGpJUf-7_PKTQ, title: The Eleventh Hour }
   the-end-of-the-line:                       { doc: 1WL2U0VrE6DIzAM13P4FFTRkIRD0B_2ft8egaxHF1UPA, title: The End of the Line }
   the-father-knows:                          { doc: 13BB02HA-IGQ8ortk0gIjJ5X6OWx9sua4BqkF52qNHfM, title: The Father Knows }
   the-party-inside:                          { doc: 13kAqEUi1hFoaJxRI2jj0_haQRMyVMwPB2uDhpJFxrSU, title: The Party Inside }
   time-in-love:                              { doc: 1vQIkQdD7yu_R7vNwjrUgA-cchfov7PbxpJ-_wRE-w_Q, title: Time in Love }
+  time-is-purposeful:                        { doc: 18qN-DBQKzY_xhdv5VNY09TkdsqTuaE6Ry0sLYm85-_g, title: Time is Purposeful }
   to-all-my-old-friends:                     { doc: 1NIpOzwVqk3_rdr2Igfb0ToudKuSEyyAn6EVYEtYt9BQ, title: To All My Old Friends }
   transcendent-meaning-in-a-flooded-city:    { doc: 1Kx8Qkpb2HNte-KsLeHAML-AhgA6WElU-a-vmJaUzZxY, title: Transcendent Meaning in a Flooded City }
   trouble-sleeping-as-a-child:               { doc: 1CvMmNLy1X0qAI-x8BeRDv-9ccgz340h8fJp1nq6Z5cA, title: Trouble Sleeping as a Child }
-  what-could-have-been:                      { doc: 1KFuyneTLbO_q8ebT22YVj3WVs24upQkzmoJEwCCK_HY, title: What Could Have Been }
   vulture-tree:                              { doc: 1Fq6q6L5ungIpj2ELSj3hJCJGV1Tt2se-F9cH_rAtTUM, title: Vulture Tree }
+  what-could-have-been:                      { doc: 1KFuyneTLbO_q8ebT22YVj3WVs24upQkzmoJEwCCK_HY, title: What Could Have Been }
   you-and-i:                                 { doc: 16hPP2pblEzTSyVOIfwbI8TWQ10krsjS_akzQ2NDmOmg, title: You and I }
   your-song-in-the-morning:                  { doc: 1Efw9AEjmMOwLmnw2hqXPmb0fGbGJ3qNLpBbYC9jSQag, title: Your Song in the Morning }
 
@@ -147,8 +151,8 @@ links:
   - { from: in-and-out-of-consciousness, phrase: "in front of a screen", to: clack-clack-clack }
   - { from: in-and-out-of-consciousness, phrase: "lamp light", to: le-maison-du-ren-magritte }
   - { from: in-and-out-of-consciousness, phrase: "succumbing to sleep", to: its-okay-if-it-doesnt-make-sense-at-firs }
-  - { from: in-and-out-of-consciousness, phrase: "willows use the breeze to talk to each other", to: transcendent-meaning-in-a-flooded-city }
   - { from: in-and-out-of-consciousness, phrase: "warm feet under the covers", to: making-up-after-decades-together }
+  - { from: in-and-out-of-consciousness, phrase: "willows use the breeze to talk to each other", to: transcendent-meaning-in-a-flooded-city }
   - { from: in-spring, phrase: "Only the dog knows", to: by-the-numbers }
   - { from: inside-a-fishs-belly, phrase: "Crane Prairie Reservoir", href: "https://www.google.com/maps/place/Crane+Prairie+Reservoir/@43.7822694,-121.7959976,13z/data=!4m6!3m5!1s0x54c75db1d783bc4b:0x4e014cc2e66ec43a!8m2!3d43.7816802!4d-121.8040683!16s/m/0g5pt0j?entry=ttu&g_ep=EgoyMDI0MTAyMi4wIKXMDSoASAFQAw==" }
   - { from: inside-a-fishs-belly, phrase: "the sun’s heat", to: muddled-soup }
@@ -159,10 +163,12 @@ links:
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "puppies", to: nostalgia }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "semblance", to: madness-at-hand }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "the scene becomes a stage", to: scenes-from-the-park }
+  - { from: language-makes-more-sense, phrase: "drift", to: the-drift }
   - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", embed: empire-of-light }
   - { from: le-maison-du-ren-magritte, phrase: "creation", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: le-maison-du-ren-magritte, phrase: "her", to: your-song-in-the-morning }
   - { from: madness-at-hand, phrase: "the devil", to: trouble-sleeping-as-a-child }
+  - { from: marked-by-water, phrase: "drift", to: language-makes-more-sense }
   - { from: marsh-voices, phrase: "black", to: osiris-brings-the-drip-drop-drip }
   - { from: masquerade, phrase: "Sleep grips you", to: in-and-out-of-consciousness }
   - { from: muddled-soup, phrase: "dead-end loops", to: its-okay-if-it-doesnt-make-sense-at-firs }
@@ -206,6 +212,7 @@ links:
   - { from: the-bard-sings, phrase: "the parsing machines will never catch", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: the-bard-sings, phrase: "winter-gust", to: prey-to-the-weather }
   - { from: the-birth-of-tragedy, phrase: "Lovers lie at ends", to: le-maison-du-ren-magritte }
+  - { from: the-drift, phrase: "a multitude", to: time-is-purposeful }
   - { from: the-eleventh-hour, phrase: "bleached-white rock", to: 12-31-19 }
   - { from: the-eleventh-hour, phrase: "gibbous and crescent", to: the-age-of-old-men-loitering }
   - { from: the-end-of-the-line, phrase: "our extinction", to: you-and-i }
@@ -215,6 +222,7 @@ links:
   - { from: time-in-love, phrase: "cry aloud", to: floating-chrysanthemums }
   - { from: time-in-love, phrase: "my lips feel your warm breath", to: masquerade }
   - { from: time-in-love, phrase: "seems", to: madness-at-hand }
+  - { from: time-is-purposeful, phrase: "cicada in the trees", to: anxious-sounding-trees }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "Checkpoint Charlie’s on Decatur", href: "https://www.offbeat.com/news/check-point-charlie-this-is-not-a-joke/" }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "We circle", to: snafu }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "a soothing horn plays", to: cryptic-word }
