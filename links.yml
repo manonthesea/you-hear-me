@@ -20,7 +20,9 @@ poems:
   clack-clack-clack:                         { doc: 12SlHOZgCUMJV_BgNaSORjtuDe6Di_RiuDhwWqDs2PgA, title: Clack Clack Clack }
   cryptic-word:                              { doc: 1-DrshyFYMpXn0RIG1BViIIa6TSDI4Q8_lV01fm8WPhU, title: Cryptic Word }
   desert-morning-chill:                      { doc: 18AETSQ45BzXtBx3v_qYpEJBHedv3Ai0_tN84k3MSfGk, title: Desert Morning Chill }
+  documented-a-day-before-it-occurred:       { doc: 140uz3TKcMN4uR_7jJgT2njXGcT4OBs0H4C-VIW54RJc, title: Documented a Day Before It Occurred }
   eat-to-remember:                           { doc: 1WnQMmGi4shEp825N8Gy_M726f7ZhbmN7Jkk6j7b-J24, title: Eat to Remember }
+  every-poem-is-an-aged-memory:              { doc: 1OLY7oS14MoO4cIo12frLpMiUIW2Yy8sCkvXAI75gXcQ, title: Every Poem is an Aged Memory }
   fertile-ground:                            { doc: 16nMGsKyzp8oDx4LWH5W2qaEMFEQFAU66rbDHBdIy12o, title: Fertile Ground }
   floating-chrysanthemums:                   { doc: 1Emvl54C09VQyaAdwx6U-3FPhWIS86vux4Cu8ybe1lkQ, title: Floating Chrysanthemums }
   friday-irony:                              { doc: 1FUFFWuqmrOPZU7gthhUvGVv3PfFfEpf_72oQMaDak50, title: Friday Irony }
@@ -41,6 +43,7 @@ poems:
   minds-deep:                                { doc: 14GQBA2zTiF2N_7pfNhq3Krtl3-C1PcQ2O1s50Zb0Fw4, title: "Mind’s Deep" }
   muddled-soup:                              { doc: 1bbiJCqlYBHfac7N3ekVCqKQ8LCec8PxB0gydjnkBZiM, title: Muddled Soup }
   nostalgia:                                 { doc: 1hDqG230l56THhDRpRMGfZs29iu6oQjd74uZbLkg3A8I, title: Nostalgia }
+  omen-of-the-dead-belly-up-hog:             { doc: 1Lke1GuPoKVs8h-FluYaZPauyfEtElK98Vs3krWb0yYA, title: Omen of the Dead, Belly-Up Hog }
   on-sunday:                                 { doc: 1At0bVa3RPnw-0J7g5RYzqgTApnYTVv-0DS49pV3Xdc8, title: On Sunday }
   on-the-shortest-night:                     { doc: 12qk0exloetUrV6Hupoa18Xv0c5TRAj8DOinNLiiG2PY, title: On the Shortest Night }
   osiris-brings-the-drip-drop-drip:          { doc: 1AzM-a33v5VLgkO6hpnSQKWEoFrn9LsRDaOmCWaIBFH8, title: Osiris Brings the Drip Drop Drip }
@@ -142,6 +145,9 @@ links:
   - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }
   - { from: desert-morning-chill, phrase: "outside lamp", to: its-okay-if-it-doesnt-make-sense-at-firs }
+  - { from: documented-a-day-before-it-occurred, phrase: "electrons of our thoughts", to: time-is-purposeful }
+  - { from: documented-a-day-before-it-occurred, phrase: "rag and bone", to: prey-to-the-weather }
+  - { from: every-poem-is-an-aged-memory, phrase: "her arms", to: your-song-in-the-morning }
   - { from: fertile-ground, phrase: "fertile", to: osiris-brings-the-drip-drop-drip }
   - { from: fertile-ground, phrase: "maggots", to: snafu }
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
@@ -175,6 +181,7 @@ links:
   - { from: nostalgia, phrase: "Solstices", to: on-the-shortest-night }
   - { from: nostalgia, phrase: "blue moon", to: the-eleventh-hour }
   - { from: nostalgia, phrase: "rascally dog", asset: "E9E151FD-4C88-49A7-A860-780A8DE38977.jpeg" }
+  - { from: omen-of-the-dead-belly-up-hog, phrase: "so as not to forget", to: every-poem-is-an-aged-memory }
   - { from: on-sunday, phrase: "godforsaken", to: transcendent-meaning-in-a-flooded-city }
   - { from: on-the-shortest-night, phrase: "John 3:16", to: on-sunday }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Black mud sound", asset: "scan0005.jpg" }
@@ -230,6 +237,7 @@ links:
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "transcendent meaning", to: people-in-the-street }
   - { from: trouble-sleeping-as-a-child, phrase: "red devil", to: floating-chrysanthemums }
   - { from: vulture-tree, phrase: "electricity", to: summer-storm }
+  - { from: vulture-tree, phrase: "feeds the buzzards", to: omen-of-the-dead-belly-up-hog }
   - { from: you-and-i, phrase: "you and I", to: on-the-shortest-night }
   - { from: your-song-in-the-morning, phrase: "my silent question", to: the-eleventh-hour }
   - { from: your-song-in-the-morning, phrase: "you whisper found comprehension", to: its-okay-if-it-doesnt-make-sense-at-firs }
