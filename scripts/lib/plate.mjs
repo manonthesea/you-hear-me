@@ -61,8 +61,9 @@ function attrHref(fromDir, toPath) {
  *   title: string,            // used for the page title and alt text
  *   back: string|null,        // repo-relative page the image click leads to
  *   pinned?: boolean,         // true when that destination was chosen, not inferred
- *   zoom?: number|null,       // magnification, 1 being fit-to-screen
- *   scroll?: number|null,     // 0..1, how far down to open the view
+ *   zoom?: number|null,       // magnification, 1 being no magnification
+ *   zoomOn?: 'load'|'click',  // magnified from the outset, or on the first click
+ *   scroll?: number|null,     // 0..1, how far down to open the view (zoomOn: load)
  *   overlay?: { image: string, href: string, alt: string } | null,
  * }} plate
  * @returns {string} the finished page.
@@ -73,6 +74,7 @@ export function renderPlate({
     back,
     pinned = false,
     zoom = null,
+    zoomOn = 'load',
     scroll = null,
     overlay = null,
 }) {
@@ -81,9 +83,17 @@ export function renderPlate({
     const safeTitle = escapeHtml(title);
     const backHref = back ? attrHref(dir, back) : attrHref(dir, 'index.html');
 
-    // A zoomed plate is a detail view: the image is drawn larger than the
-    // screen and the page scrolls, rather than being fitted into it.
-    const zoomed = typeof zoom === 'number' && zoom > 1;
+    // Two ways to magnify, and they differ only in when it happens.
+    //
+    //   load  - the plate opens as a detail view: the image is drawn
+    //           larger than the screen and the page scrolls.
+    //   click - the plate opens whole, and the first click magnifies it
+    //           around the spot the reader pointed at. The click after
+    //           that follows the link.
+    const magnifies = typeof zoom === 'number' && zoom > 1;
+    const zoomOnClick = magnifies && zoomOn === 'click';
+    const zoomOnLoad = magnifies && !zoomOnClick;
+
     // Positioned against the image rather than the window, so the amount
     // of overlap stays the same whatever size the screen is. Percentages
     // are of the image's own width: right:0 sits the overlay flush inside
@@ -139,7 +149,7 @@ export function renderPlate({
             width: auto;
             height: auto;
         }
-${zoomed ? `
+${zoomOnLoad ? `
         /* Zoomed: fill beyond the viewport and let the page scroll. */
         body { display: block; overflow: auto; }
         .stage { max-width: none; max-height: none; }
@@ -147,6 +157,22 @@ ${zoomed ? `
             max-width: none;
             max-height: none;
             width: calc(100vw * ${zoom});
+            height: auto;
+        }` : ''}
+${zoomOnClick ? `
+        /*
+         * The magnified state, entered on the first click. The width
+         * itself is set on the image by the script, from the size it was
+         * actually being drawn at - the constraints are only released
+         * here so that width can take effect and the page can scroll.
+         */
+        .plate { cursor: zoom-in; }
+        body.zoomed { display: block; overflow: auto; }
+        body.zoomed .stage { max-width: none; max-height: none; }
+        body.zoomed .plate { cursor: pointer; }
+        body.zoomed .plate, body.zoomed .plate img {
+            max-width: none;
+            max-height: none;
             height: auto;
         }` : ''}
         /*
@@ -182,7 +208,7 @@ ${pinned ? `        // This plate's destination was chosen deliberately, so the
                 document.getElementById('back').href = from;
             }
         } catch (e) { /* keep the static fallback */ }`}
-${zoomed && scroll !== null ? `        // Open part-way down the image rather than at its top edge, and
+${zoomOnLoad && scroll !== null ? `        // Open part-way down the image rather than at its top edge, and
         // centred across, so the reader lands on the detail. Waiting for
         // the image keeps the measurement off a zero-height page.
         (function () {
@@ -196,6 +222,46 @@ ${zoomed && scroll !== null ? `        // Open part-way down the image rather th
             };
             if (image.complete) place();
             else image.addEventListener('load', place);
+        })();` : ''}
+${zoomOnClick ? `        // Click once to magnify, again to follow the link.
+        //
+        // The href is left exactly as it is, so a reader with no
+        // scripting simply arrives at the destination on the first click.
+        // The zoom is an addition to the page, never a gate across it.
+        (function () {
+            const plate = document.getElementById('back');
+            const image = plate.querySelector('img');
+            let magnified = false;
+
+            plate.addEventListener('click', function (event) {
+                if (magnified) return;   // this one travels
+                event.preventDefault();
+
+                // Where in the picture the reader pointed, as a fraction
+                // of it. A keyboard press carries no coordinates, so it
+                // magnifies about the middle instead.
+                const keyboard = event.detail === 0;
+                const before = image.getBoundingClientRect();
+                if (!before.width || !before.height) return;
+                const anchorX = keyboard ? window.innerWidth / 2 : event.clientX;
+                const anchorY = keyboard ? window.innerHeight / 2 : event.clientY;
+                const fx = keyboard ? 0.5 : (anchorX - before.left) / before.width;
+                const fy = keyboard ? 0.5 : (anchorY - before.top) / before.height;
+
+                // Magnified against the size it was actually drawn at, so
+                // "${zoom}" means ${zoom} times bigger than what the reader was
+                // just looking at, whatever the screen.
+                image.style.width = before.width * ${zoom} + 'px';
+                document.body.classList.add('zoomed');
+                magnified = true;
+
+                // Put the same point of the picture back under the cursor.
+                const after = image.getBoundingClientRect();
+                window.scrollTo(
+                    after.left + window.scrollX + fx * after.width - anchorX,
+                    after.top + window.scrollY + fy * after.height - anchorY
+                );
+            });
         })();` : ''}
     </script>
 </body>

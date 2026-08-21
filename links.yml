@@ -70,10 +70,13 @@ poems:
 # its own where clicking returns the reader to the poem they came from;
 # this section only says how a particular one should differ.
 assets:
-  # Shown whole, at its own size. Clicking leads to SNAFU rather than
-  # back to Pissing Diptych.
+  # Opens whole, at its own size. The first click magnifies it around
+  # wherever the reader clicked; the click after that leads to SNAFU
+  # rather than back to Pissing Diptych.
   "patton-pissing.jpg":
     title: Patton on the Rhine
+    zoom: 3
+    zoom-on: click
     to: snafu
 
   # The kamikaze photograph the poem is named for, with the

@@ -123,3 +123,100 @@ test('zoom of 1 or less leaves the plate fitted to the screen', () => {
         assert.doesNotMatch(page, /calc\(100vw \*/, `zoom ${zoom} should not magnify`);
     }
 });
+
+// --- click once to magnify, again to travel -----------------------------
+
+const clickZoom = (over = {}) =>
+    renderPlate({
+        asset: 'patton-pissing.jpg',
+        title: 'Patton on the Rhine',
+        back: '$Pre-2010/11.26.10.html',
+        pinned: true,
+        zoom: 3,
+        zoomOn: 'click',
+        ...over,
+    });
+
+test('a click-to-zoom plate opens unmagnified', () => {
+    // The whole point is that the reader sees the picture entire first.
+    // Emitting the load-time magnification rules would defeat it.
+    const page = clickZoom();
+
+    assert.doesNotMatch(page, /^\s*body \{ display: block; overflow: auto; \}/m);
+    assert.doesNotMatch(page, /calc\(100vw \*/);
+});
+
+test('the magnified state is a class the first click adds', () => {
+    const page = clickZoom();
+
+    assert.match(page, /body\.zoomed \{ display: block; overflow: auto; \}/);
+    assert.match(page, /classList\.add\('zoomed'\)/);
+});
+
+test('the first click is stopped and the second is let through', () => {
+    // Without the guard the reader would leave the page before ever
+    // seeing it magnified.
+    const page = clickZoom();
+
+    assert.match(page, /if \(magnified\) return;/);
+    assert.match(page, /event\.preventDefault\(\)/);
+});
+
+test('the link itself is untouched, so no scripting still travels', () => {
+    // The zoom is an addition to the page, never a gate across it.
+    const page = clickZoom();
+
+    assert.match(page, /<a class="plate" id="back" href="\.\.\/\.\.\/\$Pre-2010\/11\.26\.10\.html">/);
+});
+
+test('magnification is measured against the size the image was drawn at', () => {
+    // Not against the viewport: this plate opens fitted, so "3" has to
+    // mean three times what the reader was just looking at.
+    const page = clickZoom();
+
+    assert.match(page, /before\.width \* 3 \+ 'px'/);
+});
+
+test('the clicked point of the picture stays under the cursor', () => {
+    const page = clickZoom();
+
+    assert.match(page, /fx = keyboard \? 0\.5 : \(anchorX - before\.left\) \/ before\.width/);
+    assert.match(page, /after\.left \+ window\.scrollX \+ fx \* after\.width - anchorX/);
+});
+
+test('a keyboard press magnifies about the middle', () => {
+    // event.detail is 0 for Enter on a link, and clientX/Y are 0 with it -
+    // taken literally that would jump to the top-left corner.
+    const page = clickZoom();
+
+    assert.match(page, /keyboard = event\.detail === 0/);
+    assert.match(page, /window\.innerWidth \/ 2/);
+});
+
+test('the cursor says which of the two clicks this is', () => {
+    const page = clickZoom();
+
+    assert.match(page, /\.plate \{ cursor: zoom-in; \}/);
+    assert.match(page, /body\.zoomed \.plate \{ cursor: pointer; \}/);
+});
+
+test('a plate with no zoom carries no click-to-zoom script at all', () => {
+    const page = plate();
+
+    assert.doesNotMatch(page, /classList\.add\('zoomed'\)/);
+    assert.doesNotMatch(page, /cursor: zoom-in/);
+});
+
+test('zoomOn: click with a zoom of 1 or less stays fitted and inert', () => {
+    for (const zoom of [null, 1, 0.5]) {
+        const page = clickZoom({ zoom });
+        assert.doesNotMatch(page, /classList\.add\('zoomed'\)/, `zoom ${zoom} should not magnify`);
+    }
+});
+
+test('load-time zoom is unaffected by the new option', () => {
+    const page = zoomPlate();
+
+    assert.match(page, /width: calc\(100vw \* 3\)/);
+    assert.doesNotMatch(page, /classList\.add\('zoomed'\)/);
+});
