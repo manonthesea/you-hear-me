@@ -41,15 +41,6 @@
             height: auto;
         }
 
-        /* Zoomed: fill beyond the viewport and let the page scroll. */
-        body { display: block; overflow: auto; }
-        .stage { max-width: none; max-height: none; }
-        .plate, .plate img {
-            max-width: none;
-            max-height: none;
-            width: calc(100vw * 3);
-            height: auto;
-        }
         /*
          * Over the right-hand side of the picture. Both numbers are
          * percentages of the image's width, so the composition holds on a
@@ -75,21 +66,7 @@
     <script>
         // This plate's destination was chosen deliberately, so the
         // referrer must not override it.
-        // Open part-way down the image rather than at its top edge, and
-        // centred across, so the reader lands on the detail. Waiting for
-        // the image keeps the measurement off a zero-height page.
-        (function () {
-            const image = document.querySelector('.plate img');
-            const place = function () {
-                const root = document.documentElement;
-                window.scrollTo(
-                    (root.scrollWidth - window.innerWidth) / 2,
-                    (root.scrollHeight - window.innerHeight) * 0.5
-                );
-            };
-            if (image.complete) place();
-            else image.addEventListener('load', place);
-        })();
+
     </script>
 </body>
 </html>
