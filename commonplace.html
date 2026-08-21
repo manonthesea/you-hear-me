@@ -1,0 +1,754 @@
+<meta charset="UTF-8">
+<title>The Commonplace Book</title>
+<meta name="description" content="An interactive map of how 67 poems in the you-hear-me collection cite, echo and answer one another, 2003–2025.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f3efe3;
+    --bg-wash: #ece5d3;
+    --surface: #fffdf6;
+    --surface-2: #f2ecda;
+    --ink: #262234;
+    --ink-soft: #4a465c;
+    --muted: #7d788f;
+    --border: #ddd3b8;
+    --border-soft: #e6dec7;
+    --accent: #a8611f;
+    --accent-soft: #d9ab6f;
+    /* Inbound citations. Violet rather than another warm hue, so the two
+       directions separate at a glance instead of reading as one family. */
+    --incoming: #6b46b0;
+    --incoming-soft: #b79ce0;
+    --sage: #4d7d63;
+    --sage-soft: #9cbfa9;
+    --isolated: #a49cae;
+    --shadow: 220 30% 20%;
+
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15131d;
+      --bg-wash: #1a1826;
+      --surface: #1e1c2a;
+      --surface-2: #262333;
+      --ink: #ece6d8;
+      --ink-soft: #cdc6da;
+      --muted: #8d879f;
+      --border: #34314a;
+      --border-soft: #2a2739;
+      --accent: #e2a75c;
+      --accent-soft: #7a5a30;
+      --incoming: #b79ae8;
+      --incoming-soft: #5b4485;
+      --sage: #8fbfa0;
+      --sage-soft: #3b5a49;
+      --isolated: #5c586e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15131d;
+    --bg-wash: #1a1826;
+    --surface: #1e1c2a;
+    --surface-2: #262333;
+    --ink: #ece6d8;
+    --ink-soft: #cdc6da;
+    --muted: #8d879f;
+    --border: #34314a;
+    --border-soft: #2a2739;
+    --accent: #e2a75c;
+    --accent-soft: #7a5a30;
+    --incoming: #b79ae8;
+    --incoming-soft: #5b4485;
+    --sage: #8fbfa0;
+    --sage-soft: #3b5a49;
+    --isolated: #5c586e;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 6rem;
+  }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 3vw, 2.5rem);
+  }
+
+  /* ---- masthead ---- */
+  .masthead {
+    padding: clamp(2.25rem, 5vw, 3.5rem) 0 1.75rem;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 60% 100% at 15% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+      var(--bg-wash);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.6rem;
+  }
+  h1.title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+  .dek {
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+    max-width: 46em;
+    margin: 0 0 1.5rem;
+  }
+  .dek em { font-family: var(--font-display); font-style: italic; color: var(--ink); }
+
+  .colophon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .colophon b {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---- controls ---- */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.85rem 0;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    min-width: 240px;
+    flex: 0 1 320px;
+  }
+  .search svg { flex: none; opacity: 0.55; }
+  .search input {
+    border: 0;
+    background: transparent;
+    outline: none;
+    font: inherit;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--ink);
+    width: 100%;
+  }
+  .search input::placeholder { color: var(--muted); }
+
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  .legend .item { display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+  .legend svg { flex: none; }
+  .legend .swatch-dashed {
+    width: 14px; height: 0; border-top: 1.5px dashed var(--isolated);
+  }
+
+  /* ---- eras / shelves ---- */
+  #shelves { position: relative; padding-top: 0.5rem; }
+  svg.edges { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; overflow: visible; }
+
+  .era {
+    position: relative;
+    z-index: 2;
+    padding: 2rem 0 0.5rem;
+  }
+  .era-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+  }
+  .era-head h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1.35rem;
+    margin: 0;
+    color: var(--ink);
+  }
+  .era-head .count {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .era-rule { flex: 1; height: 1px; background: var(--border); margin-left: 0.5rem; }
+
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 0.6rem;
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: 168px;
+    padding: 0.65rem 0.75rem 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    text-decoration: none;
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, opacity 0.2s ease, box-shadow 0.15s ease;
+  }
+  .card:hover, .card:focus-visible {
+    border-color: var(--accent-soft);
+    box-shadow: 0 6px 18px -8px hsl(var(--shadow) / 0.35);
+    transform: translateY(-2px);
+    outline: none;
+  }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card .t {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.86rem;
+    line-height: 1.28;
+    display: block;
+    margin-bottom: 0.3rem;
+    text-wrap: balance;
+  }
+  .card .d {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--muted);
+    display: block;
+  }
+  .card.isolated {
+    border-style: dashed;
+    background: color-mix(in srgb, var(--surface) 92%, var(--isolated) 8%);
+  }
+  .card.isolated .d::after { content: " · unlinked"; }
+
+  /* interaction states, applied to #shelves */
+  #shelves.active .card { opacity: 0.32; }
+  #shelves.active .card.is-origin,
+  #shelves.active .card.is-connected { opacity: 1; }
+  /* A poem can be both, when two poems cite each other. */
+  #shelves.active .card.is-out.is-in {
+    border-color: var(--incoming-soft);
+    box-shadow: inset 3px 0 0 var(--accent-soft);
+  }
+  #shelves.active .card.is-origin { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+  #shelves.active .card.is-out { border-color: var(--accent-soft); }
+  #shelves.active .card.is-in { border-color: var(--incoming-soft); }
+
+  #shelves.searching .card { opacity: 0.25; }
+  #shelves.searching .card.match { opacity: 1; }
+  #shelves.searching .card.match .t { color: var(--accent); }
+
+  /* ---- detail rail ---- */
+  #detail {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 30;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.22s cubic-bezier(.2,.8,.2,1), opacity 0.18s ease;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -12px 30px -14px hsl(var(--shadow) / 0.4);
+  }
+  #detail.show { transform: translateY(0); opacity: 1; }
+  .detail-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.1rem clamp(1rem, 3vw, 2.5rem) 1.3rem;
+    display: grid;
+    grid-template-columns: minmax(180px, 260px) 1fr;
+    gap: 0.5rem 2.2rem;
+  }
+  #detail .dt-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0 0 0.15rem;
+  }
+  #detail .dt-meta {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  #detail .dt-open {
+    display: inline-block;
+    margin-top: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  #detail .dt-open:hover { text-decoration: underline; }
+  .dt-cols { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .dt-col h4 {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.4rem;
+  }
+  .dt-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+  .dt-col li { font-size: 0.86rem; }
+  /* Matched to the lines on the map, so the panel reads as its legend. */
+  .dt-col.out h4, .dt-col.out .arrow { color: var(--accent); }
+  .dt-col.in h4, .dt-col.in .arrow { color: var(--incoming); }
+  .dt-col .arrow { font-weight: 600; }
+  .dt-col .phrase { color: var(--muted); font-style: italic; font-family: var(--font-display); }
+  .dt-col .to { color: var(--ink); }
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-right: 0.35rem;
+    color: var(--sage);
+    background: color-mix(in srgb, var(--sage) 14%, transparent);
+    vertical-align: 1px;
+  }
+  .dt-empty { color: var(--muted); font-size: 0.86rem; font-style: italic; }
+
+  @media (max-width: 720px) {
+    .detail-inner { grid-template-columns: 1fr; }
+    .card { width: 142px; }
+    .legend { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, #detail { transition: none; }
+  }
+
+  ::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">you-hear-me &middot; a working index</p>
+    <h1 class="title">The Commonplace Book</h1>
+    <p class="dek"><span id="dek-poems">Every poem in the collection</span>, and the <em id="dek-links">threads</em> the poet has drawn between them &mdash; a shared image, a repeated line, a word one poem lends the next. Hover a title to see what it leads to and what cites it; click one to open the poem.</p>
+    <div class="colophon">
+      <span><b id="stat-poems">&nbsp;</b> poems</span>
+      <span><b id="stat-links">&nbsp;</b> cross-references</span>
+      <span><b id="stat-isolated">&nbsp;</b> not yet woven in</span>
+      <span><b id="stat-eras">&nbsp;</b> eras, <b id="stat-span">&nbsp;</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <label class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="Find a poem or a phrase&hellip;" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="legend" aria-hidden="true">
+      <span class="item"><svg width="30" height="10" aria-hidden="true"><path d="M1,6 Q12,0 22,5" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M21,1.5 L27,5 L21,8.5 z" fill="var(--accent)"/></svg> leads to</span>
+      <span class="item"><svg width="30" height="10" aria-hidden="true"><path d="M1,6 Q12,0 22,5" fill="none" stroke="var(--incoming)" stroke-width="2"/><path d="M21,1.5 L27,5 L21,8.5 z" fill="var(--incoming)"/></svg> referenced by</span>
+      <span class="item"><span class="tag" style="margin:0;">image</span> / <span class="tag" style="margin:0;">external</span> leads outside the web</span>
+      <span class="item"><span class="swatch-dashed"></span> no links yet</span>
+    </div>
+  </div>
+
+  <main id="shelves"></main>
+</div>
+
+<aside id="detail" aria-live="polite"></aside>
+
+<script id="dataset" type="application/json">{"poems":[{"key":"snafu","slug":"snafu","title":"SNAFU","era":"$Pre-2010","path":"$Pre-2010/11.26.10.html","base":"11.26.10","sortKey":"2010-11-26","dated":true,"extras":[{"kind":"external","phrase":"Fussell, Paul."},{"kind":"external","phrase":"Sledge, E. B."}]},{"key":"prey-to-the-weather","slug":"prey-to-the-weather","title":"Prey to the Weather","era":"$Pre-2010","path":"$Pre-2010/12.21.9.html","base":"12.21.9","sortKey":"2009-12-21","dated":true,"extras":[]},{"key":"in-spring","slug":"in-spring","title":"In Spring","era":"$Pre-2010","path":"$Pre-2010/3.20.9.html","base":"3.20.9","sortKey":"2009-03-20","dated":true,"extras":[]},{"key":"scenes-from-the-park","slug":"scenes-from-the-park","title":"Scenes from the Park","era":"$Pre-2010","path":"$Pre-2010/3.22.9.html","base":"3.22.9","sortKey":"2009-03-22","dated":true,"extras":[{"kind":"external","phrase":"the park"}]},{"key":"pissing-diptych","slug":"pissing-diptych","title":"Pissing Diptych","era":"$Pre-2010","path":"$Pre-2010/3.3.10.html","base":"3.3.10","sortKey":"2010-03-03","dated":true,"extras":[{"kind":"image","phrase":"pee"}]},{"key":"pagus-trip","slug":"pagus-trip","title":"Pagus Trip","era":"$Pre-2010","path":"$Pre-2010/4.27.9.html","base":"4.27.9","sortKey":"2009-04-27","dated":true,"extras":[{"kind":"picture","phrase":"polis"}]},{"key":"marsh-voices","slug":"marsh-voices","title":"Marsh Voices","era":"$Pre-2010","path":"$Pre-2010/6.20.04.html","base":"6.20.04","sortKey":"2004-06-20","dated":true,"extras":[]},{"key":"time-in-love","slug":"time-in-love","title":"Time in Love","era":"$Pre-2010","path":"$Pre-2010/9.4.10.html","base":"9.4.10","sortKey":"2010-09-04","dated":true,"extras":[]},{"key":"le-maison-du-ren-magritte","slug":"le-maison-du-ren-magritte","title":"Le Maison du René Magritte","era":"$Pre-2010","path":"$Pre-2010/Circa 2003.html","base":"Circa 2003","sortKey":"2003-06-15","dated":false,"extras":[{"kind":"picture","phrase":"One lamp lights the very center"}]},{"key":"the-party-inside","slug":"the-party-inside","title":"The Party Inside","era":"$Pre-2010","path":"$Pre-2010/Circa 2008.html","base":"Circa 2008","sortKey":"2008-06-15","dated":false,"extras":[{"kind":"picture","phrase":"the red rose that fills the room"}]},{"key":"floating-chrysanthemums","slug":"floating-chrysanthemums","title":"Floating Chrysanthemums","era":"$Pre-2010","path":"$Pre-2010/Circa 2009.html","base":"Circa 2009","sortKey":"2009-06-15","dated":false,"extras":[{"kind":"image","phrase":"Floating Chrysanthemums"}]},{"key":"osiris-brings-the-drip-drop-drip","slug":"osiris-brings-the-drip-drop-drip","title":"Osiris Brings the Drip Drop Drip","era":"$Pre-2010","path":"$Pre-2010/Circa 2010.html","base":"Circa 2010","sortKey":"2010-06-15","dated":false,"extras":[{"kind":"image","phrase":"Black mud sound"},{"kind":"external","phrase":"stony rubbish"}]},{"key":"what-could-have-been","slug":"what-could-have-been","title":"What Could Have Been","era":"$Pre-2010","path":"$Pre-2010/Circa an Alternate Reality.html","base":"Circa an Alternate Reality","sortKey":"9999-Circa an Alternate Reality","dated":false,"extras":[]},{"key":"the-birth-of-tragedy","slug":"the-birth-of-tragedy","title":"The Birth of Tragedy","era":"$Pre-2010","path":"$Pre-2010/Circa Before Time.html","base":"Circa Before Time","sortKey":"9999-Circa Before Time","dated":false,"extras":[]},{"key":"quite-like-my-love-for-you","slug":"quite-like-my-love-for-you","title":"Quite like my love for you.","era":"$Pre-2010","path":"$Pre-2010/Circa College.html","base":"Circa College","sortKey":"9999-Circa College","dated":false,"extras":[]},{"key":"to-all-my-old-friends","slug":"to-all-my-old-friends","title":"To All My Old Friends","era":"2016-2017!","path":"2016-2017!/1. Winter/1.31.16.html","base":"1.31.16","sortKey":"2016-01-31","dated":true,"extras":[]},{"key":"nostalgia","slug":"nostalgia","title":"Nostalgia","era":"2016-2017!","path":"2016-2017!/1. Winter/2.22.17.html","base":"2.22.17","sortKey":"2017-02-22","dated":true,"extras":[{"kind":"image","phrase":"rascally dog"}]},{"key":"how-soon-we-forget","slug":"how-soon-we-forget","title":"How Soon We Forget","era":"2016-2017!","path":"2016-2017!/1. Winter/2.27.17.html","base":"2.27.17","sortKey":"2017-02-27","dated":true,"extras":[]},{"key":"trouble-sleeping-as-a-child","slug":"trouble-sleeping-as-a-child","title":"Trouble Sleeping as a Child","era":"2016-2017!","path":"2016-2017!/1. Winter/3.1.17.html","base":"3.1.17","sortKey":"2017-03-01","dated":true,"extras":[]},{"key":"transcendent-meaning-in-a-flooded-city","slug":"transcendent-meaning-in-a-flooded-city","title":"Transcendent Meaning in a Flooded City","era":"2016-2017!","path":"2016-2017!/2. Spring/4.2.17.html","base":"4.2.17","sortKey":"2017-04-02","dated":true,"extras":[{"kind":"external","phrase":"Checkpoint Charlie’s on Decatur"}]},{"key":"people-in-the-street","slug":"people-in-the-street","title":"People in the Street","era":"2016-2017!","path":"2016-2017!/2. Spring/4.4.17.html","base":"4.4.17","sortKey":"2017-04-04","dated":true,"extras":[{"kind":"external","phrase":"the Spotted Cat"}]},{"key":"you-and-i","slug":"you-and-i","title":"You and I","era":"2016-2017!","path":"2016-2017!/2. Spring/5.2.17.html","base":"5.2.17","sortKey":"2017-05-02","dated":true,"extras":[]},{"key":"the-age-of-old-men-loitering","slug":"the-age-of-old-men-loitering","title":"The Age of Old Men Loitering","era":"2016-2017!","path":"2016-2017!/3. Summer/6.30.17.html","base":"6.30.17","sortKey":"2017-06-30","dated":true,"extras":[]},{"key":"by-the-numbers","slug":"by-the-numbers","title":"By the Numbers","era":"2016-2017!","path":"2016-2017!/3. Summer/7.21.17.html","base":"7.21.17","sortKey":"2017-07-21","dated":true,"extras":[{"kind":"external","phrase":"pagus borderlands"}]},{"key":"quantum-nothingness","slug":"quantum-nothingness","title":"Quantum Nothingness","era":"2016-2017!","path":"2016-2017!/4. Fall/12.16.17.html","base":"12.16.17","sortKey":"2017-12-16","dated":true,"extras":[]},{"key":"paris","slug":"paris","title":"Paris","era":"2016-2017!","path":"2016-2017!/4. Fall/12.8.17.html","base":"12.8.17","sortKey":"2017-12-08","dated":true,"extras":[{"kind":"external","phrase":"apparition"}]},{"key":"i-write-poems-written-for-my-loves","slug":"i-write-poems-written-for-my-loves","title":"I write poems, written for my loves --","era":"2018-2019&","path":"2018-2019&/1. Winter/1.10.18.html","base":"1.10.18","sortKey":"2018-01-10","dated":true,"extras":[]},{"key":"minds-deep","slug":"minds-deep","title":"Mind’s Deep","era":"2018-2019&","path":"2018-2019&/1. Winter/1.11.19.html","base":"1.11.19","sortKey":"2019-01-11","dated":true,"extras":[]},{"key":"the-father-knows","slug":"the-father-knows","title":"The Father Knows","era":"2018-2019&","path":"2018-2019&/1. Winter/12.24.18.html","base":"12.24.18","sortKey":"2018-12-24","dated":true,"extras":[]},{"key":"12-31-19","slug":"12-31-19","title":"12.31.19","era":"2018-2019&","path":"2018-2019&/1. Winter/12.31.19.html","base":"12.31.19","sortKey":"2019-12-31","dated":true,"extras":[]},{"key":"desert-morning-chill","slug":"desert-morning-chill","title":"Desert Morning Chill","era":"2018-2019&","path":"2018-2019&/1. Winter/2.16.19.html","base":"2.16.19","sortKey":"2019-02-16","dated":true,"extras":[]},{"key":"on-sunday","slug":"on-sunday","title":"On Sunday","era":"2018-2019&","path":"2018-2019&/1. Winter/2.3.18.html","base":"2.3.18","sortKey":"2018-02-03","dated":true,"extras":[]},{"key":"the-eleventh-hour","slug":"the-eleventh-hour","title":"The Eleventh Hour","era":"2018-2019&","path":"2018-2019&/1. Winter/2.7.18.html","base":"2.7.18","sortKey":"2018-02-07","dated":true,"extras":[]},{"key":"friday-irony","slug":"friday-irony","title":"Friday Irony","era":"2018-2019&","path":"2018-2019&/2. Spring/3.30.18.html","base":"3.30.18","sortKey":"2018-03-30","dated":true,"extras":[]},{"key":"anxious-sounding-trees","slug":"anxious-sounding-trees","title":"Anxious Sounding Trees","era":"2018-2019&","path":"2018-2019&/2. Spring/5.11.18.html","base":"5.11.18","sortKey":"2018-05-11","dated":true,"extras":[]},{"key":"the-end-of-the-line","slug":"the-end-of-the-line","title":"The End of the Line","era":"2018-2019&","path":"2018-2019&/3. Summer/6.27.19.html","base":"6.27.19","sortKey":"2019-06-27","dated":true,"extras":[]},{"key":"looking-back-after-a-friend-dies","slug":"looking-back-after-a-friend-dies","title":"Looking Back After a Friend Dies","era":"2018-2019&","path":"2018-2019&/3. Summer/7.20.18.html","base":"7.20.18","sortKey":"2018-07-20","dated":true,"extras":[]},{"key":"muddled-soup","slug":"muddled-soup","title":"Muddled Soup","era":"2018-2019&","path":"2018-2019&/3. Summer/8.17.19.html","base":"8.17.19","sortKey":"2019-08-17","dated":true,"extras":[]},{"key":"summer-storm","slug":"summer-storm","title":"Summer Storm","era":"2018-2019&","path":"2018-2019&/3. Summer/8.20.18.html","base":"8.20.18","sortKey":"2018-08-20","dated":true,"extras":[]},{"key":"masquerade","slug":"masquerade","title":"Masquerade","era":"2018-2019&","path":"2018-2019&/4. Fall/10.31.18.html","base":"10.31.18","sortKey":"2018-10-31","dated":true,"extras":[]},{"key":"inside-a-fishs-belly","slug":"inside-a-fishs-belly","title":"Inside a Fish’s Belly","era":"2018-2019&","path":"2018-2019&/4. Fall/10.6.18.html","base":"10.6.18","sortKey":"2018-10-06","dated":true,"extras":[{"kind":"external","phrase":"Crane Prairie Reservoir"}]},{"key":"cryptic-word","slug":"cryptic-word","title":"Cryptic Word","era":"2018-2019&","path":"2018-2019&/4. Fall/12.1.18.html","base":"12.1.18","sortKey":"2018-12-01","dated":true,"extras":[]},{"key":"at-the-card-table-saturday-night","slug":"at-the-card-table-saturday-night","title":"At the card table Saturday night,","era":"2018-2019&","path":"2018-2019&/4. Fall/12.11.18.html","base":"12.11.18","sortKey":"2018-12-11","dated":true,"extras":[]},{"key":"on-the-shortest-night","slug":"on-the-shortest-night","title":"On the Shortest Night","era":"2018-2019&","path":"2018-2019&/4. Fall/12.21.18.html","base":"12.21.18","sortKey":"2018-12-21","dated":true,"extras":[]},{"key":"time-is-purposeful","slug":"time-is-purposeful","title":"Time is Purposeful","era":"2020-2021","path":"2020-2021/1. Winter/1.27.21a.html","base":"1.27.21a","sortKey":"2021-01-27a","dated":true,"extras":[]},{"key":"language-makes-more-sense","slug":"language-makes-more-sense","title":"Language Makes More Sense","era":"2020-2021","path":"2020-2021/1. Winter/1.27.21b.html","base":"1.27.21b","sortKey":"2021-01-27b","dated":true,"extras":[]},{"key":"the-drift","slug":"the-drift","title":"The Drift","era":"2020-2021","path":"2020-2021/1. Winter/1.27.21c.html","base":"1.27.21c","sortKey":"2021-01-27c","dated":true,"extras":[]},{"key":"your-song-in-the-morning","slug":"your-song-in-the-morning","title":"Your Song in the Morning","era":"2020-2021","path":"2020-2021/1. Winter/2.19.20.html","base":"2.19.20","sortKey":"2020-02-19","dated":true,"extras":[]},{"key":"its-okay-if-it-doesnt-make-sense-at-firs","slug":"its-okay-if-it-doesnt-make-sense-at-firs","title":"It’s Okay if it Doesn’t Make Sense at First","era":"2020-2021","path":"2020-2021/1. Winter/2.4.21.html","base":"2.4.21","sortKey":"2021-02-04","dated":true,"extras":[{"kind":"external","phrase":"Coming Community?"}]},{"key":"eat-to-remember","slug":"eat-to-remember","title":"Eat to Remember","era":"2020-2021","path":"2020-2021/2. Spring/4.29.21.html","base":"4.29.21","sortKey":"2021-04-29","dated":true,"extras":[]},{"key":"_2020-2021/2. Spring/4.6.21.html","slug":null,"title":"20th Century Blues","era":"2020-2021","path":"2020-2021/2. Spring/4.6.21.html","base":"4.6.21","sortKey":"2021-04-06","dated":true,"extras":[]},{"key":"the-bard-sings","slug":"the-bard-sings","title":"The Bard Sings","era":"2020-2021","path":"2020-2021/3. Summer/10.14.20.html","base":"10.14.20","sortKey":"2020-10-14","dated":true,"extras":[]},{"key":"clack-clack-clack","slug":"clack-clack-clack","title":"Clack Clack Clack","era":"2020-2021","path":"2020-2021/3. Summer/10.19.20.html","base":"10.19.20","sortKey":"2020-10-19","dated":true,"extras":[{"kind":"image","phrase":"Today's Fergus"}]},{"key":"fertile-ground","slug":"fertile-ground","title":"Fertile Ground","era":"2020-2021","path":"2020-2021/3. Summer/6.27.21.html","base":"6.27.21","sortKey":"2021-06-27","dated":true,"extras":[]},{"key":"marked-by-water","slug":"marked-by-water","title":"Marked by Water","era":"2020-2021","path":"2020-2021/3. Summer/7.4.21.html","base":"7.4.21","sortKey":"2021-07-04","dated":true,"extras":[]},{"key":"madness-at-hand","slug":"madness-at-hand","title":"Madness At-Hand","era":"2020-2021","path":"2020-2021/3. Summer/8.11.20.html","base":"8.11.20","sortKey":"2020-08-11","dated":true,"extras":[]},{"key":"shooting-marbles","slug":"shooting-marbles","title":"Shooting Marbles","era":"2020-2021","path":"2020-2021/3. Summer/8.30.20.html","base":"8.30.20","sortKey":"2020-08-30","dated":true,"extras":[]},{"key":"in-and-out-of-consciousness","slug":"in-and-out-of-consciousness","title":"In and Out of Consciousness","era":"2020-2021","path":"2020-2021/4. Fall/12.13.20.html","base":"12.13.20","sortKey":"2020-12-13","dated":true,"extras":[]},{"key":"_2022-2023+/1. Winter/12.28.22.html","slug":null,"title":"Year of the Rabbit","era":"2022-2023+","path":"2022-2023+/1. Winter/12.28.22.html","base":"12.28.22","sortKey":"2022-12-28","dated":true,"extras":[]},{"key":"vulture-tree","slug":"vulture-tree","title":"Vulture Tree","era":"2022-2023+","path":"2022-2023+/3. Summer/5.6.23.html","base":"5.6.23","sortKey":"2023-05-06","dated":true,"extras":[]},{"key":"_2022-2023+/3. Summer/7.9.23.html","slug":null,"title":"Every Poem is an Aged Memory","era":"2022-2023+","path":"2022-2023+/3. Summer/7.9.23.html","base":"7.9.23","sortKey":"2023-07-09","dated":true,"extras":[]},{"key":"_2022-2023+/3. Summer/8.25.23.html","slug":null,"title":"Documented a Day Before It Occurred","era":"2022-2023+","path":"2022-2023+/3. Summer/8.25.23.html","base":"8.25.23","sortKey":"2023-08-25","dated":true,"extras":[]},{"key":"_2024-2025=/2. Spring/3.30.25.html","slug":null,"title":"A Morning Without You","era":"2024-2025=","path":"2024-2025=/2. Spring/3.30.25.html","base":"3.30.25","sortKey":"2025-03-30","dated":true,"extras":[]},{"key":"_2024-2025=/2. Spring/4.12.24.html","slug":null,"title":"Omen of the Dead, Belly-Up Hog","era":"2024-2025=","path":"2024-2025=/2. Spring/4.12.24.html","base":"4.12.24","sortKey":"2024-04-12","dated":true,"extras":[]},{"key":"_2024-2025=/2. Spring/4.14.25.html","slug":null,"title":"Unison Prayer of Confession","era":"2024-2025=","path":"2024-2025=/2. Spring/4.14.25.html","base":"4.14.25","sortKey":"2025-04-14","dated":true,"extras":[]},{"key":"making-up-after-decades-together","slug":"making-up-after-decades-together","title":"Making Up After Decades Together","era":"2024-2025=","path":"2024-2025=/4. Fall/10.10.25.html","base":"10.10.25","sortKey":"2025-10-10","dated":true,"extras":[]},{"key":"_2024-2025=/4. Fall/11.21.24.html","slug":null,"title":"Winter is Coming","era":"2024-2025=","path":"2024-2025=/4. Fall/11.21.24.html","base":"11.21.24","sortKey":"2024-11-21","dated":true,"extras":[]}],"edges":[{"from":"12-31-19","to":"you-and-i","phrase":"final hours"},{"from":"12-31-19","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"the coming future"},{"from":"by-the-numbers","to":"pagus-trip","phrase":"polis"},{"from":"clack-clack-clack","to":"the-birth-of-tragedy","phrase":"fate"},{"from":"clack-clack-clack","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"pervasive concept"},{"from":"cryptic-word","to":"the-party-inside","phrase":"metaphysics"},{"from":"desert-morning-chill","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"outside lamp"},{"from":"fertile-ground","to":"osiris-brings-the-drip-drop-drip","phrase":"fertile"},{"from":"fertile-ground","to":"snafu","phrase":"maggots"},{"from":"floating-chrysanthemums","to":"how-soon-we-forget","phrase":"swim"},{"from":"how-soon-we-forget","to":"12-31-19","phrase":"promise of an aspiring year"},{"from":"i-write-poems-written-for-my-loves","to":"quantum-nothingness","phrase":"burning flame-red"},{"from":"in-and-out-of-consciousness","to":"clack-clack-clack","phrase":"in front of a screen"},{"from":"in-and-out-of-consciousness","to":"le-maison-du-ren-magritte","phrase":"lamp light"},{"from":"in-and-out-of-consciousness","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"succumbing to sleep"},{"from":"in-and-out-of-consciousness","to":"making-up-after-decades-together","phrase":"warm feet under the covers"},{"from":"in-and-out-of-consciousness","to":"transcendent-meaning-in-a-flooded-city","phrase":"willows use the breeze to talk to each other"},{"from":"in-spring","to":"by-the-numbers","phrase":"Only the dog knows"},{"from":"inside-a-fishs-belly","to":"muddled-soup","phrase":"the sun’s heat"},{"from":"its-okay-if-it-doesnt-make-sense-at-firs","to":"the-party-inside","phrase":"fever dreams"},{"from":"its-okay-if-it-doesnt-make-sense-at-firs","to":"in-and-out-of-consciousness","phrase":"flashes and glimpses of your REM state"},{"from":"its-okay-if-it-doesnt-make-sense-at-firs","to":"vulture-tree","phrase":"prophetic vision"},{"from":"its-okay-if-it-doesnt-make-sense-at-firs","to":"nostalgia","phrase":"puppies"},{"from":"its-okay-if-it-doesnt-make-sense-at-firs","to":"madness-at-hand","phrase":"semblance"},{"from":"its-okay-if-it-doesnt-make-sense-at-firs","to":"scenes-from-the-park","phrase":"the scene becomes a stage"},{"from":"language-makes-more-sense","to":"the-drift","phrase":"drift"},{"from":"le-maison-du-ren-magritte","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"creation"},{"from":"le-maison-du-ren-magritte","to":"your-song-in-the-morning","phrase":"her"},{"from":"madness-at-hand","to":"trouble-sleeping-as-a-child","phrase":"the devil"},{"from":"marked-by-water","to":"language-makes-more-sense","phrase":"drift"},{"from":"marsh-voices","to":"osiris-brings-the-drip-drop-drip","phrase":"black"},{"from":"masquerade","to":"in-and-out-of-consciousness","phrase":"Sleep grips you"},{"from":"muddled-soup","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"dead-end loops"},{"from":"nostalgia","to":"on-the-shortest-night","phrase":"Solstices"},{"from":"nostalgia","to":"the-eleventh-hour","phrase":"blue moon"},{"from":"on-sunday","to":"transcendent-meaning-in-a-flooded-city","phrase":"godforsaken"},{"from":"on-the-shortest-night","to":"on-sunday","phrase":"John 3:16"},{"from":"osiris-brings-the-drip-drop-drip","to":"pagus-trip","phrase":"Rains too long in coming"},{"from":"pagus-trip","to":"the-end-of-the-line","phrase":"Dry fish flake on the riverbed"},{"from":"paris","to":"scenes-from-the-park","phrase":"Butte Chaumont"},{"from":"paris","to":"how-soon-we-forget","phrase":"first days at the turn of the century"},{"from":"paris","to":"quite-like-my-love-for-you","phrase":"spring lover"},{"from":"people-in-the-street","to":"clack-clack-clack","phrase":"constructs of purchased meaning"},{"from":"prey-to-the-weather","to":"marsh-voices","phrase":"falls"},{"from":"prey-to-the-weather","to":"fertile-ground","phrase":"rabbit"},{"from":"quantum-nothingness","to":"nostalgia","phrase":"the dog"},{"from":"quite-like-my-love-for-you","to":"time-in-love","phrase":"When I am yours"},{"from":"scenes-from-the-park","to":"the-bard-sings","phrase":"Bob Dylan"},{"from":"scenes-from-the-park","to":"marsh-voices","phrase":"grass"},{"from":"scenes-from-the-park","to":"fertile-ground","phrase":"wild eyes"},{"from":"scenes-from-the-park","to":"in-and-out-of-consciousness","phrase":"willows acknowledge"},{"from":"shooting-marbles","to":"pissing-diptych","phrase":"History is still made"},{"from":"snafu","to":"clack-clack-clack","phrase":"half-sleep to waking-dream"},{"from":"snafu","to":"pissing-diptych","phrase":"repetitive repetition"},{"from":"summer-storm","to":"transcendent-meaning-in-a-flooded-city","phrase":"cool breeze"},{"from":"summer-storm","to":"quantum-nothingness","phrase":"quantum profound"},{"from":"summer-storm","to":"snafu","phrase":"snap-fire"},{"from":"the-age-of-old-men-loitering","to":"you-and-i","phrase":"pull a star in upon itself"},{"from":"the-age-of-old-men-loitering","to":"fertile-ground","phrase":"what men desire"},{"from":"the-bard-sings","to":"i-write-poems-written-for-my-loves","phrase":"in that space"},{"from":"the-bard-sings","to":"in-spring","phrase":"rhapsody of spring"},{"from":"the-bard-sings","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"the parsing machines will never catch"},{"from":"the-bard-sings","to":"prey-to-the-weather","phrase":"winter-gust"},{"from":"the-birth-of-tragedy","to":"le-maison-du-ren-magritte","phrase":"Lovers lie at ends"},{"from":"the-drift","to":"time-is-purposeful","phrase":"a multitude"},{"from":"the-eleventh-hour","to":"12-31-19","phrase":"bleached-white rock"},{"from":"the-eleventh-hour","to":"the-age-of-old-men-loitering","phrase":"gibbous and crescent"},{"from":"the-end-of-the-line","to":"you-and-i","phrase":"our extinction"},{"from":"the-end-of-the-line","to":"nostalgia","phrase":"solstice"},{"from":"the-party-inside","to":"paris","phrase":"the 21st century"},{"from":"time-in-love","to":"floating-chrysanthemums","phrase":"cry aloud"},{"from":"time-in-love","to":"masquerade","phrase":"my lips feel your warm breath"},{"from":"time-in-love","to":"madness-at-hand","phrase":"seems"},{"from":"time-is-purposeful","to":"anxious-sounding-trees","phrase":"cicada in the trees"},{"from":"transcendent-meaning-in-a-flooded-city","to":"snafu","phrase":"We circle"},{"from":"transcendent-meaning-in-a-flooded-city","to":"cryptic-word","phrase":"a soothing horn plays"},{"from":"transcendent-meaning-in-a-flooded-city","to":"people-in-the-street","phrase":"transcendent meaning"},{"from":"trouble-sleeping-as-a-child","to":"floating-chrysanthemums","phrase":"red devil"},{"from":"vulture-tree","to":"summer-storm","phrase":"electricity"},{"from":"you-and-i","to":"on-the-shortest-night","phrase":"you and I"},{"from":"your-song-in-the-morning","to":"the-eleventh-hour","phrase":"my silent question"},{"from":"your-song-in-the-morning","to":"its-okay-if-it-doesnt-make-sense-at-firs","phrase":"you whisper found comprehension"}]}</script>
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById('dataset').textContent);
+  const poems = DATA.poems;
+  const edges = DATA.edges;
+  const byKey = new Map(poems.map((p) => [p.key, p]));
+
+  const ERA_ORDER = ['$Pre-2010', '2016-2017!', '2018-2019&', '2020-2021', '2022-2023+', '2024-2025='];
+  const ERA_LABEL = {
+    '$Pre-2010': 'Before 2010',
+    '2016-2017!': '2016–2017',
+    '2018-2019&': '2018–2019',
+    '2020-2021': '2020–2021',
+    '2022-2023+': '2022–2023',
+    '2024-2025=': '2024–2025',
+  };
+
+  const SITE_ROOT = '';
+  function siteHref(p) {
+    return SITE_ROOT + p.path.split('/').map(encodeURIComponent).join('/');
+  }
+
+  // ---- stats -------------------------------------------------------------
+  const connectedKeys = new Set();
+  for (const e of edges) { connectedKeys.add(e.from); connectedKeys.add(e.to); }
+  const isolatedCount = poems.filter((p) => !connectedKeys.has(p.key)).length;
+  const years = poems.map((p) => Number(p.sortKey.slice(0, 4))).filter((y) => y >= 1990 && y <= 2030);
+  document.getElementById('stat-poems').textContent = poems.length;
+  document.getElementById('stat-links').textContent = edges.length;
+  document.getElementById('stat-isolated').textContent = isolatedCount;
+  document.getElementById('stat-eras').textContent = ERA_ORDER.length;
+  document.getElementById('stat-span').textContent = years.length
+    ? Math.min(...years) + '–' + Math.max(...years)
+    : '';
+
+  // Written from the data rather than typed into the copy: every sync
+  // changes these, and a dek that quietly goes stale is worse than one
+  // that never named a number.
+  const span = years.length ? Math.max(...years) - Math.min(...years) : 0;
+  document.getElementById('dek-poems').textContent =
+    poems.length + ' poems' + (span ? ', ' + span + ' years' : '');
+  document.getElementById('dek-links').textContent = edges.length + ' deliberate threads';
+
+  // ---- build the shelves --------------------------------------------------
+  const shelves = document.getElementById('shelves');
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'edges');
+  svg.setAttribute('aria-hidden', 'true');
+  shelves.appendChild(svg);
+
+  const byEra = new Map(ERA_ORDER.map((e) => [e, []]));
+  for (const p of poems) (byEra.get(p.era) || byEra.set(p.era, []).get(p.era)).push(p);
+
+  for (const era of ERA_ORDER) {
+    const list = (byEra.get(era) || []).slice().sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+    if (!list.length) continue;
+
+    const section = document.createElement('section');
+    section.className = 'era';
+    section.dataset.era = era;
+
+    const head = document.createElement('div');
+    head.className = 'era-head';
+    head.innerHTML =
+      '<h2>' + ERA_LABEL[era] + '</h2>' +
+      '<span class="count">' + list.length + (list.length === 1 ? ' poem' : ' poems') + '</span>' +
+      '<span class="era-rule"></span>';
+    section.appendChild(head);
+
+    const cards = document.createElement('div');
+    cards.className = 'cards';
+
+    for (const p of list) {
+      const a = document.createElement('a');
+      a.className = 'card' + (connectedKeys.has(p.key) ? '' : ' isolated');
+      a.dataset.key = p.key;
+      a.href = siteHref(p);
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.innerHTML =
+        '<span class="t">' + escapeHtml(p.title) + '</span>' +
+        '<span class="d">' + escapeHtml(dateLabel(p)) + '</span>';
+      cards.appendChild(a);
+    }
+    section.appendChild(cards);
+    shelves.appendChild(section);
+  }
+
+  function dateLabel(p) {
+    if (p.dated && /^\d{4}-\d{2}-\d{2}/.test(p.sortKey)) {
+      const [y, m, d] = p.sortKey.slice(0, 10).split('-');
+      return m + '/' + d + '/' + y.slice(2);
+    }
+    return p.base.replace(/^Circa\s*/, 'c. ');
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // ---- edge geometry --------------------------------------------------
+  const cardEls = new Map();
+  shelves.querySelectorAll('.card').forEach((el) => cardEls.set(el.dataset.key, el));
+
+  const adjacency = new Map(); // key -> [{other, phrase, dir}]
+  for (const p of poems) adjacency.set(p.key, []);
+  for (const e of edges) {
+    if (!byKey.has(e.from) || !byKey.has(e.to)) continue;
+    adjacency.get(e.from).push({ other: e.to, phrase: e.phrase, dir: 'out' });
+    adjacency.get(e.to).push({ other: e.from, phrase: e.phrase, dir: 'in' });
+  }
+
+  // Where the straight run between two card centres crosses the border
+  // of one of them. Lines are drawn between these points rather than
+  // centre to centre, because the cards sit above the drawing: an
+  // arrowhead at a centre would be hidden underneath the card it points
+  // at. "pad" backs the point off the border to leave room for the head.
+  function borderPoint(r, containerRect, towardX, towardY, pad) {
+    const cx = r.left + r.width / 2 - containerRect.left;
+    const cy = r.top + r.height / 2 - containerRect.top;
+    let dx = towardX - cx, dy = towardY - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    dx /= len; dy /= len;
+    const tx = Math.abs(dx) > 1e-6 ? (r.width / 2) / Math.abs(dx) : Infinity;
+    const ty = Math.abs(dy) > 1e-6 ? (r.height / 2) / Math.abs(dy) : Infinity;
+    const t = Math.min(tx, ty) + pad;
+    return { x: cx + dx * t, y: cy + dy * t };
+  }
+
+  // One marker per direction. Their fill is set from the CSS variables at
+  // focus time rather than hard-coded, so both themes get the right head.
+  function makeDefs() {
+    const defs = document.createElementNS(svgNS, 'defs');
+    for (const id of ['arrow-out', 'arrow-in']) {
+      const marker = document.createElementNS(svgNS, 'marker');
+      marker.setAttribute('id', id);
+      marker.setAttribute('viewBox', '0 0 10 10');
+      marker.setAttribute('refX', '9');
+      marker.setAttribute('refY', '5');
+      marker.setAttribute('markerWidth', '5');
+      marker.setAttribute('markerHeight', '5');
+      marker.setAttribute('orient', 'auto-start-reverse');
+      marker.setAttribute('markerUnits', 'strokeWidth');
+      const head = document.createElementNS(svgNS, 'path');
+      head.setAttribute('d', 'M 0,1.5 L 10,5 L 0,8.5 z');
+      head.setAttribute('class', 'head-' + id);
+      marker.appendChild(head);
+      defs.appendChild(marker);
+    }
+    return defs;
+  }
+
+  let pathEls = [];
+  function layoutEdges() {
+    const rect = shelves.getBoundingClientRect();
+    svg.setAttribute('width', rect.width);
+    svg.setAttribute('height', rect.height);
+    svg.setAttribute('viewBox', '0 0 ' + rect.width + ' ' + rect.height);
+    svg.textContent = '';
+    svg.appendChild(makeDefs());
+    pathEls = [];
+
+    for (const e of edges) {
+      const a = cardEls.get(e.from), b = cardEls.get(e.to);
+      if (!a || !b) continue;
+      const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      const acx = ra.left + ra.width / 2 - rect.left, acy = ra.top + ra.height / 2 - rect.top;
+      const bcx = rb.left + rb.width / 2 - rect.left, bcy = rb.top + rb.height / 2 - rect.top;
+
+      // Leave the source at its border and stop short of the target's,
+      // so the head lands on the edge of the box it points at.
+      const from = borderPoint(ra, rect, bcx, bcy, 1);
+      const to = borderPoint(rb, rect, acx, acy, 4);
+      const x1 = from.x, y1 = from.y, x2 = to.x, y2 = to.y;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.hypot(dx, dy);
+      // Only a genuinely degenerate pair is skipped. An earlier guard
+      // dropped anything under 12px, which silently lost every citation
+      // between two cards sitting side by side - seven of them, and the
+      // map looked perfectly reasonable without them.
+      if (!(len > 0.5)) continue;
+      // Neighbours need a deep bow rather than a short straight hop:
+      // it buys the curve enough length to carry an arrowhead, and
+      // reads as a deliberate hop rather than a smudge between boxes.
+      const bow = len < 48 ? 26 : Math.min(len * 0.18, 70);
+      const nx = -dy / len, ny = dx / len;
+      const c1x = x1 + dx * 0.33 + nx * bow, c1y = y1 + dy * 0.33 + ny * bow;
+      const c2x = x1 + dx * 0.66 + nx * bow, c2y = y1 + dy * 0.66 + ny * bow;
+
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', 'M ' + x1 + ',' + y1 + ' C ' + c1x + ',' + c1y + ' ' + c2x + ',' + c2y + ' ' + x2 + ',' + y2);
+      path.setAttribute('fill', 'none');
+      path.dataset.from = e.from;
+      path.dataset.to = e.to;
+      path.setAttribute('class', 'edge-path');
+      svg.appendChild(path);
+      pathEls.push(path);
+    }
+    resetEdgeStyle();
+  }
+
+  function resetEdgeStyle() {
+    const faint = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();
+    for (const p of pathEls) {
+      p.setAttribute('stroke', faint);
+      p.setAttribute('stroke-width', '1');
+      p.setAttribute('stroke-opacity', '0.22');
+      // No heads at rest: seventy-odd arrowheads at once is a hedge, not
+      // a map. Direction is what focusing a poem is for.
+      p.removeAttribute('marker-end');
+    }
+  }
+
+  // ---- hover / focus interaction ---------------------------------------
+  let pinned = null;
+
+  function showDetail(key) {
+    const p = byKey.get(key);
+    const detail = document.getElementById('detail');
+    const conns = adjacency.get(key) || [];
+    const outs = conns.filter((c) => c.dir === 'out');
+    const ins = conns.filter((c) => c.dir === 'in');
+
+    const list = (arr, arrow) =>
+      arr.length
+        ? '<ul>' + arr.map((c) => '<li><span class="phrase">“' + escapeHtml(c.phrase) + '”</span> <span class="arrow">' + arrow + '</span> <span class="to">' + escapeHtml(byKey.get(c.other).title) + '</span></li>').join('') + '</ul>'
+        : '<p class="dt-empty">none</p>';
+
+    const extrasHtml = (p.extras || []).length
+      ? '<ul>' + p.extras.map((x) => '<li><span class="tag">' + x.kind + '</span><span class="phrase">“' + escapeHtml(x.phrase) + '”</span></li>').join('') + '</ul>'
+      : '';
+
+    detail.innerHTML =
+      '<div class="detail-inner">' +
+        '<div>' +
+          '<p class="dt-title">' + escapeHtml(p.title) + '</p>' +
+          '<p class="dt-meta">' + ERA_LABEL[p.era] + ' &middot; ' + escapeHtml(dateLabel(p)) +
+            (connectedKeys.has(p.key) ? '' : (p.slug ? ' &middot; no cross-references yet' : ' &middot; not yet in the ledger')) + '</p>' +
+          '<a class="dt-open" href="' + siteHref(p) + '" target="_blank" rel="noopener">open the poem ↗</a>' +
+        '</div>' +
+        '<div class="dt-cols">' +
+          '<div class="dt-col out"><h4>leads to</h4>' + list(outs, '→') + '</div>' +
+          '<div class="dt-col in"><h4>referenced by</h4>' + list(ins, '←') + '</div>' +
+          (extrasHtml ? '<div class="dt-col"><h4>also links out</h4>' + extrasHtml + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    detail.classList.add('show');
+  }
+
+  function hideDetail() {
+    document.getElementById('detail').classList.remove('show');
+  }
+
+  function focusPoem(key) {
+    shelves.classList.add('active');
+    const conns = adjacency.get(key) || [];
+    const outTo = new Set(conns.filter((c) => c.dir === 'out').map((c) => c.other));
+    const inFrom = new Set(conns.filter((c) => c.dir === 'in').map((c) => c.other));
+    for (const [k, el] of cardEls) {
+      el.classList.toggle('is-origin', k === key);
+      el.classList.toggle('is-connected', outTo.has(k) || inFrom.has(k));
+      el.classList.toggle('is-out', outTo.has(k));
+      el.classList.toggle('is-in', inFrom.has(k));
+    }
+
+    // Colour the heads to match their lines. Read from the variables each
+    // time so a theme change is picked up rather than baked in at load.
+    const out = cssVar('--accent'), incoming = cssVar('--incoming'), faint = cssVar('--muted');
+    for (const el of svg.querySelectorAll('.head-arrow-out')) el.setAttribute('fill', out);
+    for (const el of svg.querySelectorAll('.head-arrow-in')) el.setAttribute('fill', incoming);
+
+    for (const p of pathEls) {
+      // Brown leads away from this poem, violet arrives at it. The head
+      // is at the far end either way, so it always points the direction
+      // the citation actually runs.
+      const leads = p.dataset.from === key;
+      const cites = p.dataset.to === key;
+      p.setAttribute('stroke', leads ? out : cites ? incoming : faint);
+      p.setAttribute('stroke-width', leads || cites ? '2.25' : '1');
+      p.setAttribute('stroke-opacity', leads || cites ? '0.9' : '0.08');
+      if (leads || cites) {
+        p.setAttribute('marker-end', 'url(#' + (leads ? 'arrow-out' : 'arrow-in') + ')');
+        svg.appendChild(p); // bring to front
+      } else {
+        p.removeAttribute('marker-end');
+      }
+    }
+    showDetail(key);
+  }
+
+  function clearFocus() {
+    if (pinned) return;
+    shelves.classList.remove('active');
+    for (const [, el] of cardEls) { el.classList.remove('is-origin', 'is-connected', 'is-out', 'is-in'); }
+    resetEdgeStyle();
+    hideDetail();
+  }
+
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  shelves.addEventListener('pointerover', (ev) => {
+    const card = ev.target.closest('.card');
+    if (card) focusPoem(card.dataset.key);
+  });
+  shelves.addEventListener('pointerout', (ev) => {
+    const toCard = ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.card');
+    if (!toCard) clearFocus();
+  });
+  shelves.addEventListener('focusin', (ev) => {
+    const card = ev.target.closest('.card');
+    if (card) focusPoem(card.dataset.key);
+  });
+  shelves.addEventListener('focusout', (ev) => {
+    const toCard = ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.card');
+    if (!toCard) clearFocus();
+  });
+  shelves.addEventListener('click', (ev) => {
+    const card = ev.target.closest('.card');
+    if (card) { pinned = card.dataset.key; focusPoem(pinned); }
+  });
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape' && pinned) { pinned = null; clearFocus(); }
+  });
+  document.addEventListener('click', (ev) => {
+    if (pinned && !ev.target.closest('.card') && !ev.target.closest('#detail')) { pinned = null; clearFocus(); }
+  });
+
+  // ---- search ------------------------------------------------------------
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { shelves.classList.remove('searching'); cardEls.forEach((el) => el.classList.remove('match')); return; }
+    shelves.classList.add('searching');
+    for (const p of poems) {
+      const hay = (p.title + ' ' + (adjacency.get(p.key) || []).map((c) => c.phrase).join(' ') + ' ' + (p.extras || []).map((x) => x.phrase).join(' ')).toLowerCase();
+      cardEls.get(p.key).classList.toggle('match', hay.includes(q));
+    }
+  });
+
+  // ---- layout lifecycle ---------------------------------------------------
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(layoutEdges, 120); });
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(() => requestAnimationFrame(layoutEdges)); }
+  requestAnimationFrame(layoutEdges);
+})();
+</script>
