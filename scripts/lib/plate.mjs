@@ -66,6 +66,7 @@ function attrHref(fromDir, toPath) {
  *   focus?: number|null,      // 0..1 across, where the magnified view frames (zoomOn: click)
  *   scroll?: number|null,     // 0..1, how far down to open the view (zoomOn: load)
  *   overlay?: { image: string, href: string, alt: string } | null,
+ *   embed?: { src: string, frame: 'iframe'|'image' } | null,  // a picture on another server
  * }} plate
  * @returns {string} the finished page.
  */
@@ -79,9 +80,11 @@ export function renderPlate({
     focus = null,
     scroll = null,
     overlay = null,
+    embed = null,
 }) {
     const dir = path.posix.dirname(platePath(plateSlug(asset)));
-    const src = attrHref(dir, asset);
+    const src = embed ? escapeHtml(embed.src) : attrHref(dir, asset);
+    const framed = embed?.frame === 'iframe';
     const safeTitle = escapeHtml(title);
     const backHref = back ? attrHref(dir, back) : attrHref(dir, 'index.html');
 
@@ -164,6 +167,21 @@ export function renderPlate({
             width: auto;
             height: auto;
         }
+${framed ? `
+        /*
+         * A picture on someone else's server, in a frame. Full bleed,
+         * because its proportions are not knowable from here - there is
+         * nothing to shrink-wrap the way a local image is shrink-wrapped.
+         */
+        .stage { position: absolute; inset: 0; max-width: none; max-height: none; }
+        .embed { display: block; width: 100%; height: 100%; border: 0; }
+        /*
+         * The whole surface is the button. A click inside a cross-origin
+         * frame never reaches this page, so the link cannot wrap the frame
+         * the way it wraps an image - it has to lie on top of it.
+         */
+        .cover { position: absolute; inset: 0; display: block; cursor: pointer; }
+        .cover:focus-visible { outline: 2px solid #58a6ff; outline-offset: -4px; }` : ''}
 ${zoomOnLoad ? `
         /* Zoomed: fill beyond the viewport and let the page scroll. */
         body { display: block; overflow: auto; }
@@ -208,9 +226,11 @@ ${zoomOnClick ? `
 </head>
 <body>
     <div class="stage">
-        <a class="plate" id="back" href="${backHref}">
-            <img src="${src}" alt="${safeTitle}">
-        </a>${overlayHtml}
+${framed ? `        <iframe class="embed" src="${src}" title="${safeTitle}"
+                referrerpolicy="no-referrer" sandbox loading="lazy"></iframe>
+        <a class="cover" id="back" href="${backHref}" aria-label="${safeTitle}"></a>` : `        <a class="plate" id="back" href="${backHref}">
+            <img src="${src}" alt="${safeTitle}"${embed ? ' referrerpolicy="no-referrer"' : ''}>
+        </a>`}${overlayHtml}
     </div>
     <script>
 ${pinned ? `        // This plate's destination was chosen deliberately, so the

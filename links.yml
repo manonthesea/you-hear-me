@@ -95,6 +95,21 @@ assets:
       alt: Yeats
       href: index.html
 
+# Pictures that live on someone else's server. Shown on a plate of our
+# own, so a click can lead somewhere in the collection instead of
+# stranding the reader on a bare image on a strange site.
+#
+# "frame: image" draws the picture the way a local one is drawn - whole,
+# centred on black. "frame: iframe" puts the URL in an actual frame,
+# which for a bare image file means the browser renders it at full size
+# and the plate shows a cropped corner of it.
+embeds:
+  tomb-of-the-wrestlers:
+    title: The Tomb of the Wrestlers
+    src: "https://www.renemagritte.org/assets/img/paintings/the-tomb-of-the-wrestlers.jpg"
+    frame: image
+    to: le-maison-du-ren-magritte
+
 links:
   - { from: 12-31-19, phrase: "final hours", to: you-and-i }
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }
@@ -170,7 +185,7 @@ links:
   - { from: the-end-of-the-line, phrase: "our extinction", to: you-and-i }
   - { from: the-end-of-the-line, phrase: "solstice", to: nostalgia }
   - { from: the-party-inside, phrase: "the 21st century", to: paris }
-  - { from: the-party-inside, phrase: "the red rose that fills the room", href: "https://www.renemagritte.org/assets/img/paintings/the-tomb-of-the-wrestlers.jpg" }
+  - { from: the-party-inside, phrase: "the red rose that fills the room", embed: tomb-of-the-wrestlers }
   - { from: time-in-love, phrase: "cry aloud", to: floating-chrysanthemums }
   - { from: time-in-love, phrase: "my lips feel your warm breath", to: masquerade }
   - { from: time-in-love, phrase: "seems", to: madness-at-hand }

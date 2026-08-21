@@ -251,3 +251,82 @@ test('a focus part-way across is placed at the middle of the screen', () => {
 
     assert.match(page, /left \+ 0\.75 \* after\.width - window\.innerWidth \/ 2/);
 });
+
+// --- a picture on someone else's server ---------------------------------
+
+const embedPlate = (over = {}) =>
+    renderPlate({
+        asset: 'tomb-of-the-wrestlers',
+        title: 'The Tomb of the Wrestlers',
+        back: '$Pre-2010/Circa 2003.html',
+        pinned: true,
+        embed: { src: 'https://example.org/a b.jpg?x=1&y=2', frame: 'iframe' },
+        ...over,
+    });
+
+test('a framed embed puts the remote URL in an iframe', () => {
+    const page = embedPlate();
+
+    assert.match(page, /<iframe class="embed" src="https:\/\/example\.org\/a b\.jpg\?x=1&amp;y=2"/);
+    assert.doesNotMatch(page, /<img src="https/);
+});
+
+test('the URL is escaped but not re-encoded', () => {
+    // It may already carry percent escapes of its own; encoding again
+    // would double them and fetch a URL nobody published.
+    const page = embedPlate({ embed: { src: 'https://e.org/a%20b.jpg', frame: 'iframe' } });
+
+    assert.match(page, /src="https:\/\/e\.org\/a%20b\.jpg"/);
+});
+
+test('the click target lies on top of the frame, not around it', () => {
+    // A click inside a cross-origin frame never reaches this page, so a
+    // link wrapping the iframe would simply never fire. This is the
+    // whole reason the markup differs from an image plate.
+    const page = embedPlate();
+
+    assert.match(page, /<a class="cover" id="back" href="\.\.\/\.\.\/\$Pre-2010\/Circa%20\d+\.html"/);
+    assert.match(page, /\.cover \{ position: absolute; inset: 0;/);
+});
+
+test('the cover is reachable and named for a screen reader', () => {
+    // It has no text of its own - it is an empty box over a picture.
+    const page = embedPlate();
+
+    assert.match(page, /<a class="cover"[^>]*aria-label="The Tomb of the Wrestlers"/);
+    assert.match(page, /\.cover:focus-visible/);
+});
+
+test('third-party content is sandboxed and sent no referrer', () => {
+    // sandbox with no allowances: the framed page cannot run scripts or
+    // navigate this window. no-referrer both keeps the reader's page to
+    // itself and gets past the commoner sort of hotlink check.
+    const page = embedPlate();
+
+    assert.match(page, /sandbox/);
+    assert.match(page, /referrerpolicy="no-referrer"/);
+});
+
+test('a framed embed fills the page, having no size of its own to keep', () => {
+    // A local image is shrink-wrapped by .stage; a cross-origin frame's
+    // proportions cannot be measured from here, so there is nothing to
+    // wrap.
+    const page = embedPlate();
+
+    assert.match(page, /\.stage \{ position: absolute; inset: 0;/);
+    assert.match(page, /\.embed \{ display: block; width: 100%; height: 100%; border: 0; \}/);
+});
+
+test('frame: image draws the remote picture as an ordinary plate', () => {
+    // Same page as a local image plate, only the src points elsewhere -
+    // so it is centred on black at its own size, and X-Frame-Options
+    // cannot refuse it.
+    const page = embedPlate({ embed: { src: 'https://example.org/tomb.jpg', frame: 'image' } });
+
+    assert.match(page, /<a class="plate" id="back"[^>]*>\s*<img src="https:\/\/example\.org\/tomb\.jpg"/);
+    assert.doesNotMatch(page, /<iframe/);
+});
+
+test('an ordinary plate grows no iframe', () => {
+    assert.doesNotMatch(plate(), /<iframe|class="cover"/);
+});
