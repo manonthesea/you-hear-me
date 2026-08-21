@@ -76,6 +76,12 @@ assets:
     title: Patton on the Rhine
     to: snafu
 
+  # The kamikaze photograph the poem is named for, with the
+  # chrysanthemums painted back into it. Clicking returns the reader to
+  # the poem, which is the default and so needs nothing said here.
+  "floating-chrysanthemums.jpg":
+    title: Floating Chrysanthemums
+
   "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
     title: Who Goes with Fergus?
     overlay:
@@ -94,7 +100,7 @@ links:
   - { from: desert-morning-chill, phrase: "outside lamp", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: fertile-ground, phrase: "fertile", to: osiris-brings-the-drip-drop-drip }
   - { from: fertile-ground, phrase: "maggots", to: snafu }
-  - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", href: "https://www.ww2online.org/image/kamikaze-plane-falling-out-flak-filled-sky-coast-okinawa-japan-1945" }
+  - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
   - { from: floating-chrysanthemums, phrase: "swim", to: how-soon-we-forget }
   - { from: how-soon-we-forget, phrase: "promise of an aspiring year", to: 12-31-19 }
   - { from: i-write-poems-written-for-my-loves, phrase: "burning flame-red", to: quantum-nothingness }
