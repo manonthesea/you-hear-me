@@ -124,6 +124,7 @@ links:
   - { from: by-the-numbers, phrase: "pagus borderlands", href: "https://www.earthwidemoth.com/blog/2006/07/27/vitanza-seeing/" }
   - { from: by-the-numbers, phrase: "polis", to: pagus-trip }
   - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" }
+  - { from: clack-clack-clack, phrase: "fate", to: the-birth-of-tragedy }
   - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }
   - { from: desert-morning-chill, phrase: "outside lamp", to: its-okay-if-it-doesnt-make-sense-at-firs }
