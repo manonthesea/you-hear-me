@@ -63,6 +63,7 @@ function attrHref(fromDir, toPath) {
  *   pinned?: boolean,         // true when that destination was chosen, not inferred
  *   zoom?: number|null,       // magnification, 1 being no magnification
  *   zoomOn?: 'load'|'click',  // magnified from the outset, or on the first click
+ *   focus?: number|null,      // 0..1 across, where the magnified view frames (zoomOn: click)
  *   scroll?: number|null,     // 0..1, how far down to open the view (zoomOn: load)
  *   overlay?: { image: string, href: string, alt: string } | null,
  * }} plate
@@ -75,6 +76,7 @@ export function renderPlate({
     pinned = false,
     zoom = null,
     zoomOn = 'load',
+    focus = null,
     scroll = null,
     overlay = null,
 }) {
@@ -93,6 +95,19 @@ export function renderPlate({
     const magnifies = typeof zoom === 'number' && zoom > 1;
     const zoomOnClick = magnifies && zoomOn === 'click';
     const zoomOnLoad = magnifies && !zoomOnClick;
+
+    // Across, the magnified view either follows the click like the
+    // vertical does, or - when the picture has a subject that is not in
+    // the middle - frames a fixed fraction of the width instead. Down it
+    // always follows the click.
+    const across =
+        focus === null
+            ? `                    // Across and down alike, the point clicked stays put.
+                    left + fx * after.width - anchorX`
+            : `                    // Across, the view is framed at ${focus} of the way over
+                    // whatever the reader clicked, and centred on it. scrollTo
+                    // clamps, so 0 simply rests against the left edge.
+                    left + ${focus} * after.width - window.innerWidth / 2`;
 
     // Positioned against the image rather than the window, so the amount
     // of overlap stays the same whatever size the screen is. Percentages
@@ -255,11 +270,12 @@ ${zoomOnClick ? `        // Click once to magnify, again to follow the link.
                 document.body.classList.add('zoomed');
                 magnified = true;
 
-                // Put the same point of the picture back under the cursor.
                 const after = image.getBoundingClientRect();
+                const left = after.left + window.scrollX;
+                const top = after.top + window.scrollY;
                 window.scrollTo(
-                    after.left + window.scrollX + fx * after.width - anchorX,
-                    after.top + window.scrollY + fy * after.height - anchorY
+${across},
+                    top + fy * after.height - anchorY
                 );
             });
         })();` : ''}

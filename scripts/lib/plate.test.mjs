@@ -181,7 +181,8 @@ test('the clicked point of the picture stays under the cursor', () => {
     const page = clickZoom();
 
     assert.match(page, /fx = keyboard \? 0\.5 : \(anchorX - before\.left\) \/ before\.width/);
-    assert.match(page, /after\.left \+ window\.scrollX \+ fx \* after\.width - anchorX/);
+    assert.match(page, /const left = after\.left \+ window\.scrollX/);
+    assert.match(page, /left \+ fx \* after\.width - anchorX/);
 });
 
 test('a keyboard press magnifies about the middle', () => {
@@ -219,4 +220,34 @@ test('load-time zoom is unaffected by the new option', () => {
 
     assert.match(page, /width: calc\(100vw \* 3\)/);
     assert.doesNotMatch(page, /classList\.add\('zoomed'\)/);
+});
+
+// --- framing the magnified view across the picture ----------------------
+
+test('with no focus, the view follows the click across as well as down', () => {
+    const page = clickZoom();
+
+    assert.match(page, /left \+ fx \* after\.width - anchorX/);
+    assert.doesNotMatch(page, /window\.innerWidth \/ 2\n/);
+});
+
+test('a focus frames a fixed fraction across, ignoring where the click landed', () => {
+    // Patton stands on the left of his photograph; the reader clicking
+    // the right of the frame should still be shown him.
+    const page = clickZoom({ focus: 0 });
+
+    assert.match(page, /left \+ 0 \* after\.width - window\.innerWidth \/ 2/);
+    assert.doesNotMatch(page, /left \+ fx \* after\.width - anchorX/);
+});
+
+test('focus leaves the vertical alone - down still follows the click', () => {
+    const page = clickZoom({ focus: 0 });
+
+    assert.match(page, /top \+ fy \* after\.height - anchorY/);
+});
+
+test('a focus part-way across is placed at the middle of the screen', () => {
+    const page = clickZoom({ focus: 0.75 });
+
+    assert.match(page, /left \+ 0\.75 \* after\.width - window\.innerWidth \/ 2/);
 });

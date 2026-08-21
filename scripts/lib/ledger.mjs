@@ -23,6 +23,10 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { escapeHtml } from './render.mjs';
 
+// Where a click-magnified view sits across the picture, as a fraction of
+// its width. Both spellings of the middle, because both get typed.
+const FOCUS_WORDS = { left: 0, center: 0.5, centre: 0.5, right: 1 };
+
 /**
  * @param {string} text - contents of links.yml.
  * @returns {{ poems: Map<string, {doc: string, title: string|null}>, links: Array<object> }}
@@ -65,6 +69,7 @@ export function parseLedger(text) {
         }
         const { title, overlay, zoom, scroll, to, href } = value;
         const zoomOn = value['zoom-on'];
+        const focus = value.focus;
         if (zoom !== undefined && (typeof zoom !== 'number' || !(zoom > 0))) {
             throw new Error(`assets["${asset}"].zoom must be a positive number (1 is fit-to-screen).`);
         }
@@ -86,6 +91,19 @@ export function parseLedger(text) {
         // from where the reader clicked, so the two cannot both apply.
         if (zoomOn === 'click' && scroll !== undefined) {
             throw new Error(`assets["${asset}"].scroll applies to "zoom-on: load"; with "click" the reader's own click places the view.`);
+        }
+        // Which part of the width a click-magnified view frames. Named
+        // for the poet's sake - "left" reads better in this file than "0"
+        // - but a fraction is accepted for anything in between.
+        let focusAcross = null;
+        if (focus !== undefined) {
+            if (zoomOn !== 'click') {
+                throw new Error(`assets["${asset}"].focus applies to "zoom-on: click"; a plate that opens magnified is placed by "scroll".`);
+            }
+            focusAcross = FOCUS_WORDS[focus] ?? focus;
+            if (typeof focusAcross !== 'number' || !(focusAcross >= 0 && focusAcross <= 1)) {
+                throw new Error(`assets["${asset}"].focus must be left, center, right, or a fraction between 0 and 1.`);
+            }
         }
         // Where clicking the image leads. Left unset, a plate returns the
         // reader to the poem they came from; setting it pins a
@@ -121,6 +139,7 @@ export function parseLedger(text) {
             title: title ?? null,
             zoom: zoom ?? null,
             zoomOn: zoomOn ?? 'load',
+            focus: focusAcross,
             scroll: scroll ?? null,
             to: to ?? null,
             href: href ?? null,
