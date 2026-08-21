@@ -41,6 +41,22 @@
             height: auto;
         }
 
+
+        /*
+         * The magnified state, entered on the first click. The width
+         * itself is set on the image by the script, from the size it was
+         * actually being drawn at - the constraints are only released
+         * here so that width can take effect and the page can scroll.
+         */
+        .plate { cursor: zoom-in; }
+        body.zoomed { display: block; overflow: auto; }
+        body.zoomed .stage { max-width: none; max-height: none; }
+        body.zoomed .plate { cursor: pointer; }
+        body.zoomed .plate, body.zoomed .plate img {
+            max-width: none;
+            max-height: none;
+            height: auto;
+        }
         /*
          * Over the right-hand side of the picture. Both numbers are
          * percentages of the image's width, so the composition holds on a
@@ -67,6 +83,46 @@
         // This plate's destination was chosen deliberately, so the
         // referrer must not override it.
 
+        // Click once to magnify, again to follow the link.
+        //
+        // The href is left exactly as it is, so a reader with no
+        // scripting simply arrives at the destination on the first click.
+        // The zoom is an addition to the page, never a gate across it.
+        (function () {
+            const plate = document.getElementById('back');
+            const image = plate.querySelector('img');
+            let magnified = false;
+
+            plate.addEventListener('click', function (event) {
+                if (magnified) return;   // this one travels
+                event.preventDefault();
+
+                // Where in the picture the reader pointed, as a fraction
+                // of it. A keyboard press carries no coordinates, so it
+                // magnifies about the middle instead.
+                const keyboard = event.detail === 0;
+                const before = image.getBoundingClientRect();
+                if (!before.width || !before.height) return;
+                const anchorX = keyboard ? window.innerWidth / 2 : event.clientX;
+                const anchorY = keyboard ? window.innerHeight / 2 : event.clientY;
+                const fx = keyboard ? 0.5 : (anchorX - before.left) / before.width;
+                const fy = keyboard ? 0.5 : (anchorY - before.top) / before.height;
+
+                // Magnified against the size it was actually drawn at, so
+                // "3" means 3 times bigger than what the reader was
+                // just looking at, whatever the screen.
+                image.style.width = before.width * 3 + 'px';
+                document.body.classList.add('zoomed');
+                magnified = true;
+
+                // Put the same point of the picture back under the cursor.
+                const after = image.getBoundingClientRect();
+                window.scrollTo(
+                    after.left + window.scrollX + fx * after.width - anchorX,
+                    after.top + window.scrollY + fy * after.height - anchorY
+                );
+            });
+        })();
     </script>
 </body>
 </html>
