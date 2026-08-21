@@ -362,3 +362,103 @@ test('focus on a plate that opens magnified fails, naming the option that fits',
         /focus applies to "zoom-on: click"/
     );
 });
+
+// --- pictures on someone else's server -----------------------------------
+
+const EMBED_LEDGER = `
+poems:
+  magritte: { doc: doc-magritte }
+  party:    { doc: doc-party }
+  unbuilt:  { doc: doc-nowhere }
+
+embeds:
+  tomb:
+    title: The Tomb of the Wrestlers
+    src: "https://example.org/tomb.jpg"
+    to: magritte
+
+links:
+  - { from: party, phrase: "the red rose", embed: tomb }
+`;
+
+const embedWorld = {
+    pathForDoc: (d) => ({ 'doc-magritte': '$Pre-2010/Circa 2003.html', 'doc-party': 'p/party.html' })[d],
+    assetExists: () => false,
+};
+
+test('an embed parses, and a link may point at it by name', () => {
+    const ledger = parseLedger(EMBED_LEDGER);
+
+    assert.equal(ledger.embeds.get('tomb').src, 'https://example.org/tomb.jpg');
+    assert.equal(ledger.embeds.get('tomb').to, 'magritte');
+    assert.equal(ledger.links[0].embed, 'tomb');
+});
+
+test('an embed defaults to being framed', () => {
+    assert.equal(parseLedger(EMBED_LEDGER).embeds.get('tomb').frame, 'iframe');
+});
+
+test('an embed link resolves to the embed, not to the URL', () => {
+    // The whole point: the reader goes to a page of ours, which is what
+    // lets the click lead somewhere.
+    const { bySource } = resolveLedger(parseLedger(EMBED_LEDGER), embedWorld);
+
+    assert.deepEqual(bySource.get('p/party.html')[0].target, { kind: 'embed', name: 'tomb' });
+});
+
+test('an embed whose destination is unpublished waits, like any other link', () => {
+    // A plate that leads nowhere is worse than no plate; the words stay.
+    const ledger = parseLedger(EMBED_LEDGER.replace('to: magritte', 'to: unbuilt'));
+    const { bySource, pending } = resolveLedger(ledger, embedWorld);
+
+    assert.equal(bySource.size, 0);
+    assert.match(pending[0].why, /"unbuilt" is not published/);
+});
+
+test('an embed with no destination fails - a plate has to lead somewhere', () => {
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg" }'),
+        /exactly one of "to" or "href"/
+    );
+});
+
+test('an embed src must be https', () => {
+    // The site is served over https; an http frame would be blocked as
+    // mixed content and show the reader nothing at all.
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "http://e/x.jpg", to: a }'),
+        /must be an https URL/
+    );
+});
+
+test('an embed naming an unknown poem fails', () => {
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg", to: ghost }'),
+        /unknown poem: "ghost"/
+    );
+});
+
+test('a link naming an unknown embed fails', () => {
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nlinks:\n  - { from: a, phrase: x, embed: ghost }'),
+        /unknown embed: "ghost"/
+    );
+});
+
+test('an embed and another destination on one link fail', () => {
+    assert.throws(
+        () =>
+            parseLedger(
+                'poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg", to: a }\n' +
+                    'links:\n  - { from: a, phrase: x, embed: t, to: a }'
+            ),
+        /exactly one of "to", "href", "asset" or "embed"/
+    );
+});
+
+test('an unknown frame fails rather than quietly becoming an iframe', () => {
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg", to: a, frame: object }'),
+        /must be "iframe" or "image"/
+    );
+});

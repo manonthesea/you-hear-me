@@ -252,12 +252,14 @@ async function main() {
     let ledgerPending = [];
     let ledgerMissingAssets = [];
     let ledgerAssets = new Map();
+    let ledgerEmbeds = new Map();
     // Resolves an overlay's "to:" slug to the page it was published at.
     let pathForSlug = () => undefined;
     const plates = new Map();
     if (existsSync(LEDGER_PATH)) {
         const ledger = parseLedger(await readFile(LEDGER_PATH, 'utf8'));
         ledgerAssets = ledger.assets;
+        ledgerEmbeds = ledger.embeds;
         pathForSlug = (slug) => docIdToPath.get(ledger.poems.get(slug)?.doc);
         const resolved = resolveLedger(ledger, {
             pathForDoc: (docId) => docIdToPath.get(docId),
@@ -272,6 +274,14 @@ async function main() {
         // poem points at the plate rather than the bare file.
         for (const [sourcePath, links] of resolved.bySource) {
             for (const link of links) {
+                if (link.target.kind === 'embed') {
+                    // A picture on another server gets a plate too, keyed
+                    // by its name since there is no file here to key on.
+                    const name = link.target.name;
+                    if (!plates.has(name)) plates.set(name, { asset: name, embed: name, back: sourcePath });
+                    link.target = { kind: 'plate', path: platePath(plateSlug(name)) };
+                    continue;
+                }
                 if (link.target.kind !== 'asset') continue;
                 const asset = link.target.path;
                 if (!plates.has(asset)) {
@@ -387,8 +397,11 @@ async function main() {
     // Plates are written after the poems, so a plate's way back always
     // points at a page this run actually produced.
     const plateEntries = [];
-    for (const { asset, back } of plates.values()) {
-        const config = ledgerAssets.get(asset) ?? {};
+    for (const { asset, back, embed } of plates.values()) {
+        // An embedded picture is configured under its own name, and
+        // always leads where the ledger said - there is no poem it
+        // "came from" to fall back to.
+        const config = (embed ? ledgerEmbeds.get(embed) : ledgerAssets.get(asset)) ?? {};
         const overlay = config.overlay
             ? {
                   image: config.overlay.image,
@@ -409,6 +422,7 @@ async function main() {
             focus: config.focus ?? null,
             scroll: config.scroll ?? null,
             overlay,
+            embed: embed ? { src: config.src, frame: config.frame } : null,
         });
         const outputPath = path.join(REPO_ROOT, platePathFor);
         let existing = null;

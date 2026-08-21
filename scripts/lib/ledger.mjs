@@ -147,25 +147,60 @@ export function parseLedger(text) {
         });
     }
 
+    // Pictures that live on someone else's server. Named rather than
+    // pathed, because there is no file here to point at, and given a
+    // plate of their own so a click can lead somewhere - which is the
+    // whole reason not to link straight out to the image.
+    const embeds = new Map();
+    for (const [name, value] of Object.entries(doc.embeds ?? {})) {
+        if (!value || typeof value !== 'object') {
+            throw new Error(`embeds.${name} must be a mapping.`);
+        }
+        const { title, src, to, href, frame } = value;
+        if (typeof src !== 'string' || !/^https:\/\//.test(src)) {
+            throw new Error(`embeds.${name}.src must be an https URL.`);
+        }
+        const targets = [to, href].filter((t) => t !== undefined);
+        if (targets.length !== 1) {
+            throw new Error(`embeds.${name} needs exactly one of "to" or "href" - where clicking it leads.`);
+        }
+        if (to !== undefined && !poems.has(to)) {
+            throw new Error(`embeds.${name}.to names an unknown poem: "${to}".`);
+        }
+        if (frame !== undefined && frame !== 'iframe' && frame !== 'image') {
+            throw new Error(`embeds.${name}.frame must be "iframe" or "image".`);
+        }
+        embeds.set(name, {
+            title: title ?? name,
+            src,
+            to: to ?? null,
+            href: href ?? null,
+            frame: frame ?? 'iframe',
+        });
+    }
+
     const rawLinks = doc.links ?? [];
     if (!Array.isArray(rawLinks)) throw new Error('links.yml: "links" must be a list.');
 
     const links = rawLinks.map((link, i) => {
         const where = `links[${i}]`;
         if (!link || typeof link !== 'object') throw new Error(`${where} is not a mapping.`);
-        const { from, phrase, to, href, asset } = link;
+        const { from, phrase, to, href, asset, embed } = link;
         if (typeof from !== 'string' || !from) throw new Error(`${where} needs "from".`);
         if (typeof phrase !== 'string' || !phrase.trim()) throw new Error(`${where} needs "phrase".`);
         if (!poems.has(from)) throw new Error(`${where}.from names an unknown poem: "${from}".`);
 
-        const destinations = [to, href, asset].filter((d) => d !== undefined);
+        const destinations = [to, href, asset, embed].filter((d) => d !== undefined);
         if (destinations.length !== 1) {
-            throw new Error(`${where} needs exactly one of "to", "href" or "asset".`);
+            throw new Error(`${where} needs exactly one of "to", "href", "asset" or "embed".`);
         }
         if (to !== undefined && !poems.has(to)) {
             throw new Error(`${where}.to names an unknown poem: "${to}".`);
         }
-        return { from, phrase, to, href, asset, where };
+        if (embed !== undefined && !embeds.has(embed)) {
+            throw new Error(`${where}.embed names an unknown embed: "${embed}".`);
+        }
+        return { from, phrase, to, href, asset, embed, where };
     });
 
     // The same phrase linked twice in one poem is a copy-paste slip: the
@@ -180,7 +215,7 @@ export function parseLedger(text) {
         seenAnchors.add(key);
     }
 
-    return { poems, assets, links };
+    return { poems, assets, embeds, links };
 }
 
 /**
@@ -224,6 +259,16 @@ export function resolveLedger(ledger, { pathForDoc, assetExists }) {
                 continue;
             }
             target = { kind: 'asset', path: link.asset };
+        } else if (link.embed !== undefined) {
+            const embed = ledger.embeds.get(link.embed);
+            // The plate has to lead somewhere. If that poem is not
+            // published there is no plate worth making, so the link waits
+            // exactly as a link straight to the poem would.
+            if (embed.to && !pathForDoc(ledger.poems.get(embed.to).doc)) {
+                pending.push({ ...link, why: `"${embed.to}" is not published` });
+                continue;
+            }
+            target = { kind: 'embed', name: link.embed };
         } else {
             target = { kind: 'external', url: link.href };
         }
