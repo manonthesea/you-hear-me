@@ -120,6 +120,14 @@ embeds:
     src: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg"
     frame: image
 
+  # Illustrates "or turn back and return to the polis?" - a Reuters
+  # resizer URL, which means this src carries a signed, time-limited
+  # auth token and may need replacing once it expires.
+  the-polis:
+    title: The Polis
+    src: "https://www.reuters.com/resizer/v2/LDFMSPUH65JIPJIAHDOMVOIE4Q.jpg?auth=10fb814d80290adf8fb2a9bbe471061daffd57c50701d52aa9ed583f616adad5&width=1920&quality=80"
+    frame: image
+
 links:
   - { from: 12-31-19, phrase: "final hours", to: you-and-i }
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }
@@ -166,7 +174,7 @@ links:
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Rains too long in coming", to: pagus-trip }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", href: "https://www.poetryfoundation.org/poems/47311/the-waste-land" }
   - { from: pagus-trip, phrase: "Dry fish flake on the riverbed", to: the-end-of-the-line }
-  - { from: pagus-trip, phrase: "polis", href: "https://www.reuters.com/resizer/v2/LDFMSPUH65JIPJIAHDOMVOIE4Q.jpg?auth=10fb814d80290adf8fb2a9bbe471061daffd57c50701d52aa9ed583f616adad5&width=1920&quality=80" }
+  - { from: pagus-trip, phrase: "polis", embed: the-polis }
   - { from: paris, phrase: "Butte Chaumont", to: scenes-from-the-park }
   - { from: paris, phrase: "apparition", href: "https://www.poetryfoundation.org/poetrymagazine/poems/12675/in-a-station-of-the-metro" }
   - { from: paris, phrase: "first days at the turn of the century", to: how-soon-we-forget }
