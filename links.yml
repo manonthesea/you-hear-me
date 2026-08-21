@@ -33,6 +33,7 @@ poems:
   looking-back-after-a-friend-dies:          { doc: 1luh5Q5RXHhei-lLxH7fOKdjHqUJ1-7VWWv4KXNfEB0c, title: Looking Back After a Friend Dies }
   madness-at-hand:                           { doc: 1112_ND-vGDGjsjHvcLAJTyu_PHYWsThMT9CZE38ArvU, title: Madness At-Hand }
   marked-by-water:                           { doc: 1G5itt7gjCwCZkm0fLAPKIOklXGCTAa5simr0sN623Ic, title: Marked by Water }
+  making-up-after-decades-together:           { doc: 1G-HhPkxSII5uOmmEafedMdVs1yVj2Isoyu0dCoECRpo, title: Making Up After Decades Together }
   marsh-voices:                              { doc: 1Nvh9h8fgyLUrn9MPO_e_fdM29oMuJjHZeEnxUIHfClE, title: Marsh Voices }
   masquerade:                                { doc: 10QQDcAu6DKA9IeB8NSfvHmx9KWuLw-Z-sqHl7eTGeJ4, title: Masquerade }
   minds-deep:                                { doc: 14GQBA2zTiF2N_7pfNhq3Krtl3-C1PcQ2O1s50Zb0Fw4, title: "Mind’s Deep" }
@@ -136,11 +137,13 @@ links:
   - { from: in-and-out-of-consciousness, phrase: "lamp light", to: le-maison-du-ren-magritte }
   - { from: in-and-out-of-consciousness, phrase: "succumbing to sleep", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: in-and-out-of-consciousness, phrase: "willows use the breeze to talk to each other", to: transcendent-meaning-in-a-flooded-city }
+  - { from: in-and-out-of-consciousness, phrase: "warm feet under the covers", to: making-up-after-decades-together }
   - { from: in-spring, phrase: "Only the dog knows", to: by-the-numbers }
   - { from: inside-a-fishs-belly, phrase: "Crane Prairie Reservoir", href: "https://www.google.com/maps/place/Crane+Prairie+Reservoir/@43.7822694,-121.7959976,13z/data=!4m6!3m5!1s0x54c75db1d783bc4b:0x4e014cc2e66ec43a!8m2!3d43.7816802!4d-121.8040683!16s/m/0g5pt0j?entry=ttu&g_ep=EgoyMDI0MTAyMi4wIKXMDSoASAFQAw==" }
   - { from: inside-a-fishs-belly, phrase: "the sun’s heat", to: muddled-soup }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "Coming Community?", href: "https://theanarchistlibrary.org/library/giorgio-agamben-the-coming-community" }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "fever dreams", to: the-party-inside }
+  - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "flashes and glimpses of your REM state", to: in-and-out-of-consciousness }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "puppies", to: nostalgia }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "semblance", to: madness-at-hand }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "the scene becomes a stage", to: scenes-from-the-park }
@@ -175,6 +178,7 @@ links:
   - { from: scenes-from-the-park, phrase: "Bob Dylan", to: the-bard-sings }
   - { from: scenes-from-the-park, phrase: "grass", to: marsh-voices }
   - { from: scenes-from-the-park, phrase: "the park", href: "https://img2.10bestmedia.com/Images/Photos/189784/p-Butte-Chaumont_55_660x440_201404231435.jpg" }
+  - { from: scenes-from-the-park, phrase: "wild eyes", to: fertile-ground }
   - { from: scenes-from-the-park, phrase: "willows acknowledge", to: in-and-out-of-consciousness }
   - { from: shooting-marbles, phrase: "History is still made", to: pissing-diptych }
   - { from: snafu, phrase: "Fussell, Paul.", href: "https://en.wikipedia.org/wiki/Paul_Fussell" }
