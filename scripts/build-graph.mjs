@@ -50,6 +50,10 @@ async function listRepoFiles(dir = '') {
         const rel = dir ? path.posix.join(dir, entry.name) : entry.name;
         if (entry.isDirectory()) {
             if (SKIP_DIRS.has(entry.name)) continue;
+            // GitHub Pages runs Jekyll, which does not publish anything
+            // whose name begins with an underscore. Indexing those would
+            // fill the map with links the live site answers with a 404.
+            if (entry.name.startsWith('_')) continue;
             files.push(...(await listRepoFiles(rel)));
         } else if (entry.isFile()) {
             files.push(rel);
