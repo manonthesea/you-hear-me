@@ -331,3 +331,34 @@ test('scroll with zoom-on: load is still fine', () => {
     assert.equal(cfg.scroll, 0.5);
     assert.equal(cfg.zoomOn, 'load');
 });
+
+// --- which part of the picture a magnified view frames -------------------
+
+test('focus may be named, and lands on a fraction', () => {
+    for (const [word, fraction] of [['left', 0], ['center', 0.5], ['centre', 0.5], ['right', 1]]) {
+        const cfg = asset(`    zoom: 3\n    "zoom-on": click\n    focus: ${word}`).assets.get('p.jpg');
+        assert.equal(cfg.focus, fraction, `focus: ${word}`);
+    }
+});
+
+test('focus may be a fraction for anything in between', () => {
+    assert.equal(asset('    zoom: 3\n    "zoom-on": click\n    focus: 0.3').assets.get('p.jpg').focus, 0.3);
+});
+
+test('focus defaults to unset, meaning the view follows the click', () => {
+    assert.equal(asset('    zoom: 3\n    "zoom-on": click').assets.get('p.jpg').focus, null);
+});
+
+test('a misspelt focus fails rather than silently following the click', () => {
+    // "lft" would otherwise produce a plate that ignores the instruction
+    // entirely - a wrong page rather than a broken one.
+    assert.throws(() => asset('    zoom: 3\n    "zoom-on": click\n    focus: lft'), /must be left, center, right/);
+    assert.throws(() => asset('    zoom: 3\n    "zoom-on": click\n    focus: 2'), /must be left, center, right/);
+});
+
+test('focus on a plate that opens magnified fails, naming the option that fits', () => {
+    assert.throws(
+        () => asset('    zoom: 3\n    "zoom-on": load\n    focus: left'),
+        /focus applies to "zoom-on: click"/
+    );
+});
