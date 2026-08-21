@@ -184,6 +184,7 @@ links:
   - { from: shooting-marbles, phrase: "History is still made", to: pissing-diptych }
   - { from: snafu, phrase: "Fussell, Paul.", href: "https://en.wikipedia.org/wiki/Paul_Fussell" }
   - { from: snafu, phrase: "Sledge, E. B.", href: "https://en.wikipedia.org/wiki/Eugene_Sledge" }
+  - { from: snafu, phrase: "half-sleep to waking-dream", to: clack-clack-clack }
   - { from: snafu, phrase: "repetitive repetition", to: pissing-diptych }
   - { from: summer-storm, phrase: "cool breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: summer-storm, phrase: "quantum profound", to: quantum-nothingness }
