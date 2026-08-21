@@ -160,9 +160,13 @@ export function parseLedger(text) {
         if (typeof src !== 'string' || !/^https:\/\//.test(src)) {
             throw new Error(`embeds.${name}.src must be an https URL.`);
         }
+        // Where clicking it leads. Left unset, the plate returns the
+        // reader to the poem they came from - the same default an image
+        // plate has, and the right one when the picture illustrates the
+        // poem rather than pointing away from it.
         const targets = [to, href].filter((t) => t !== undefined);
-        if (targets.length !== 1) {
-            throw new Error(`embeds.${name} needs exactly one of "to" or "href" - where clicking it leads.`);
+        if (targets.length > 1) {
+            throw new Error(`embeds.${name} needs at most one of "to" or "href".`);
         }
         if (to !== undefined && !poems.has(to)) {
             throw new Error(`embeds.${name}.to names an unknown poem: "${to}".`);

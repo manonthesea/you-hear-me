@@ -110,6 +110,13 @@ embeds:
     frame: image
     to: le-maison-du-ren-magritte
 
+  # Illustrates the line it hangs on rather than pointing elsewhere, so
+  # it takes the default and hands the reader back to the poem.
+  empire-of-light:
+    title: The Empire of Light
+    src: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg"
+    frame: image
+
 links:
   - { from: 12-31-19, phrase: "final hours", to: you-and-i }
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }
@@ -137,7 +144,7 @@ links:
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "puppies", to: nostalgia }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "semblance", to: madness-at-hand }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "the scene becomes a stage", to: scenes-from-the-park }
-  - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", href: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg" }
+  - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", embed: empire-of-light }
   - { from: le-maison-du-ren-magritte, phrase: "creation", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: le-maison-du-ren-magritte, phrase: "her", to: your-song-in-the-morning }
   - { from: madness-at-hand, phrase: "the devil", to: trouble-sleeping-as-a-child }
