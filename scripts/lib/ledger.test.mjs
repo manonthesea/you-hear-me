@@ -415,10 +415,23 @@ test('an embed whose destination is unpublished waits, like any other link', () 
     assert.match(pending[0].why, /"unbuilt" is not published/);
 });
 
-test('an embed with no destination fails - a plate has to lead somewhere', () => {
+test('an embed with no destination returns the reader to the poem', () => {
+    // The same default an image plate has. A picture that illustrates
+    // the poem it hangs beside should hand the reader back to it, and
+    // requiring a destination would mean inventing one.
+    const ledger = parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg" }');
+
+    assert.equal(ledger.embeds.get('t').to, null);
+    assert.equal(ledger.embeds.get('t').href, null);
+});
+
+test('an embed with two destinations still fails', () => {
     assert.throws(
-        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg" }'),
-        /exactly one of "to" or "href"/
+        () =>
+            parseLedger(
+                'poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg", to: a, href: "https://f" }'
+            ),
+        /at most one of "to" or "href"/
     );
 });
 

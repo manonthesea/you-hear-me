@@ -330,3 +330,36 @@ test('frame: image draws the remote picture as an ordinary plate', () => {
 test('an ordinary plate grows no iframe', () => {
     assert.doesNotMatch(plate(), /<iframe|class="cover"/);
 });
+
+test('an embed with no pinned destination follows the reader back', () => {
+    // Same as an image plate: the static href names the poem that links
+    // the picture, and the referrer check overrides it for a reader who
+    // arrived from elsewhere on the site.
+    const page = renderPlate({
+        asset: 'empire-of-light',
+        title: 'The Empire of Light',
+        back: '$Pre-2010/Circa 2003.html',
+        pinned: false,
+        embed: { src: 'https://example.org/lamp.jpg', frame: 'image' },
+    });
+
+    assert.match(page, /document\.referrer/);
+    assert.match(page, /href="\.\.\/\.\.\/\$Pre-2010\/Circa%20\d+\.html"/);
+});
+
+test('a remote picture is sent no referrer whichever way it is framed', () => {
+    // Not only the iframe: an <img> hotlink leaks the reader's page in
+    // the Referer header too, and the commoner hotlink checks read it.
+    const page = renderPlate({
+        asset: 'x',
+        title: 'x',
+        back: 'a.html',
+        embed: { src: 'https://example.org/x.jpg', frame: 'image' },
+    });
+
+    assert.match(page, /<img src="https:\/\/example\.org\/x\.jpg"[^>]*referrerpolicy="no-referrer"/);
+});
+
+test('a local picture carries no referrer policy - there is nobody to withhold it from', () => {
+    assert.doesNotMatch(plate(), /referrerpolicy/);
+});
