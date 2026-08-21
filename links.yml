@@ -207,6 +207,7 @@ links:
   - { from: summer-storm, phrase: "quantum profound", to: quantum-nothingness }
   - { from: summer-storm, phrase: "snap-fire", to: snafu }
   - { from: the-age-of-old-men-loitering, phrase: "pull a star in upon itself", to: you-and-i }
+  - { from: the-age-of-old-men-loitering, phrase: "what men desire", to: fertile-ground }
   - { from: the-bard-sings, phrase: "in that space", to: i-write-poems-written-for-my-loves }
   - { from: the-bard-sings, phrase: "rhapsody of spring", to: in-spring }
   - { from: the-bard-sings, phrase: "the parsing machines will never catch", to: its-okay-if-it-doesnt-make-sense-at-firs }
