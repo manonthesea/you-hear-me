@@ -288,3 +288,46 @@ test('a phrase with a colon, braces or a leading indicator survives', () => {
         ['of it all: the', '- a dash', '#hash {brace}']
     );
 });
+
+// --- when the magnification happens --------------------------------------
+
+const asset = (body) => parseLedger(`poems:\n  a: { doc: d }\nassets:\n  "p.jpg":\n${body}`);
+
+test('an asset may say the zoom waits for a click', () => {
+    const ledger = asset('    zoom: 3\n    "zoom-on": click');
+
+    assert.equal(ledger.assets.get('p.jpg').zoom, 3);
+    assert.equal(ledger.assets.get('p.jpg').zoomOn, 'click');
+});
+
+test('zoom defaults to happening on load', () => {
+    assert.equal(asset('    zoom: 3').assets.get('p.jpg').zoomOn, 'load');
+});
+
+test('an unknown zoom-on fails rather than silently meaning "load"', () => {
+    // A typo here would produce a plate that opens magnified when the
+    // poet asked for the opposite - a wrong page, not a broken one, and
+    // so the kind that survives a glance.
+    assert.throws(() => asset('    zoom: 3\n    "zoom-on": hover'), /must be "load" or "click"/);
+});
+
+test('zoom-on with nothing to zoom fails', () => {
+    assert.throws(() => asset('    "zoom-on": click'), /needs a "zoom"/);
+});
+
+test('scroll and zoom-on: click contradict each other and fail', () => {
+    // Click-to-zoom places the view from where the reader clicked, so a
+    // fixed opening position cannot also be honoured. Silently ignoring
+    // one of them would leave the ledger saying something untrue.
+    assert.throws(
+        () => asset('    zoom: 3\n    "zoom-on": click\n    scroll: 0.5'),
+        /scroll applies to "zoom-on: load"/
+    );
+});
+
+test('scroll with zoom-on: load is still fine', () => {
+    const cfg = asset('    zoom: 3\n    "zoom-on": load\n    scroll: 0.5').assets.get('p.jpg');
+
+    assert.equal(cfg.scroll, 0.5);
+    assert.equal(cfg.zoomOn, 'load');
+});

@@ -405,6 +405,7 @@ async function main() {
             back: pinnedTo ?? back,
             pinned: Boolean(pinnedTo),
             zoom: config.zoom ?? null,
+            zoomOn: config.zoomOn ?? 'load',
             scroll: config.scroll ?? null,
             overlay,
         });
