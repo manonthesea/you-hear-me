@@ -115,11 +115,15 @@
                 document.body.classList.add('zoomed');
                 magnified = true;
 
-                // Put the same point of the picture back under the cursor.
                 const after = image.getBoundingClientRect();
+                const left = after.left + window.scrollX;
+                const top = after.top + window.scrollY;
                 window.scrollTo(
-                    after.left + window.scrollX + fx * after.width - anchorX,
-                    after.top + window.scrollY + fy * after.height - anchorY
+                    // Across, the view is framed at 0 of the way over
+                    // whatever the reader clicked, and centred on it. scrollTo
+                    // clamps, so 0 simply rests against the left edge.
+                    left + 0 * after.width - window.innerWidth / 2,
+                    top + fy * after.height - anchorY
                 );
             });
         })();
