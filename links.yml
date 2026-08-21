@@ -53,6 +53,7 @@ poems:
   shooting-marbles:                          { doc: 1T99ZwgjylXUiAtBejVJnrJmdl6bRRWnNl4bhZv4IutA, title: Shooting Marbles }
   snafu:                                     { doc: 1OVUsNcrdpPuVW4l2gf9NAaQ4V4z3BAQjSzuhSC7TZWM, title: SNAFU }
   summer-storm:                              { doc: 1ULPktQWNZIJ1EDhnGIGn3_BL0tMLBitxgtpHDTuHm6E, title: Summer Storm }
+  the-age-of-old-men-loitering:              { doc: 1A16eM8Ip5sTrUZ8m1fNgVhFoP520j-maBugU5xf0RY8, title: The Age of Old Men Loitering }
   the-bard-sings:                            { doc: 1dCFEDcX9xgCON6OpB1FWHCJ6if6v262kgFB34aSvwfY, title: The Bard Sings }
   the-birth-of-tragedy:                      { doc: 1P16YY6UP1mPak9BuY9PZ8upOSwezsKhdJ_yoFyDRWAs, title: The Birth of Tragedy }
   the-eleventh-hour:                         { doc: 1VNWnGydnAxpo_o2Sn63vC2mraJCe0vtGpJUf-7_PKTQ, title: The Eleventh Hour }
@@ -64,6 +65,7 @@ poems:
   transcendent-meaning-in-a-flooded-city:    { doc: 1Kx8Qkpb2HNte-KsLeHAML-AhgA6WElU-a-vmJaUzZxY, title: Transcendent Meaning in a Flooded City }
   trouble-sleeping-as-a-child:               { doc: 1CvMmNLy1X0qAI-x8BeRDv-9ccgz340h8fJp1nq6Z5cA, title: Trouble Sleeping as a Child }
   what-could-have-been:                      { doc: 1KFuyneTLbO_q8ebT22YVj3WVs24upQkzmoJEwCCK_HY, title: What Could Have Been }
+  vulture-tree:                              { doc: 1Fq6q6L5ungIpj2ELSj3hJCJGV1Tt2se-F9cH_rAtTUM, title: Vulture Tree }
   you-and-i:                                 { doc: 16hPP2pblEzTSyVOIfwbI8TWQ10krsjS_akzQ2NDmOmg, title: You and I }
   your-song-in-the-morning:                  { doc: 1Efw9AEjmMOwLmnw2hqXPmb0fGbGJ3qNLpBbYC9jSQag, title: Your Song in the Morning }
 
@@ -189,12 +191,14 @@ links:
   - { from: summer-storm, phrase: "cool breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: summer-storm, phrase: "quantum profound", to: quantum-nothingness }
   - { from: summer-storm, phrase: "snap-fire", to: snafu }
+  - { from: the-age-of-old-men-loitering, phrase: "pull a star in upon itself", to: you-and-i }
   - { from: the-bard-sings, phrase: "in that space", to: i-write-poems-written-for-my-loves }
   - { from: the-bard-sings, phrase: "rhapsody of spring", to: in-spring }
   - { from: the-bard-sings, phrase: "the parsing machines will never catch", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: the-bard-sings, phrase: "winter-gust", to: prey-to-the-weather }
   - { from: the-birth-of-tragedy, phrase: "Lovers lie at ends", to: le-maison-du-ren-magritte }
   - { from: the-eleventh-hour, phrase: "bleached-white rock", to: 12-31-19 }
+  - { from: the-eleventh-hour, phrase: "gibbous and crescent", to: the-age-of-old-men-loitering }
   - { from: the-end-of-the-line, phrase: "our extinction", to: you-and-i }
   - { from: the-end-of-the-line, phrase: "solstice", to: nostalgia }
   - { from: the-party-inside, phrase: "the 21st century", to: paris }
@@ -207,6 +211,7 @@ links:
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "a soothing horn plays", to: cryptic-word }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "transcendent meaning", to: people-in-the-street }
   - { from: trouble-sleeping-as-a-child, phrase: "red devil", to: floating-chrysanthemums }
+  - { from: vulture-tree, phrase: "electricity", to: summer-storm }
   - { from: you-and-i, phrase: "you and I", to: on-the-shortest-night }
   - { from: your-song-in-the-morning, phrase: "my silent question", to: the-eleventh-hour }
   - { from: your-song-in-the-morning, phrase: "you whisper found comprehension", to: its-okay-if-it-doesnt-make-sense-at-firs }
