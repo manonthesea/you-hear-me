@@ -182,3 +182,110 @@ em,
     display: inline-block;
     margin-top: -0.5em;
 }
+
+/*
+ * Narrow screens: fit the poem to the screen instead of asking the
+ * reader to pinch it into view.
+ *
+ * <pre> does not wrap, so the longest line decides the page's width, and
+ * the poems disagree wildly about that - 19 characters at the narrowest,
+ * 117 at the widest. One mobile font size would leave half of them
+ * overflowing and shrink the other half for nothing, so each page
+ * carries its own width as --cols and is sized from it.
+ *
+ * This is not smaller than it already reads. A 61-column poem on a 390px
+ * phone lays out 695px wide today, so seeing it whole means zooming to
+ * 56% - an effective 9px. Sizing it to fit lands in the same place. What
+ * goes away is the gesture, on every page, every time.
+ *
+ * Desktop is untouched: the block sits behind a media query and the
+ * clamp's ceiling is the 1rem it already was.
+ */
+@media (max-width: 700px) {
+    body {
+        padding: 12px;
+    }
+
+    .poem {
+        /*
+         * The verse needs pre's indent, the line-number box, the space
+         * after the number, and then its own characters - all of them
+         * 0.6em wide in Courier New. Solving that for the font size is
+         * this: 4.975em of fixed offset, 0.6em per column.
+         */
+        font-size: clamp(8.5px, calc((100vw - 24px) / (var(--cols, 60) * 0.6 + 4.975)), 1rem);
+
+        /*
+         * Desktop sizes this wrapper to the longest line so a citation
+         * wraps where the verse ends rather than at the screen edge. On
+         * a phone that hands the decision to the title, which is prose
+         * and could simply wrap: a long one laid the page out 528px wide
+         * on its own. Let the wrapper be the screen and let the title
+         * wrap inside it.
+         */
+        width: auto;
+        min-width: 0;
+    }
+
+    pre {
+        padding-left: 2.5em;
+    }
+
+    .line-number {
+        width: 1.875em;
+        left: -2.5em;
+    }
+
+    /*
+     * The title and the citations are the two places an em means
+     * something different from what it means in the verse, and both have
+     * to land on the verse's left edge.
+     *
+     * A custom property does not solve this: an em inside one is resolved
+     * where the property is used, not where it was written, so a shared
+     * --gutter comes out scaled by whatever type reads it. The offset is
+     * therefore written in the verse's ems and divided by each element's
+     * own multiple, which is the one form that resolves to the same
+     * length everywhere.
+     *
+     * h1 is given an explicit size for the same reason: left alone it is
+     * the browser's 2em, which over 9px verse is a 19px title, and the
+     * arithmetic below would have nothing fixed to divide by.
+     */
+    h1 {
+        font-size: 1.6em;
+        padding-left: calc((2.5em + 1.875em + 0.6em) / 1.6);
+        /* The 37px above, kept as its ratio to the type it sits over. */
+        margin-bottom: 0.8em;
+    }
+
+    /* Already inside pre's indent, so only the rest of the offset. */
+    em,
+    .date {
+        padding-left: calc(1.875em + 0.6em);
+    }
+
+    .footnote {
+        padding-left: calc((2.5em + 1.875em + 0.6em) / 0.85);
+    }
+
+    .indent {
+        padding-left: 2.5em;
+    }
+
+    .double-indent {
+        padding-left: 5em;
+    }
+
+    .fifth-indent {
+        padding-left: 12.5em;
+    }
+
+    .stanza {
+        padding-left: 5em;
+    }
+
+    h2 {
+        padding-left: 7.5em;
+    }
+}
