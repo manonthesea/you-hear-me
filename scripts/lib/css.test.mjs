@@ -87,7 +87,9 @@ test('the poem wrapper is sized by its longest line, with the body as a floor', 
 test('the template keeps the wrapper the footnote width depends on', async () => {
     // .poem is what <pre> and the citations are measured against; if the
     // template ever loses the div, the CSS above silently does nothing.
+    // Matched loosely on purpose: the div carries a style attribute now,
+    // and what this test is protecting is the wrapper, not its markup.
     const template = await readFile(TEMPLATE_PATH, 'utf8');
 
-    assert.match(template, /<div class="poem">/);
+    assert.match(template, /<div class="poem"[^>]*>/);
 });
