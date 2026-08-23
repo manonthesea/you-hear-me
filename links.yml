@@ -135,10 +135,64 @@ embeds:
     src: "https://www.reuters.com/resizer/v2/LDFMSPUH65JIPJIAHDOMVOIE4Q.jpg?auth=10fb814d80290adf8fb2a9bbe471061daffd57c50701d52aa9ed583f616adad5&width=1920&quality=80"
     frame: image
 
+  # The nine pages a reader used to be sent away to, and the one picture
+  # among them. Framed on a plate so the collection keeps them, with a
+  # click anywhere to come back and a way out in the corner.
+  #
+  # "cover: false" would let the reader scroll and use the framed page
+  # instead of returning on the first click - see the pull request.
+
+  paul-fussell:
+    title: Paul Fussell
+    src: "https://en.wikipedia.org/wiki/Paul_Fussell"
+
+  eugene-sledge:
+    title: E. B. Sledge
+    src: "https://en.wikipedia.org/wiki/Eugene_Sledge"
+
+  the-coming-community:
+    title: Giorgio Agamben, The Coming Community
+    src: "https://theanarchistlibrary.org/library/giorgio-agamben-the-coming-community"
+
+  the-waste-land:
+    title: T. S. Eliot, The Waste Land
+    src: "https://www.poetryfoundation.org/poems/47311/the-waste-land"
+
+  in-a-station-of-the-metro:
+    title: Ezra Pound, In a Station of the Metro
+    src: "https://www.poetryfoundation.org/poetrymagazine/poems/12675/in-a-station-of-the-metro"
+
+  pagus-borderlands:
+    title: Vitanza, Seeing
+    src: "https://www.earthwidemoth.com/blog/2006/07/27/vitanza-seeing/"
+
+  check-point-charlie:
+    title: Check Point Charlie's, Decatur Street
+    src: "https://www.offbeat.com/news/check-point-charlie-this-is-not-a-joke/"
+
+  # Maps refuse to be framed from a /maps/place or /maps/@ URL - those
+  # are the interactive app, not an embeddable view. "output=embed" is
+  # the form that frames, and it needs the coordinates the old link
+  # already carried.
+  crane-prairie-reservoir:
+    title: Crane Prairie Reservoir
+    src: "https://maps.google.com/maps?q=43.7816802,-121.8040683&z=13&output=embed"
+
+  the-spotted-cat:
+    title: The Spotted Cat, Frenchmen Street
+    src: "https://maps.google.com/maps?q=29.9639569,-90.0577958&z=18&output=embed"
+
+  # A bare image, so drawn rather than framed - a picture in an iframe is
+  # rendered at natural size and shows a cropped corner.
+  butte-chaumont:
+    title: Parc des Buttes-Chaumont
+    src: "https://img2.10bestmedia.com/Images/Photos/189784/p-Butte-Chaumont_55_660x440_201404231435.jpg"
+    frame: image
+
 links:
   - { from: 12-31-19, phrase: "final hours", to: you-and-i }
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }
-  - { from: by-the-numbers, phrase: "pagus borderlands", href: "https://www.earthwidemoth.com/blog/2006/07/27/vitanza-seeing/" }
+  - { from: by-the-numbers, phrase: "pagus borderlands", embed: pagus-borderlands }
   - { from: by-the-numbers, phrase: "polis", to: pagus-trip }
   - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" }
   - { from: clack-clack-clack, phrase: "fate", to: the-birth-of-tragedy }
@@ -160,9 +214,9 @@ links:
   - { from: in-and-out-of-consciousness, phrase: "warm feet under the covers", to: making-up-after-decades-together }
   - { from: in-and-out-of-consciousness, phrase: "willows use the breeze to talk to each other", to: transcendent-meaning-in-a-flooded-city }
   - { from: in-spring, phrase: "Only the dog knows", to: by-the-numbers }
-  - { from: inside-a-fishs-belly, phrase: "Crane Prairie Reservoir", href: "https://www.google.com/maps/place/Crane+Prairie+Reservoir/@43.7822694,-121.7959976,13z/data=!4m6!3m5!1s0x54c75db1d783bc4b:0x4e014cc2e66ec43a!8m2!3d43.7816802!4d-121.8040683!16s/m/0g5pt0j?entry=ttu&g_ep=EgoyMDI0MTAyMi4wIKXMDSoASAFQAw==" }
+  - { from: inside-a-fishs-belly, phrase: "Crane Prairie Reservoir", embed: crane-prairie-reservoir }
   - { from: inside-a-fishs-belly, phrase: "the sun’s heat", to: muddled-soup }
-  - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "Coming Community?", href: "https://theanarchistlibrary.org/library/giorgio-agamben-the-coming-community" }
+  - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "Coming Community?", embed: the-coming-community }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "fever dreams", to: the-party-inside }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "flashes and glimpses of your REM state", to: in-and-out-of-consciousness }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "prophetic vision", to: vulture-tree }
@@ -186,15 +240,15 @@ links:
   - { from: on-the-shortest-night, phrase: "John 3:16", to: on-sunday }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Black mud sound", asset: "scan0005.jpg" }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Rains too long in coming", to: pagus-trip }
-  - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", href: "https://www.poetryfoundation.org/poems/47311/the-waste-land" }
+  - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", embed: the-waste-land }
   - { from: pagus-trip, phrase: "Dry fish flake on the riverbed", to: the-end-of-the-line }
   - { from: pagus-trip, phrase: "polis", embed: the-polis }
   - { from: paris, phrase: "Butte Chaumont", to: scenes-from-the-park }
-  - { from: paris, phrase: "apparition", href: "https://www.poetryfoundation.org/poetrymagazine/poems/12675/in-a-station-of-the-metro" }
+  - { from: paris, phrase: "apparition", embed: in-a-station-of-the-metro }
   - { from: paris, phrase: "first days at the turn of the century", to: how-soon-we-forget }
   - { from: paris, phrase: "spring lover", to: quite-like-my-love-for-you }
   - { from: people-in-the-street, phrase: "constructs of purchased meaning", to: clack-clack-clack }
-  - { from: people-in-the-street, phrase: "the Spotted Cat", href: "https://www.google.com/maps/@29.9639569,-90.0577958,3a,75y,90t/data=!3m7!1e1!3m5!1srJtVXDi3fST92njgiQzdVw!2e0!6shttps://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=0&panoid=rJtVXDi3fST92njgiQzdVw&yaw=0!7i16384!8i8192?coh=205410&entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw==" }
+  - { from: people-in-the-street, phrase: "the Spotted Cat", embed: the-spotted-cat }
   - { from: pissing-diptych, phrase: "pee", asset: "patton-pissing.jpg" }
   - { from: prey-to-the-weather, phrase: "falls", to: marsh-voices }
   - { from: prey-to-the-weather, phrase: "rabbit", to: fertile-ground }
@@ -202,12 +256,12 @@ links:
   - { from: quite-like-my-love-for-you, phrase: "When I am yours", to: time-in-love }
   - { from: scenes-from-the-park, phrase: "Bob Dylan", to: the-bard-sings }
   - { from: scenes-from-the-park, phrase: "grass", to: marsh-voices }
-  - { from: scenes-from-the-park, phrase: "the park", href: "https://img2.10bestmedia.com/Images/Photos/189784/p-Butte-Chaumont_55_660x440_201404231435.jpg" }
+  - { from: scenes-from-the-park, phrase: "the park", embed: butte-chaumont }
   - { from: scenes-from-the-park, phrase: "wild eyes", to: fertile-ground }
   - { from: scenes-from-the-park, phrase: "willows acknowledge", to: in-and-out-of-consciousness }
   - { from: shooting-marbles, phrase: "History is still made", to: pissing-diptych }
-  - { from: snafu, phrase: "Fussell, Paul.", href: "https://en.wikipedia.org/wiki/Paul_Fussell" }
-  - { from: snafu, phrase: "Sledge, E. B.", href: "https://en.wikipedia.org/wiki/Eugene_Sledge" }
+  - { from: snafu, phrase: "Fussell, Paul.", embed: paul-fussell }
+  - { from: snafu, phrase: "Sledge, E. B.", embed: eugene-sledge }
   - { from: snafu, phrase: "half-sleep to waking-dream", to: clack-clack-clack }
   - { from: snafu, phrase: "repetitive repetition", to: pissing-diptych }
   - { from: summer-storm, phrase: "cool breeze", to: transcendent-meaning-in-a-flooded-city }
@@ -231,7 +285,7 @@ links:
   - { from: time-in-love, phrase: "my lips feel your warm breath", to: masquerade }
   - { from: time-in-love, phrase: "seems", to: madness-at-hand }
   - { from: time-is-purposeful, phrase: "cicada in the trees", to: anxious-sounding-trees }
-  - { from: transcendent-meaning-in-a-flooded-city, phrase: "Checkpoint Charlie’s on Decatur", href: "https://www.offbeat.com/news/check-point-charlie-this-is-not-a-joke/" }
+  - { from: transcendent-meaning-in-a-flooded-city, phrase: "Checkpoint Charlie’s on Decatur", embed: check-point-charlie }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "We circle", to: snafu }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "a soothing horn plays", to: cryptic-word }
   - { from: transcendent-meaning-in-a-flooded-city, phrase: "transcendent meaning", to: people-in-the-street }

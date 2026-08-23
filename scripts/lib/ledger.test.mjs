@@ -475,3 +475,31 @@ test('an unknown frame fails rather than quietly becoming an iframe', () => {
         /must be "iframe" or "image"/
     );
 });
+
+// --- whether a framed page can be used, or only returned from ------------
+
+test('an embed is covered by default, as a picture wants', () => {
+    const led = parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x" }');
+
+    assert.equal(led.embeds.get('t').cover, true);
+});
+
+test('cover: false is carried through for a page meant to be read', () => {
+    const led = parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x", cover: false }');
+
+    assert.equal(led.embeds.get('t').cover, false);
+});
+
+test('a non-boolean cover fails rather than being read as truthy', () => {
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x", cover: yes-please }'),
+        /must be true or false/
+    );
+});
+
+test('cover on an image embed fails, naming why it does not apply', () => {
+    assert.throws(
+        () => parseLedger('poems:\n  a: { doc: d }\nembeds:\n  t: { src: "https://e/x.jpg", frame: image, cover: false }'),
+        /applies to "frame: iframe"/
+    );
+});

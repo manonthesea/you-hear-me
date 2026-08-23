@@ -422,7 +422,7 @@ async function main() {
             focus: config.focus ?? null,
             scroll: config.scroll ?? null,
             overlay,
-            embed: embed ? { src: config.src, frame: config.frame } : null,
+            embed: embed ? { src: config.src, frame: config.frame, cover: config.cover } : null,
         });
         const outputPath = path.join(REPO_ROOT, platePathFor);
         let existing = null;

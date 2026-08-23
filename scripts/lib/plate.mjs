@@ -18,6 +18,20 @@ import { escapeHtml } from './render.mjs';
 
 const PLATE_DIR = 'plates';
 
+// Enough for a modern page to draw itself - a map will not render at all
+// without scripts - while still withholding allow-top-navigation, so a
+// framed site cannot take the reader's tab out from under them.
+const SANDBOX = 'allow-scripts allow-same-origin allow-popups';
+
+// Just the host, for the escape hatch's label: "open en.wikipedia.org".
+function hostOf(url) {
+    try {
+        return new URL(url).host;
+    } catch {
+        return 'the page';
+    }
+}
+
 /**
  * A readable directory name for an image.
  *
@@ -66,7 +80,7 @@ function attrHref(fromDir, toPath) {
  *   focus?: number|null,      // 0..1 across, where the magnified view frames (zoomOn: click)
  *   scroll?: number|null,     // 0..1, how far down to open the view (zoomOn: load)
  *   overlay?: { image: string, href: string, alt: string } | null,
- *   embed?: { src: string, frame: 'iframe'|'image' } | null,  // a picture on another server
+ *   embed?: { src: string, frame: 'iframe'|'image', cover?: boolean } | null,
  * }} plate
  * @returns {string} the finished page.
  */
@@ -85,6 +99,10 @@ export function renderPlate({
     const dir = path.posix.dirname(platePath(plateSlug(asset)));
     const src = embed ? escapeHtml(embed.src) : attrHref(dir, asset);
     const framed = embed?.frame === 'iframe';
+    // Clicking anywhere returns the reader, as on an image plate. Turned
+    // off for a frame whose contents are meant to be read or used: a
+    // cover over a Wikipedia article is an article nobody can scroll.
+    const covered = framed && embed.cover !== false;
     const safeTitle = escapeHtml(title);
     const backHref = back ? attrHref(dir, back) : attrHref(dir, 'index.html');
 
@@ -181,7 +199,27 @@ ${framed ? `
          * the way it wraps an image - it has to lie on top of it.
          */
         .cover { position: absolute; inset: 0; display: block; cursor: pointer; }
-        .cover:focus-visible { outline: 2px solid #58a6ff; outline-offset: -4px; }` : ''}
+        .cover:focus-visible { outline: 2px solid #58a6ff; outline-offset: -4px; }
+        /*
+         * Above the cover, so it stays clickable, and there whether or
+         * not the frame loaded. A site that refuses to be framed renders
+         * nothing at all inside one, and without this the plate would be
+         * a blank page with no way onward.
+         */
+        .ways {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem 0.9rem;
+            font: 12px/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
+            background: rgba(0, 0, 0, 0.72);
+            border-top-left-radius: 6px;
+        }
+        .ways a { color: #9aa4b2; text-decoration: none; white-space: nowrap; }
+        .ways a:hover, .ways a:focus-visible { color: #e6edf3; text-decoration: underline; }` : ''}
 ${zoomOnLoad ? `
         /* Zoomed: fill beyond the viewport and let the page scroll. */
         body { display: block; overflow: auto; }
@@ -227,8 +265,12 @@ ${zoomOnClick ? `
 <body>
     <div class="stage">
 ${framed ? `        <iframe class="embed" src="${src}" title="${safeTitle}"
-                referrerpolicy="no-referrer" sandbox loading="lazy"></iframe>
-        <a class="cover" id="back" href="${backHref}" aria-label="${safeTitle}"></a>` : `        <a class="plate" id="back" href="${backHref}">
+                referrerpolicy="no-referrer" sandbox="${SANDBOX}" loading="lazy"></iframe>
+${covered ? `        <a class="cover" id="back" href="${backHref}" aria-label="Back"></a>` : ''}
+        <p class="ways">
+${covered ? '' : `            <a id="back" href="${backHref}">&larr; back</a>`}
+            <a href="${src}" target="_blank" rel="noopener noreferrer">open ${escapeHtml(hostOf(embed.src))} &#8599;</a>
+        </p>` : `        <a class="plate" id="back" href="${backHref}">
             <img src="${src}" alt="${safeTitle}"${embed ? ' referrerpolicy="no-referrer"' : ''}>
         </a>`}${overlayHtml}
     </div>
