@@ -156,7 +156,7 @@ export function parseLedger(text) {
         if (!value || typeof value !== 'object') {
             throw new Error(`embeds.${name} must be a mapping.`);
         }
-        const { title, src, to, href, frame } = value;
+        const { title, src, to, href, frame, cover } = value;
         if (typeof src !== 'string' || !/^https:\/\//.test(src)) {
             throw new Error(`embeds.${name}.src must be an https URL.`);
         }
@@ -174,12 +174,22 @@ export function parseLedger(text) {
         if (frame !== undefined && frame !== 'iframe' && frame !== 'image') {
             throw new Error(`embeds.${name}.frame must be "iframe" or "image".`);
         }
+        // Whether clicking anywhere on the frame returns the reader.
+        // On by default, which is what an image wants; a page meant to
+        // be read needs it off, or it cannot even be scrolled.
+        if (cover !== undefined && typeof cover !== 'boolean') {
+            throw new Error(`embeds.${name}.cover must be true or false.`);
+        }
+        if (cover !== undefined && (frame ?? 'iframe') !== 'iframe') {
+            throw new Error(`embeds.${name}.cover applies to "frame: iframe"; an image is its own link.`);
+        }
         embeds.set(name, {
             title: title ?? name,
             src,
             to: to ?? null,
             href: href ?? null,
             frame: frame ?? 'iframe',
+            cover: cover ?? true,
         });
     }
 

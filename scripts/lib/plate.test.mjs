@@ -289,11 +289,14 @@ test('the click target lies on top of the frame, not around it', () => {
     assert.match(page, /\.cover \{ position: absolute; inset: 0;/);
 });
 
-test('the cover is reachable and named for a screen reader', () => {
-    // It has no text of its own - it is an empty box over a picture.
+test('the cover is reachable and named for what it does', () => {
+    // It has no text of its own - it is an empty box over a frame - and
+    // what it does is go back, so that is what it should announce. It
+    // used to announce the picture's title, which reads as a link to the
+    // picture the reader is already looking at.
     const page = embedPlate();
 
-    assert.match(page, /<a class="cover"[^>]*aria-label="The Tomb of the Wrestlers"/);
+    assert.match(page, /<a class="cover"[^>]*aria-label="Back"/);
     assert.match(page, /\.cover:focus-visible/);
 });
 
@@ -362,4 +365,67 @@ test('a remote picture is sent no referrer whichever way it is framed', () => {
 
 test('a local picture carries no referrer policy - there is nobody to withhold it from', () => {
     assert.doesNotMatch(plate(), /referrerpolicy/);
+});
+
+// --- a page in a frame, rather than a picture ----------------------------
+
+const framedPage = (over = {}) =>
+    renderPlate({
+        asset: 'paul-fussell',
+        title: 'Paul Fussell',
+        back: '$Pre-2010/11.26.10.html',
+        pinned: false,
+        embed: { src: 'https://en.wikipedia.org/wiki/Paul_Fussell', frame: 'iframe', ...over },
+    });
+
+test('a framed page always offers a way out of the frame', () => {
+    // A site that refuses to be framed renders nothing at all inside one.
+    // Without this the plate is a black page with no way onward, which is
+    // worse than the plain link it replaced.
+    const page = framedPage();
+
+    assert.match(page, /<a href="https:\/\/en\.wikipedia\.org\/wiki\/Paul_Fussell" target="_blank" rel="noopener noreferrer">/);
+    assert.match(page, /open en\.wikipedia\.org/);
+});
+
+test('the way out sits above the cover, or it could never be clicked', () => {
+    const page = framedPage();
+
+    assert.match(page, /\.ways \{[^}]*z-index: 2/s);
+});
+
+test('the frame may run scripts but may not take the tab', () => {
+    // A map does not draw at all without scripts. allow-top-navigation is
+    // the one that would let a framed site replace the page around it.
+    const page = framedPage();
+
+    assert.match(page, /sandbox="allow-scripts allow-same-origin allow-popups"/);
+    assert.doesNotMatch(page, /allow-top-navigation/);
+});
+
+test('cover: false leaves the page usable and shows a back link instead', () => {
+    // A cover over an article is an article nobody can scroll.
+    const covered = framedPage();
+    const usable = framedPage({ cover: false });
+
+    assert.match(covered, /<a class="cover"/);
+    assert.doesNotMatch(usable, /<a class="cover"/);
+    assert.match(usable, /<a id="back" href="[^"]*11\.26\.10\.html">&larr; back<\/a>/);
+});
+
+test('the cover and the back link lead to the same place', () => {
+    const covered = framedPage();
+    const usable = framedPage({ cover: false });
+    const href = (p) => p.match(/id="back" href="([^"]+)"/)[1];
+
+    assert.equal(href(covered), href(usable));
+});
+
+test('an image embed grows no frame furniture', () => {
+    const page = renderPlate({
+        asset: 'x', title: 'x', back: 'a.html',
+        embed: { src: 'https://example.org/x.jpg', frame: 'image' },
+    });
+
+    assert.doesNotMatch(page, /<iframe|class="ways"|class="cover"/);
 });
