@@ -83,8 +83,8 @@ test('only poem-to-poem links become edges', () => {
 });
 
 test('pictures and outbound links stay on the card, out of the graph', () => {
-    // Counting these as citations is exactly how graph.html came to
-    // claim three times as many poems as the collection has.
+    // Counting these as citations is exactly how the old link map came
+    // to claim three times as many poems as the collection has.
     const { poems } = dataset();
     const snafu = poems.find((p) => p.key === 'snafu');
 

@@ -40,9 +40,6 @@ jobs:
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
         run: npm run sync
 
-      - name: Rebuild narrative map
-        run: npm run graph
-
       - name: Rebuild the Commonplace Book
         run: npm run commonplace
 
