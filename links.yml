@@ -36,11 +36,12 @@ poems:
   le-maison-du-ren-magritte:                 { doc: 1y6WJaTSUXf0JNRsx-YNjI7n9Xlb3UDng3psTQogw4GQ, title: "Le Maison du René Magritte" }
   looking-back-after-a-friend-dies:          { doc: 1luh5Q5RXHhei-lLxH7fOKdjHqUJ1-7VWWv4KXNfEB0c, title: Looking Back After a Friend Dies }
   madness-at-hand:                           { doc: 1112_ND-vGDGjsjHvcLAJTyu_PHYWsThMT9CZE38ArvU, title: Madness At-Hand }
-  making-up-after-decades-together:           { doc: 1G-HhPkxSII5uOmmEafedMdVs1yVj2Isoyu0dCoECRpo, title: Making Up After Decades Together }
+  making-up-after-decades-together:          { doc: 1G-HhPkxSII5uOmmEafedMdVs1yVj2Isoyu0dCoECRpo, title: Making Up After Decades Together }
   marked-by-water:                           { doc: 1G5itt7gjCwCZkm0fLAPKIOklXGCTAa5simr0sN623Ic, title: Marked by Water }
   marsh-voices:                              { doc: 1Nvh9h8fgyLUrn9MPO_e_fdM29oMuJjHZeEnxUIHfClE, title: Marsh Voices }
   masquerade:                                { doc: 10QQDcAu6DKA9IeB8NSfvHmx9KWuLw-Z-sqHl7eTGeJ4, title: Masquerade }
   minds-deep:                                { doc: 14GQBA2zTiF2N_7pfNhq3Krtl3-C1PcQ2O1s50Zb0Fw4, title: "Mind’s Deep" }
+  months-later:                              { doc: 15OMP_-Opjx387Q2-GKMy17akz_UFIFs6st3_o74aO9E, title: Months Later }
   muddled-soup:                              { doc: 1bbiJCqlYBHfac7N3ekVCqKQ8LCec8PxB0gydjnkBZiM, title: Muddled Soup }
   nostalgia:                                 { doc: 1hDqG230l56THhDRpRMGfZs29iu6oQjd74uZbLkg3A8I, title: Nostalgia }
   omen-of-the-dead-belly-up-hog:             { doc: 1Lke1GuPoKVs8h-FluYaZPauyfEtElK98Vs3krWb0yYA, title: Omen of the Dead, Belly-Up Hog }
@@ -73,6 +74,7 @@ poems:
   trouble-sleeping-as-a-child:               { doc: 1CvMmNLy1X0qAI-x8BeRDv-9ccgz340h8fJp1nq6Z5cA, title: Trouble Sleeping as a Child }
   vulture-tree:                              { doc: 1Fq6q6L5ungIpj2ELSj3hJCJGV1Tt2se-F9cH_rAtTUM, title: Vulture Tree }
   what-could-have-been:                      { doc: 1KFuyneTLbO_q8ebT22YVj3WVs24upQkzmoJEwCCK_HY, title: What Could Have Been }
+  year-of-the-rabbit:                        { doc: 1MbI3L0E4aNJTckQTCENDZIawxaYEwGwqRx9hab6GpIs, title: Year of the Rabbit }
   you-and-i:                                 { doc: 16hPP2pblEzTSyVOIfwbI8TWQ10krsjS_akzQ2NDmOmg, title: You and I }
   your-song-in-the-morning:                  { doc: 1Efw9AEjmMOwLmnw2hqXPmb0fGbGJ3qNLpBbYC9jSQag, title: Your Song in the Morning }
 
@@ -199,6 +201,7 @@ links:
   - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }
   - { from: desert-morning-chill, phrase: "outside lamp", to: its-okay-if-it-doesnt-make-sense-at-firs }
+  - { from: documented-a-day-before-it-occurred, phrase: "The path drops off", to: omen-of-the-dead-belly-up-hog }
   - { from: documented-a-day-before-it-occurred, phrase: "electrons of our thoughts", to: time-is-purposeful }
   - { from: documented-a-day-before-it-occurred, phrase: "rag and bone", to: prey-to-the-weather }
   - { from: every-poem-is-an-aged-memory, phrase: "her arms", to: your-song-in-the-morning }
@@ -228,6 +231,7 @@ links:
   - { from: le-maison-du-ren-magritte, phrase: "creation", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: le-maison-du-ren-magritte, phrase: "her", to: your-song-in-the-morning }
   - { from: madness-at-hand, phrase: "the devil", to: trouble-sleeping-as-a-child }
+  - { from: making-up-after-decades-together, phrase: "words they deserve", to: quite-like-my-love-for-you }
   - { from: marked-by-water, phrase: "drift", to: language-makes-more-sense }
   - { from: marsh-voices, phrase: "black", to: osiris-brings-the-drip-drop-drip }
   - { from: masquerade, phrase: "Sleep grips you", to: in-and-out-of-consciousness }
@@ -292,6 +296,7 @@ links:
   - { from: trouble-sleeping-as-a-child, phrase: "red devil", to: floating-chrysanthemums }
   - { from: vulture-tree, phrase: "electricity", to: summer-storm }
   - { from: vulture-tree, phrase: "feeds the buzzards", to: omen-of-the-dead-belly-up-hog }
+  - { from: year-of-the-rabbit, phrase: "You killed that rabbit two years ago", to: months-later }
   - { from: you-and-i, phrase: "you and I", to: on-the-shortest-night }
   - { from: your-song-in-the-morning, phrase: "my silent question", to: the-eleventh-hour }
   - { from: your-song-in-the-morning, phrase: "you whisper found comprehension", to: its-okay-if-it-doesnt-make-sense-at-firs }
