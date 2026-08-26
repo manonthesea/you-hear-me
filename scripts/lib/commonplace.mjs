@@ -1,10 +1,11 @@
 // The Commonplace Book: the collection's own index of itself.
 //
-// Where graph.html reads every <a href> on every page - and so counts
-// plates, hand-made pages and outbound links alike - this reads the
-// ledger. The ledger is the record of what the poet deliberately drew
-// between poems, so it is the only source that can answer "how does
-// this collection refer to itself" without inflating the answer.
+// It reads the ledger rather than the pages. Reading every <a href>
+// on every page - as the map this replaced did - counts plates,
+// hand-made pages and outbound links alike, and so answers a question
+// nobody asked. The ledger is the record of what the poet deliberately
+// drew between poems, so it is the only source that can answer "how
+// does this collection refer to itself" without inflating the answer.
 //
 // The page is generated rather than written because the alternative was
 // a snapshot that went stale the moment a link was added, and quietly:

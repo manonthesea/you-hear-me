@@ -381,8 +381,8 @@ comment would swallow the real content.
   loop.
 - **From GitHub**: Actions tab → "Sync poems" workflow → Run workflow.
   It exports every Doc, regenerates changed pages, rebuilds the
-  narrative map (`graph.html`), and pushes a commit only if something
-  changed. This stays the way to publish a **Doc edit**: nothing on
+  Commonplace Book (`commonplace.html`), and pushes a commit only if
+  something changed. This stays the way to publish a **Doc edit**: nothing on
   GitHub can detect that you edited a poem in Drive, so a manual run (or
   a scheduled one, if ever added) is the only thing that picks it up.
 - **Locally**: `npm install`, run `gcloud auth application-default
