@@ -59,6 +59,39 @@ export function parseManifest(raw) {
 }
 
 /**
+ * The prefix marking a manifest entry as a plate rather than a poem.
+ *
+ * A plate is a generated page and belongs in the manifest - it is the
+ * manifest that authorises its deletion - but it is not a poem, has no
+ * Doc behind it, and must never be offered as one. Written by the sync,
+ * read by everything that asks the manifest what the collection holds.
+ */
+export const PLATE_PREFIX = 'plate:';
+
+/**
+ * Is this manifest entry a poem?
+ *
+ * Everything that walks the manifest wants poems and not plates, and
+ * before this each caller spelled the test out for itself - so a caller
+ * that forgot simply offered eighteen plates as poems, all of them
+ * titled "index", which is how `poems:ids` came to emit a block nobody
+ * could safely paste.
+ *
+ * @param {{ id: string|null }} entry
+ */
+export function isPoem(entry) {
+    return Boolean(entry?.id) && !entry.id.startsWith(PLATE_PREFIX);
+}
+
+/**
+ * @param {Array<{ id: string|null }>} entries
+ * @returns {Array<object>} the poems among them, in the given order.
+ */
+export function poemsIn(entries) {
+    return entries.filter(isPoem);
+}
+
+/**
  * @param {Array<{ id: string, path: string, permalink: string }>} entries
  * @returns {object} the JSON body to write, ordered so a re-run with no
  *   edits produces no diff.
