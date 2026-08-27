@@ -205,6 +205,7 @@ links:
   - { from: documented-a-day-before-it-occurred, phrase: "electrons of our thoughts", to: time-is-purposeful }
   - { from: documented-a-day-before-it-occurred, phrase: "rag and bone", to: prey-to-the-weather }
   - { from: every-poem-is-an-aged-memory, phrase: "her arms", to: your-song-in-the-morning }
+  - { from: fertile-ground, phrase: "Like time stuck", to: documented-a-day-before-it-occurred }
   - { from: fertile-ground, phrase: "fertile", to: osiris-brings-the-drip-drop-drip }
   - { from: fertile-ground, phrase: "maggots", to: snafu }
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
