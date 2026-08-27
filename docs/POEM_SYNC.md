@@ -91,7 +91,15 @@ sit at different depths.
 
 Run `npm run poems:ids` to print the `poems:` block ready to paste — it
 reads the manifest and the published pages, so it needs no Drive
-credentials.
+credentials. It lists poems only; the plates in the manifest are pages
+but not poems, and offering them as such once produced a block that
+could not safely be pasted.
+
+The slug is yours to rename — it only has to be unique, and the `title`
+beside it is a comment for the reader. What must not change is the Doc
+the slug is bound to. Rename it in the `poems:` block and in every
+`from`/`to` that names it; a slug nothing resolves to is reported as
+waiting rather than applied.
 
 ### Anchors
 

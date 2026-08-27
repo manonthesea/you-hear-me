@@ -36,7 +36,7 @@ import { existsSync } from 'node:fs';
 import { linkPhraseAcross } from './lib/anchor.mjs';
 import { hrefFor, parseLedger, resolveLedger } from './lib/ledger.mjs';
 import { platePath, plateSlug, renderPlate } from './lib/plate.mjs';
-import { generatedPaths, manifestBody, parseManifest } from './lib/manifest.mjs';
+import { PLATE_PREFIX, generatedPaths, manifestBody, parseManifest } from './lib/manifest.mjs';
 import { findCollisions, outputPathFor, parseDocName, selectOrphans } from './lib/paths.mjs';
 import {
     findPermalinkCollisions,
@@ -431,7 +431,7 @@ async function main() {
         } catch {
             // no plate for this image yet
         }
-        plateEntries.push({ id: `plate:${asset}`, path: platePathFor, permalink: null });
+        plateEntries.push({ id: `${PLATE_PREFIX}${asset}`, path: platePathFor, permalink: null });
         if (existing !== page) {
             await mkdir(path.dirname(outputPath), { recursive: true });
             await writeFile(outputPath, page, 'utf8');

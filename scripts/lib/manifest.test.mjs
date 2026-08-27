@@ -7,7 +7,7 @@
 
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { generatedPaths, manifestBody, parseManifest } from './manifest.mjs';
+import { PLATE_PREFIX, generatedPaths, isPoem, manifestBody, parseManifest, poemsIn } from './manifest.mjs';
 
 const OLD = JSON.stringify({ pages: ['A.html', 'Early/B.html'] });
 const NEW = JSON.stringify({
@@ -96,4 +96,38 @@ test('both the poem page and its permalink count as generated', () => {
 
 test('a page from before permalinks contributes only its path', () => {
     assert.deepEqual(generatedPaths(parseManifest(OLD)), ['A.html', 'Early/B.html']);
+});
+
+// --- poems and plates -----------------------------------------------------
+
+test('a plate is not a poem, however much it looks like a page', () => {
+    // Plates belong in the manifest - it is what authorises deleting
+    // them - but they have no Doc behind them and must never be offered
+    // as poems. "Has an id" was the test before, and plates have one.
+    assert.equal(isPoem({ id: 'doc-abc', path: 'A.html' }), true);
+    assert.equal(isPoem({ id: `${PLATE_PREFIX}patton.jpg`, path: 'plates/patton/index.html' }), false);
+});
+
+test('an entry with no id at all is not a poem either', () => {
+    // A pre-identity manifest reads as {id: null}; nothing can bind a
+    // slug to it, so it cannot be named in the ledger.
+    for (const entry of [{ id: null }, {}, undefined]) {
+        assert.equal(isPoem(entry), false, JSON.stringify(entry));
+    }
+});
+
+test('the poems come back in the order they were given', () => {
+    // Callers sort by their own rule afterwards; reordering here would
+    // silently change the block "poems:ids" prints.
+    const entries = parseManifest(
+        JSON.stringify({
+            pages: [
+                { id: 'doc-b', path: 'B.html' },
+                { id: `${PLATE_PREFIX}x.jpg`, path: 'plates/x/index.html' },
+                { id: 'doc-a', path: 'A.html' },
+            ],
+        })
+    );
+
+    assert.deepEqual(poemsIn(entries).map((e) => e.id), ['doc-b', 'doc-a']);
 });

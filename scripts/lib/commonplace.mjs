@@ -12,6 +12,7 @@
 // a map that is merely out of date looks exactly like a correct one.
 
 import path from 'node:path';
+import { isPoem } from './manifest.mjs';
 
 // The folders are named for their era, with a punctuation mark that
 // keeps them sorting in order on disk. The reader does not need to see
@@ -65,7 +66,7 @@ export function buildDataset({ ledger, entries, bySource, titles }) {
     for (const entry of entries) {
         // Plates are pages too, but they are not poems and nothing cites
         // them by name; they appear on a poem's card as "links out".
-        if (!entry.id || entry.id.startsWith('plate:')) continue;
+        if (!isPoem(entry)) continue;
         const base = path.posix.basename(entry.path, '.html');
         const { sortKey, dated } = dateKey(base);
         const slug = slugByDoc.get(entry.id) ?? null;

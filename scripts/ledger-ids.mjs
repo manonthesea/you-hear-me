@@ -16,7 +16,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseManifest } from './lib/manifest.mjs';
+import { isPoem, parseManifest, poemsIn } from './lib/manifest.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST_PATH = path.join(REPO_ROOT, '.poem-sync-manifest.json');
@@ -54,18 +54,21 @@ function yamlString(value) {
 
 async function main() {
     const entries = parseManifest(await readFile(MANIFEST_PATH, 'utf8'));
-    const withoutId = entries.filter((entry) => !entry.id);
+    const candidates = entries.filter((entry) => !entry.id || isPoem(entry));
+    const withoutId = candidates.filter((entry) => !entry.id);
     if (withoutId.length > 0) {
         console.error(
-            `${withoutId.length} of ${entries.length} manifest entries have no Doc ID. ` +
+            `${withoutId.length} of ${candidates.length} poems in the manifest have no Doc ID. ` +
                 'Run a sync first — identity is recorded the next time poems are published.'
         );
-        if (withoutId.length === entries.length) process.exit(1);
+        if (withoutId.length === candidates.length) process.exit(1);
     }
 
     const taken = new Set();
     const rows = [];
-    for (const entry of entries.filter((e) => e.id)) {
+    // Plates carry an id too, so "has an id" was never the right test:
+    // it offered every plate as a poem, each one titled "index".
+    for (const entry of poemsIn(entries)) {
         const title = await titleOf(entry.path);
         rows.push({ slug: slugify(title, taken), doc: entry.id, title });
     }

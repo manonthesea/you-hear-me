@@ -18,7 +18,7 @@ import * as cheerio from 'cheerio';
 
 import { buildDataset, renderCommonplace } from './lib/commonplace.mjs';
 import { parseLedger, resolveLedger } from './lib/ledger.mjs';
-import { parseManifest } from './lib/manifest.mjs';
+import { isPoem, parseManifest } from './lib/manifest.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -38,7 +38,7 @@ async function main() {
 
     const docToPath = new Map();
     for (const e of entries) {
-        if (e.id && !e.id.startsWith('plate:')) docToPath.set(e.id, e.path);
+        if (isPoem(e)) docToPath.set(e.id, e.path);
     }
 
     const { bySource, pending, missingAssets } = resolveLedger(ledger, {
@@ -50,7 +50,7 @@ async function main() {
     // because a poem with no ledger entry still needs its name.
     const titles = new Map();
     for (const e of entries) {
-        if (!e.id || e.id.startsWith('plate:')) continue;
+        if (!isPoem(e)) continue;
         const file = path.join(REPO_ROOT, e.path);
         if (!existsSync(file)) continue;
         const $ = cheerio.load(await readFile(file, 'utf8'));

@@ -15,19 +15,18 @@
 poems:
   12-31-19:                                  { doc: 1Pfd450stzwB0ObaW58m-MKmtpJoRdZVL7a7dXqilfP0, title: 12.31.19 }
   anxious-sounding-trees:                    { doc: 1SGWXbWjBmoeRPXiMpHx8qIz3zxr-Bo0b6xUkxoIz_Wc, title: Anxious Sounding Trees }
-  at-the-card-table-saturday-night:          { doc: 1fi4X2aufSgpQBwB25-oDZQSh4vwV91b2j1wTqEzOMiI, title: At the card table Saturday night, }
   by-the-numbers:                            { doc: 1DJVhMxIYAFUXkbmi9eWHThMoosS7JtFfT2Qm8mx-4MU, title: By the Numbers }
   clack-clack-clack:                         { doc: 12SlHOZgCUMJV_BgNaSORjtuDe6Di_RiuDhwWqDs2PgA, title: Clack Clack Clack }
   cryptic-word:                              { doc: 1-DrshyFYMpXn0RIG1BViIIa6TSDI4Q8_lV01fm8WPhU, title: Cryptic Word }
   desert-morning-chill:                      { doc: 18AETSQ45BzXtBx3v_qYpEJBHedv3Ai0_tN84k3MSfGk, title: Desert Morning Chill }
   documented-a-day-before-it-occurred:       { doc: 140uz3TKcMN4uR_7jJgT2njXGcT4OBs0H4C-VIW54RJc, title: Documented a Day Before It Occurred }
   eat-to-remember:                           { doc: 1WnQMmGi4shEp825N8Gy_M726f7ZhbmN7Jkk6j7b-J24, title: Eat to Remember }
+  emmanuel-is-hard-to-see:                   { doc: 1fi4X2aufSgpQBwB25-oDZQSh4vwV91b2j1wTqEzOMiI, title: Emmanuel is Hard to See }
   every-poem-is-an-aged-memory:              { doc: 1OLY7oS14MoO4cIo12frLpMiUIW2Yy8sCkvXAI75gXcQ, title: Every Poem is an Aged Memory }
   fertile-ground:                            { doc: 16nMGsKyzp8oDx4LWH5W2qaEMFEQFAU66rbDHBdIy12o, title: Fertile Ground }
   floating-chrysanthemums:                   { doc: 1Emvl54C09VQyaAdwx6U-3FPhWIS86vux4Cu8ybe1lkQ, title: Floating Chrysanthemums }
   friday-irony:                              { doc: 1FUFFWuqmrOPZU7gthhUvGVv3PfFfEpf_72oQMaDak50, title: Friday Irony }
   how-soon-we-forget:                        { doc: 11YmvKxUTWOE8ZbykykDHX8KoiGlNypg0hCEURgqgm2A, title: How Soon We Forget }
-  i-write-poems-written-for-my-loves:        { doc: 1M2mRsgFCmfr8E5SnP3FZnYXxNTIziwbJSuJtMWFusr8, title: I write poems, written for my loves -- }
   in-and-out-of-consciousness:               { doc: 1KjLS9djyIRuWBPxtWmSwYvqyJgIfqaJiHqMapalHXv4, title: In and Out of Consciousness }
   in-spring:                                 { doc: 1R-is1_zgezEhkwYVL2n3kZ571uDzR_zTQTrnHu6XHGI, title: In Spring }
   inside-a-fishs-belly:                      { doc: 1I5sMCA-1ybdHcGPJ4907he9T88OhJJW5AbjF0CYteVk, title: "Inside a Fish’s Belly" }
@@ -43,6 +42,7 @@ poems:
   minds-deep:                                { doc: 14GQBA2zTiF2N_7pfNhq3Krtl3-C1PcQ2O1s50Zb0Fw4, title: "Mind’s Deep" }
   months-later:                              { doc: 15OMP_-Opjx387Q2-GKMy17akz_UFIFs6st3_o74aO9E, title: Months Later }
   muddled-soup:                              { doc: 1bbiJCqlYBHfac7N3ekVCqKQ8LCec8PxB0gydjnkBZiM, title: Muddled Soup }
+  neighborhood-poet:                         { doc: 1M2mRsgFCmfr8E5SnP3FZnYXxNTIziwbJSuJtMWFusr8, title: Neighborhood Poet }
   nostalgia:                                 { doc: 1hDqG230l56THhDRpRMGfZs29iu6oQjd74uZbLkg3A8I, title: Nostalgia }
   omen-of-the-dead-belly-up-hog:             { doc: 1Lke1GuPoKVs8h-FluYaZPauyfEtElK98Vs3krWb0yYA, title: Omen of the Dead, Belly-Up Hog }
   on-sunday:                                 { doc: 1At0bVa3RPnw-0J7g5RYzqgTApnYTVv-0DS49pV3Xdc8, title: On Sunday }
@@ -210,7 +210,6 @@ links:
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
   - { from: floating-chrysanthemums, phrase: "swim", to: how-soon-we-forget }
   - { from: how-soon-we-forget, phrase: "promise of an aspiring year", to: 12-31-19 }
-  - { from: i-write-poems-written-for-my-loves, phrase: "burning flame-red", to: quantum-nothingness }
   - { from: in-and-out-of-consciousness, phrase: "in front of a screen", to: clack-clack-clack }
   - { from: in-and-out-of-consciousness, phrase: "lamp light", to: le-maison-du-ren-magritte }
   - { from: in-and-out-of-consciousness, phrase: "succumbing to sleep", to: its-okay-if-it-doesnt-make-sense-at-firs }
@@ -236,6 +235,7 @@ links:
   - { from: marsh-voices, phrase: "black", to: osiris-brings-the-drip-drop-drip }
   - { from: masquerade, phrase: "Sleep grips you", to: in-and-out-of-consciousness }
   - { from: muddled-soup, phrase: "dead-end loops", to: its-okay-if-it-doesnt-make-sense-at-firs }
+  - { from: neighborhood-poet, phrase: "burning flame-red", to: quantum-nothingness }
   - { from: nostalgia, phrase: "Solstices", to: on-the-shortest-night }
   - { from: nostalgia, phrase: "blue moon", to: the-eleventh-hour }
   - { from: nostalgia, phrase: "rascally dog", asset: "E9E151FD-4C88-49A7-A860-780A8DE38977.jpeg" }
@@ -273,7 +273,7 @@ links:
   - { from: summer-storm, phrase: "snap-fire", to: snafu }
   - { from: the-age-of-old-men-loitering, phrase: "pull a star in upon itself", to: you-and-i }
   - { from: the-age-of-old-men-loitering, phrase: "what men desire", to: fertile-ground }
-  - { from: the-bard-sings, phrase: "in that space", to: i-write-poems-written-for-my-loves }
+  - { from: the-bard-sings, phrase: "in that space", to: neighborhood-poet }
   - { from: the-bard-sings, phrase: "rhapsody of spring", to: in-spring }
   - { from: the-bard-sings, phrase: "the parsing machines will never catch", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: the-bard-sings, phrase: "winter-gust", to: prey-to-the-weather }
