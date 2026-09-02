@@ -2,12 +2,13 @@
   "name": "you-hear-me",
   "private": true,
   "type": "module",
-  "description": "Build tooling for the you-hear-me poetry site: syncs poems from Google Docs, draws the Commonplace Book, and sweeps the site for broken links.",
+  "description": "Build tooling for the you-hear-me poetry site: syncs poems from Google Docs, draws the Commonplace Book and the Paths, and sweeps the site for broken links.",
   "scripts": {
     "sync": "node scripts/sync-poems.mjs",
     "links": "node scripts/check-links.mjs",
     "commonplace": "node scripts/build-commonplace.mjs",
-    "test": "node --test scripts/lib/convert.test.mjs scripts/lib/publish.test.mjs scripts/lib/footnotes.test.mjs scripts/lib/css.test.mjs scripts/lib/render.test.mjs scripts/lib/site.test.mjs scripts/lib/manifest.test.mjs scripts/lib/permalink.test.mjs scripts/lib/anchor.test.mjs scripts/lib/ledger.test.mjs scripts/lib/plate.test.mjs scripts/lib/commonplace.test.mjs scripts/lib/sweep.test.mjs",
+    "paths": "node scripts/build-paths.mjs",
+    "test": "node --test scripts/lib/convert.test.mjs scripts/lib/publish.test.mjs scripts/lib/footnotes.test.mjs scripts/lib/css.test.mjs scripts/lib/render.test.mjs scripts/lib/site.test.mjs scripts/lib/manifest.test.mjs scripts/lib/permalink.test.mjs scripts/lib/anchor.test.mjs scripts/lib/ledger.test.mjs scripts/lib/plate.test.mjs scripts/lib/commonplace.test.mjs scripts/lib/sweep.test.mjs scripts/lib/walk.test.mjs",
     "poems:ids": "node scripts/ledger-ids.mjs"
   },
   "dependencies": {

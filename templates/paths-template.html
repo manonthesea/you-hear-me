@@ -1,0 +1,579 @@
+<meta charset="UTF-8">
+<title>The Paths</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* The Commonplace Book's tokens, unchanged. The two pages are the
+     same collection seen two ways and should not look like strangers.
+     Violet keeps the meaning it has there: a link arriving, not one
+     leaving. */
+  :root {
+    --bg: #f3efe3;
+    --bg-wash: #ece5d3;
+    --surface: #fffdf6;
+    --surface-2: #f2ecda;
+    --ink: #262234;
+    --ink-soft: #4a465c;
+    --muted: #7d788f;
+    --border: #ddd3b8;
+    --border-soft: #e6dec7;
+    --accent: #a8611f;
+    --accent-soft: #d9ab6f;
+    --incoming: #6b46b0;
+    --incoming-soft: #b79ce0;
+    --sage: #4d7d63;
+    --sage-soft: #9cbfa9;
+    --isolated: #a49cae;
+    --shadow: 220 30% 20%;
+
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15131d;
+      --bg-wash: #1a1826;
+      --surface: #1e1c2a;
+      --surface-2: #262333;
+      --ink: #ece6d8;
+      --ink-soft: #cdc6da;
+      --muted: #8d879f;
+      --border: #34314a;
+      --border-soft: #2a2739;
+      --accent: #e2a75c;
+      --accent-soft: #7a5a30;
+      --incoming: #b79ae8;
+      --incoming-soft: #5b4485;
+      --sage: #8fbfa0;
+      --sage-soft: #3b5a49;
+      --isolated: #5c586e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15131d; --bg-wash: #1a1826; --surface: #1e1c2a; --surface-2: #262333;
+    --ink: #ece6d8; --ink-soft: #cdc6da; --muted: #8d879f;
+    --border: #34314a; --border-soft: #2a2739;
+    --accent: #e2a75c; --accent-soft: #7a5a30;
+    --incoming: #b79ae8; --incoming-soft: #5b4485;
+    --sage: #8fbfa0; --sage-soft: #3b5a49; --isolated: #5c586e;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 6rem;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2.5rem); }
+
+  /* ---- masthead ---- */
+  .masthead {
+    padding: clamp(2.25rem, 5vw, 3.5rem) 0 1.75rem;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 60% 100% at 15% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+      var(--bg-wash);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 0.6rem;
+  }
+  h1.title {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 3.1rem); letter-spacing: -0.01em;
+    margin: 0 0 0.5rem; text-wrap: balance;
+  }
+  .dek { font-size: 1.02rem; color: var(--ink-soft); max-width: 62ch; margin: 0 0 1.25rem; }
+  .dek b { font-weight: 600; color: var(--ink); }
+  .sibling {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    color: var(--ink-soft); text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft); padding-bottom: 1px;
+  }
+  .sibling:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---- controls ---- */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center;
+    padding: 1rem 0 0.25rem;
+  }
+  .controls label {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  }
+  select, .btn {
+    font-family: var(--font-body); font-size: 0.9rem; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.4rem 0.65rem; cursor: pointer;
+    max-width: min(28rem, 70vw);
+  }
+  select:hover, .btn:hover { border-color: var(--accent); }
+  .btn[disabled] { opacity: 0.45; cursor: default; }
+  .btn[disabled]:hover { border-color: var(--border); }
+
+  /* ---- the trail ---- */
+  main { padding-top: 2rem; }
+  .trail { list-style: none; margin: 0; padding: 0; }
+
+  .step { position: relative; padding-left: 2.6rem; }
+  /* The spine. Drawn per-step so the last one can stop at its own dot
+     instead of trailing into space. */
+  .step::before {
+    content: ''; position: absolute; left: 0.72rem; top: 0; bottom: 0;
+    width: 2px; background: var(--accent-soft);
+  }
+  .step:first-child::before { top: 1.15rem; }
+  .step:last-child::before { bottom: auto; height: 1.15rem; }
+
+  .dot {
+    position: absolute; left: 0; top: 0.55rem;
+    width: 1.45rem; height: 1.45rem; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--accent-soft);
+    display: grid; place-items: center;
+    font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted);
+  }
+  .step.here .dot { border-color: var(--accent); background: var(--accent); color: var(--bg); font-weight: 500; }
+  .step.start .dot { border-style: double; border-width: 4px; }
+
+  .poem {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.7rem;
+    background: none; border: 0; padding: 0.5rem 0 0.5rem; margin: 0;
+    text-align: left; font: inherit; color: inherit; cursor: pointer; width: 100%;
+  }
+  .step:not(.here) .poem:hover .t { color: var(--accent); }
+  .poem .t { font-family: var(--font-display); font-size: 1.18rem; font-weight: 600; letter-spacing: -0.005em; }
+  .step.here .poem .t { color: var(--accent); }
+  .poem .d { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); }
+  .poem .rewind {
+    font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted);
+    opacity: 0; transition: opacity 0.12s;
+  }
+  .step:not(.here) .poem:hover .rewind, .poem:focus-visible .rewind { opacity: 1; }
+
+  /* The phrase that carries you from one poem to the next. It is the
+     whole point of walking rather than reading a map: the map shows
+     which poems touch, this shows the words that touch them. */
+  .via {
+    margin: 0 0 0.35rem; padding: 0 0 0.55rem;
+    font-family: var(--font-display); font-style: italic;
+    font-size: 1rem; color: var(--ink-soft);
+  }
+  .via::before { content: '“'; }
+  .via::after { content: '”'; }
+
+  .open {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+    text-decoration: none; border-bottom: 1px solid var(--border);
+  }
+  .open:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---- the choices at the head of the trail ---- */
+  .fork { padding: 0.4rem 0 0 2.6rem; }
+  .fork h2 {
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    margin: 0.9rem 0 0.7rem;
+  }
+  .choices { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); margin: 0 0 1.4rem; }
+
+  .choice {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-soft);
+    border-radius: 9px; padding: 0.7rem 0.85rem; font: inherit; color: inherit;
+    transition: border-color 0.12s, transform 0.12s, box-shadow 0.12s;
+  }
+  .choice:hover, .choice:focus-visible {
+    border-color: var(--accent); border-left-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px -6px hsl(var(--shadow) / 0.35);
+  }
+  .choice .phrase { font-family: var(--font-display); font-style: italic; font-size: 1rem; color: var(--ink); }
+  .choice .arrow { font-family: var(--font-mono); color: var(--accent); padding: 0 0.35rem; }
+  .choice .dest { font-family: var(--font-display); font-weight: 600; }
+  .choice .meta {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); margin-top: 0.35rem;
+  }
+  .key {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 0 0.3rem; color: var(--muted);
+  }
+
+  /* Inbound choices keep the violet the map already uses for a link
+     arriving, and say "referenced by" as well - never the colour alone. */
+  .choice.back { border-left-color: var(--incoming-soft); }
+  .choice.back:hover, .choice.back:focus-visible { border-color: var(--incoming); border-left-color: var(--incoming); }
+  .choice.back .arrow { color: var(--incoming); }
+
+  /* A destination already on the walk. Marked with a word and a glyph
+     as well as a tint, because a loop is the most interesting thing
+     that can happen here and must not depend on being seen in colour. */
+  .loops { color: var(--incoming); font-weight: 500; }
+  .choice.looping { border-left-style: dashed; }
+
+  .ends {
+    font-family: var(--font-display); font-style: italic; font-size: 1.05rem;
+    color: var(--muted); margin: 0.2rem 0 1.4rem;
+  }
+
+  /* ---- the tally ---- */
+  .tally {
+    display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; align-items: baseline;
+    border-top: 1px solid var(--border); margin-top: 1.5rem; padding-top: 0.9rem;
+    font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted);
+  }
+  .tally b { color: var(--ink); font-weight: 500; }
+  .tally .closed { color: var(--incoming); }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem;
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  .swatch { display: inline-block; width: 0.85rem; border-top: 3px solid; vertical-align: middle; margin-right: 0.35rem; }
+
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .step { padding-left: 2.1rem; }
+    .fork { padding-left: 2.1rem; }
+    .dot { width: 1.25rem; height: 1.25rem; }
+    .step::before { left: 0.61rem; }
+    .choices { grid-template-columns: 1fr; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">you-hear-me &middot; the links, walked</p>
+    <h1 class="title">The Paths</h1>
+    <p class="dek" id="dek">&nbsp;</p>
+    <a class="sibling" href="commonplace.html">see the whole map instead &rarr; The Commonplace Book</a>
+
+    <div class="controls">
+      <label for="root">Begin at</label>
+      <select id="root"></select>
+      <button class="btn" id="back" type="button">&larr; step back</button>
+      <button class="btn" id="reset" type="button">start over</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <ol class="trail" id="trail"></ol>
+  <div class="fork" id="fork"></div>
+
+  <div class="wrap" style="padding:0">
+    <div class="tally" id="tally"></div>
+    <div class="legend">
+      <span><span class="swatch" style="border-color: var(--accent)"></span>leads to</span>
+      <span><span class="swatch" style="border-color: var(--incoming)"></span>referenced by &mdash; a step backwards</span>
+      <span><span class="swatch" style="border-color: var(--incoming); border-top-style: dashed"></span>&#8634; already on your path</span>
+    </div>
+  </div>
+  <p class="visually-hidden" role="status" aria-live="polite" id="say"></p>
+</main>
+
+<script id="dataset" type="application/json">{{DATA}}</script>
+<script>
+(function () {
+  'use strict';
+
+  var DATA = JSON.parse(document.getElementById('dataset').textContent);
+  var poems = DATA.poems;
+  var edges = DATA.edges;
+  var byKey = new Map(poems.map(function (p) { return [p.key, p]; }));
+
+  var out = new Map(), inn = new Map();
+  edges.forEach(function (e) {
+    if (!out.has(e.from)) out.set(e.from, []);
+    if (!inn.has(e.to)) inn.set(e.to, []);
+    out.get(e.from).push(e);
+    inn.get(e.to).push(e);
+  });
+  var leadsFrom = function (k) { return out.get(k) || []; };
+  var leadsTo = function (k) { return inn.get(k) || []; };
+
+  var SITE_ROOT = '{{SITE_ROOT}}';
+  function href(p) { return SITE_ROOT + p.path.split('/').map(encodeURIComponent).join('/'); }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function dateLabel(p) {
+    if (p.dated && /^\d{4}-\d{2}-\d{2}/.test(p.sortKey)) {
+      var parts = p.sortKey.slice(0, 10).split('-');
+      return parts[1] + '/' + parts[2] + '/' + parts[0].slice(2);
+    }
+    return p.base.replace(/^Circa\s*/i, 'c. ');
+  }
+
+  // ---- the walk ----------------------------------------------------------
+  // A path is the list of poems stepped through, in order. Everything on
+  // the page is a function of it, so there is one thing to get right.
+  var path = [];
+
+  function readHash() {
+    var raw = decodeURIComponent(location.hash.replace(/^#/, ''));
+    if (!raw) return null;
+    var keys = raw.split('>').map(function (k) { return k.trim(); }).filter(Boolean);
+    // A hash is a URL someone may have kept for a while. Anything in it
+    // that no longer names a poem is dropped rather than believed.
+    var walk = [];
+    keys.forEach(function (k) {
+      if (!byKey.has(k)) return;
+      if (!walk.length) { walk.push(k); return; }
+      var last = walk[walk.length - 1];
+      var joined = leadsFrom(last).concat(leadsTo(last)).some(function (e) {
+        return (e.from === last ? e.to : e.from) === k;
+      });
+      if (joined) walk.push(k);
+    });
+    return walk.length ? walk : null;
+  }
+
+  function writeHash() {
+    var next = '#' + path.map(encodeURIComponent).join('>');
+    if (location.hash !== next) history.replaceState(null, '', next);
+  }
+
+  function goTo(key) { path.push(key); render(); }
+  function truncateTo(i) { path = path.slice(0, i + 1); render(); }
+
+  // ---- rendering ---------------------------------------------------------
+  var trailEl = document.getElementById('trail');
+  var forkEl = document.getElementById('fork');
+  var tallyEl = document.getElementById('tally');
+  var sayEl = document.getElementById('say');
+
+  function render() {
+    var onPath = new Set(path);
+    var here = path[path.length - 1];
+
+    // --- the trail so far ---
+    trailEl.textContent = '';
+    path.forEach(function (key, i) {
+      var p = byKey.get(key);
+      var li = document.createElement('li');
+      li.className = 'step' + (i === path.length - 1 ? ' here' : '') + (i === 0 ? ' start' : '');
+
+      var dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.textContent = i === 0 ? '◆' : String(i);
+      dot.setAttribute('aria-hidden', 'true');
+      li.appendChild(dot);
+
+      var poem = document.createElement('button');
+      poem.type = 'button';
+      poem.className = 'poem';
+      poem.innerHTML =
+        '<span class="t">' + escapeHtml(p.title) + '</span>' +
+        '<span class="d">' + escapeHtml(dateLabel(p)) + '</span>' +
+        (i === path.length - 1 ? '' : '<span class="rewind">walk on from here ↶</span>');
+      if (i === path.length - 1) {
+        poem.setAttribute('aria-current', 'step');
+        poem.disabled = true;
+        poem.style.cursor = 'default';
+      } else {
+        poem.title = 'Go back to this poem and take a different turn';
+        poem.addEventListener('click', function () { truncateTo(i); });
+      }
+      li.appendChild(poem);
+
+      var open = document.createElement('a');
+      open.className = 'open';
+      open.href = href(p);
+      open.target = '_blank';
+      open.rel = 'noopener';
+      open.textContent = 'read it ↗';
+      li.appendChild(open);
+
+      // The phrase that carried the reader out of this poem.
+      if (i < path.length - 1) {
+        var step = stepBetween(key, path[i + 1]);
+        var via = document.createElement('p');
+        via.className = 'via';
+        via.textContent = step ? step.phrase : 'back to';
+        li.appendChild(via);
+      }
+
+      trailEl.appendChild(li);
+    });
+
+    // --- where it can go next ---
+    forkEl.textContent = '';
+    var forward = leadsFrom(here);
+    var backward = leadsTo(here).filter(function (e) {
+      // Only offer a backwards step that is not already the forward one.
+      return !forward.some(function (f) { return f.to === e.from; });
+    });
+
+    if (forward.length) {
+      forkEl.appendChild(heading('from here the poem leads'));
+      forkEl.appendChild(choiceList(forward, 'forward', onPath, 0));
+    }
+    if (!forward.length) {
+      var ends = document.createElement('p');
+      ends.className = 'ends';
+      ends.textContent = backward.length
+        ? 'Nothing leads onward from here — but the collection points back at it.'
+        : 'Nothing leads onward from here. The path ends.';
+      forkEl.appendChild(ends);
+    }
+    if (backward.length) {
+      forkEl.appendChild(heading('and is referenced by'));
+      // Numbered on from the forward group: the key handler indexes
+      // every choice on the page, so a second list starting at 1 again
+      // would print a number that presses something else.
+      forkEl.appendChild(choiceList(backward, 'back', onPath, forward.length));
+    }
+
+    tally(onPath);
+    writeHash();
+    document.getElementById('back').disabled = path.length < 2;
+    sayEl.textContent =
+      byKey.get(here).title + '. ' +
+      (forward.length ? forward.length + ' onward ' + (forward.length === 1 ? 'link' : 'links') + '.' : 'No links onward.');
+  }
+
+  function heading(text) {
+    var h = document.createElement('h2');
+    h.textContent = text;
+    return h;
+  }
+
+  function stepBetween(a, b) {
+    var f = leadsFrom(a).find(function (e) { return e.to === b; });
+    if (f) return f;
+    return leadsTo(a).find(function (e) { return e.from === b; }) || null;
+  }
+
+  function choiceList(list, direction, onPath, offset) {
+    var wrapEl = document.createElement('div');
+    wrapEl.className = 'choices';
+
+    list.forEach(function (e, i) {
+      var otherKey = direction === 'forward' ? e.to : e.from;
+      var other = byKey.get(otherKey);
+      if (!other) return;
+
+      var loops = onPath.has(otherKey);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'choice ' + direction + (loops ? ' looping' : '');
+      b.innerHTML =
+        '<span class="phrase">“' + escapeHtml(e.phrase) + '”</span>' +
+        '<span class="arrow">' + (direction === 'forward' ? '→' : '←') + '</span>' +
+        '<span class="dest">' + escapeHtml(other.title) + '</span>' +
+        '<span class="meta">' +
+          '<span class="key">' + (offset + i < 9 ? offset + i + 1 : '&#183;') + '</span>' +
+          '<span>' + escapeHtml(dateLabel(other)) + '</span>' +
+          (loops ? '<span class="loops">↺ already on your path</span>' : '') +
+          (leadsFrom(otherKey).length === 0 ? '<span>path ends there</span>' : '') +
+        '</span>';
+      b.addEventListener('click', function () { goTo(otherKey); });
+      wrapEl.appendChild(b);
+    });
+
+    return wrapEl;
+  }
+
+  function tally(onPath) {
+    var steps = path.length - 1;
+    var closed = path.length > 2 && path[0] === path[path.length - 1];
+    var revisits = path.length - onPath.size;
+    tallyEl.innerHTML =
+      '<span><b>' + path.length + '</b> poems</span>' +
+      '<span><b>' + steps + '</b> ' + (steps === 1 ? 'link' : 'links') + ' followed</span>' +
+      (revisits ? '<span class="closed">↺ returned ' + revisits + '×</span>' : '') +
+      (closed ? '<span class="closed">the path closes where it began</span>' : '');
+  }
+
+  // ---- controls ----------------------------------------------------------
+  var rootSel = document.getElementById('root');
+  poems.slice()
+    .sort(function (a, b) { return a.title.localeCompare(b.title); })
+    .forEach(function (p) {
+      var o = document.createElement('option');
+      o.value = p.key;
+      var n = leadsFrom(p.key).length;
+      o.textContent = p.title + (n ? '' : '  (no links onward)');
+      rootSel.appendChild(o);
+    });
+
+  rootSel.addEventListener('change', function () { path = [rootSel.value]; render(); });
+  document.getElementById('reset').addEventListener('click', function () { path = [path[0]]; render(); });
+  document.getElementById('back').addEventListener('click', function () {
+    if (path.length > 1) { path.pop(); render(); }
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    if (ev.key === 'Backspace' && path.length > 1) { ev.preventDefault(); path.pop(); render(); return; }
+    if (/^[1-9]$/.test(ev.key)) {
+      var buttons = forkEl.querySelectorAll('.choice');
+      var pick = buttons[Number(ev.key) - 1];
+      if (pick) { ev.preventDefault(); pick.click(); }
+    }
+  });
+
+  window.addEventListener('hashchange', function () {
+    var walk = readHash();
+    // Nothing readable in the new hash - a hand-edited URL, or one kept
+    // from before a slug was renamed. Keep the walk the reader is on and
+    // put the URL back in step with it, rather than leaving the address
+    // bar describing a page that is not on screen.
+    if (!walk) { writeHash(); return; }
+    if (walk.join('>') !== path.join('>')) { path = walk; render(); }
+  });
+
+  // ---- the sentence under the title --------------------------------------
+  // Written from the data, so it cannot claim a number the page does not
+  // show - the same rule the Commonplace Book's dek follows.
+  (function dek() {
+    var seen = new Set([DATA.root]);
+    var queue = [DATA.root];
+    var depth = new Map([[DATA.root, 0]]);
+    for (var i = 0; i < queue.length; i++) {
+      leadsFrom(queue[i]).forEach(function (e) {
+        if (seen.has(e.to)) return;
+        seen.add(e.to);
+        depth.set(e.to, depth.get(queue[i]) + 1);
+        queue.push(e.to);
+      });
+    }
+    var furthest = Math.max.apply(null, Array.from(depth.values()));
+    document.getElementById('dek').innerHTML =
+      'One link at a time, following the phrase that carries you across. From ' +
+      '<b>' + escapeHtml(byKey.get(DATA.root).title) + '</b>, <b>' + seen.size + '</b> of ' +
+      poems.length + ' poems lie along some path — the furthest <b>' + furthest +
+      '</b> steps out. Pick a phrase to take a step; click a poem behind you to turn a different way.';
+  })();
+
+  path = readHash() || [DATA.root];
+  rootSel.value = path[0];
+  render();
+})();
+</script>
