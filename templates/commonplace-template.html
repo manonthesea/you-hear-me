@@ -368,6 +368,14 @@
     .card, #detail { transition: none; }
   }
 
+  .sibling-link { margin: 0.9rem 0 0; }
+  .sibling-link a {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    color: var(--ink-soft); text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft); padding-bottom: 1px;
+  }
+  .sibling-link a:hover { color: var(--accent); border-color: var(--accent); }
+
   ::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); }
 </style>
 
@@ -382,6 +390,7 @@
       <span><b id="stat-isolated">&nbsp;</b> not yet woven in</span>
       <span><b id="stat-eras">&nbsp;</b> eras, <b id="stat-span">&nbsp;</b></span>
     </div>
+    <p class="sibling-link"><a href="paths.html">walk the threads one at a time &rarr; The Paths</a></p>
   </div>
 </header>
 

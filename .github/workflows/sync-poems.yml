@@ -43,6 +43,9 @@ jobs:
       - name: Rebuild the Commonplace Book
         run: npm run commonplace
 
+      - name: Rebuild the Paths
+        run: npm run paths
+
       - name: Commit and push if changed
         run: |
           git config user.name "poem-sync-bot"
