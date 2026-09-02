@@ -104,6 +104,7 @@
     border-bottom: 1px solid var(--accent-soft); padding-bottom: 1px;
   }
   .sibling:hover { color: var(--accent); border-color: var(--accent); }
+  .siblings { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin: 0; }
 
   /* ---- controls ---- */
   .controls {
@@ -313,7 +314,10 @@
     <p class="eyebrow">you-hear-me &middot; the links, walked</p>
     <h1 class="title">The Paths</h1>
     <p class="dek" id="dek">&nbsp;</p>
-    <a class="sibling" href="commonplace.html">see the whole map instead &rarr; The Commonplace Book</a>
+    <p class="siblings">
+      <a class="sibling" href="maze.html">see every path at once &rarr; The Maze</a>
+      <a class="sibling" href="commonplace.html">see the whole map instead &rarr; The Commonplace Book</a>
+    </p>
 
     <div class="controls">
       <label for="root">Begin at</label>

@@ -368,7 +368,7 @@
     .card, #detail { transition: none; }
   }
 
-  .sibling-link { margin: 0.9rem 0 0; }
+  .sibling-link { margin: 0.9rem 0 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
   .sibling-link a {
     font-family: var(--font-mono); font-size: 0.78rem;
     color: var(--ink-soft); text-decoration: none;
@@ -390,7 +390,10 @@
       <span><b id="stat-isolated">&nbsp;</b> not yet woven in</span>
       <span><b id="stat-eras">&nbsp;</b> eras, <b id="stat-span">&nbsp;</b></span>
     </div>
-    <p class="sibling-link"><a href="paths.html">walk the threads one at a time &rarr; The Paths</a></p>
+    <p class="sibling-link">
+      <a href="paths.html">walk the threads one at a time &rarr; The Paths</a>
+      <a href="maze.html">see every path at once &rarr; The Maze</a>
+    </p>
   </div>
 </header>
 
