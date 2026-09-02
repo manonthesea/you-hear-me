@@ -128,7 +128,16 @@
   main { padding-top: 2rem; }
   .trail { list-style: none; margin: 0; padding: 0; }
 
-  .step { position: relative; padding-left: 2.6rem; }
+  /* The walk on the left, the turns it did not take drifting off to its
+     right - close enough to read, recessed enough that the path stays
+     the thing you are looking at. */
+  .step {
+    position: relative; padding-left: 2.6rem;
+    display: grid; align-items: start;
+    grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+    column-gap: clamp(1rem, 4vw, 3rem);
+  }
+  .chosen { min-width: 0; }
   /* The spine. Drawn per-step so the last one can stop at its own dot
      instead of trailing into space. */
   .step::before {
@@ -179,6 +188,36 @@
     text-decoration: none; border-bottom: 1px solid var(--border);
   }
   .open:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---- the roads not taken ---- */
+  .forgone {
+    padding: 0.6rem 0 0.5rem;
+    border-left: 1px dashed var(--border);
+    padding-left: clamp(0.8rem, 2vw, 1.4rem);
+    align-self: stretch;
+  }
+  .forgone-label {
+    font-family: var(--font-mono); font-size: 0.64rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--isolated); margin: 0 0 0.35rem;
+  }
+  .ghost {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: none; border: 0; border-radius: 6px;
+    padding: 0.08rem 0.35rem 0.08rem 0; margin: 0;
+    font: inherit; line-height: 1.4; color: var(--isolated);
+    opacity: 0.75; transition: opacity 0.14s, color 0.14s;
+  }
+  /* Hovering a road not taken brings it back to life - the glimpse is
+     an offer, and it should look like one before it is clicked. */
+  .ghost:hover, .ghost:focus-visible {
+    opacity: 1; color: var(--ink-soft);
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+  }
+  .ghost:hover .garrow, .ghost:focus-visible .garrow { color: var(--accent); }
+  .ghost .gphrase { font-family: var(--font-display); font-style: italic; font-size: 0.92rem; }
+  .ghost .garrow { font-family: var(--font-mono); font-size: 0.8rem; padding: 0 0.3rem; color: inherit; }
+  .ghost .gdest { font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; }
 
   /* ---- the choices at the head of the trail ---- */
   .fork { padding: 0.4rem 0 0 2.6rem; }
@@ -252,6 +291,14 @@
     clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
   }
 
+  @media (max-width: 900px) {
+    .step { grid-template-columns: minmax(0, 1fr); }
+    .forgone {
+      border-left: 0; border-top: 1px dashed var(--border);
+      padding-left: 0; padding-top: 0.5rem; margin-bottom: 0.5rem;
+    }
+  }
+
   @media (max-width: 640px) {
     .step { padding-left: 2.1rem; }
     .fork { padding-left: 2.1rem; }
@@ -287,6 +334,7 @@
       <span><span class="swatch" style="border-color: var(--accent)"></span>leads to</span>
       <span><span class="swatch" style="border-color: var(--incoming)"></span>referenced by &mdash; a step backwards</span>
       <span><span class="swatch" style="border-color: var(--incoming); border-top-style: dashed"></span>&#8634; already on your path</span>
+      <span><span class="swatch" style="border-color: var(--isolated); border-top-style: dashed"></span>turns not taken &mdash; click one to go that way instead</span>
     </div>
   </div>
   <p class="visually-hidden" role="status" aria-live="polite" id="say"></p>
@@ -384,6 +432,9 @@
       dot.setAttribute('aria-hidden', 'true');
       li.appendChild(dot);
 
+      var chosen = document.createElement('div');
+      chosen.className = 'chosen';
+
       var poem = document.createElement('button');
       poem.type = 'button';
       poem.className = 'poem';
@@ -399,7 +450,7 @@
         poem.title = 'Go back to this poem and take a different turn';
         poem.addEventListener('click', function () { truncateTo(i); });
       }
-      li.appendChild(poem);
+      chosen.appendChild(poem);
 
       var open = document.createElement('a');
       open.className = 'open';
@@ -407,7 +458,7 @@
       open.target = '_blank';
       open.rel = 'noopener';
       open.textContent = 'read it ↗';
-      li.appendChild(open);
+      chosen.appendChild(open);
 
       // The phrase that carried the reader out of this poem.
       if (i < path.length - 1) {
@@ -415,7 +466,16 @@
         var via = document.createElement('p');
         via.className = 'via';
         via.textContent = step ? step.phrase : 'back to';
-        li.appendChild(via);
+        chosen.appendChild(via);
+      }
+      li.appendChild(chosen);
+
+      // The turns not taken. Only for steps behind the reader - at the
+      // head of the trail every branch is on offer in full, so ghosting
+      // them there would be showing the same thing twice.
+      if (i < path.length - 1) {
+        var missed = forgoneAt(i);
+        if (missed.length) li.appendChild(ghosts(missed, i));
       }
 
       trailEl.appendChild(li);
@@ -455,6 +515,52 @@
     sayEl.textContent =
       byKey.get(here).title + '. ' +
       (forward.length ? forward.length + ' onward ' + (forward.length === 1 ? 'link' : 'links') + '.' : 'No links onward.');
+  }
+
+  /**
+   * The links out of step `i` that the reader did not follow.
+   *
+   * Forward links only. A step backwards is a way of retracing rather
+   * than a road onward, and ghosting every inbound citation as well
+   * would bury the branches that actually continue the narrative.
+   */
+  function forgoneAt(i) {
+    var taken = path[i + 1];
+    return leadsFrom(path[i]).filter(function (e) { return e.to !== taken; });
+  }
+
+  function ghosts(list, i) {
+    var box = document.createElement('div');
+    box.className = 'forgone';
+
+    var label = document.createElement('p');
+    label.className = 'forgone-label';
+    label.textContent = list.length === 1 ? 'one turn not taken' : list.length + ' turns not taken';
+    box.appendChild(label);
+
+    list.forEach(function (e) {
+      var other = byKey.get(e.to);
+      if (!other) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ghost';
+      // Named for a screen reader as the offer it is, since the grey is
+      // the only thing saying so to everyone else.
+      b.setAttribute('aria-label',
+        'Instead, follow “' + e.phrase + '” to ' + other.title + ' from ' + byKey.get(path[i]).title);
+      b.innerHTML =
+        '<span class="gphrase">“' + escapeHtml(e.phrase) + '”</span>' +
+        '<span class="garrow">→</span>' +
+        '<span class="gdest">' + escapeHtml(other.title) + '</span>';
+      // A glimpse you can step into: take this turn instead, from there.
+      b.addEventListener('click', function () {
+        path = path.slice(0, i + 1);
+        goTo(e.to);
+      });
+      box.appendChild(b);
+    });
+
+    return box;
   }
 
   function heading(text) {
