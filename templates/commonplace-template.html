@@ -412,15 +412,11 @@
   const edges = DATA.edges;
   const byKey = new Map(poems.map((p) => [p.key, p]));
 
-  const ERA_ORDER = ['$Pre-2010', '2016-2017!', '2018-2019&', '2020-2021', '2022-2023+', '2024-2025='];
-  const ERA_LABEL = {
-    '$Pre-2010': 'Before 2010',
-    '2016-2017!': '2016–2017',
-    '2018-2019&': '2018–2019',
-    '2020-2021': '2020–2021',
-    '2022-2023+': '2022–2023',
-    '2024-2025=': '2024–2025',
-  };
+  // Both come from the data, which is built from the folders that
+  // actually exist. A list typed in here went stale the first morning a
+  // new era folder synced, and took a poem and a thread down with it.
+  const ERA_ORDER = DATA.eras.map((e) => e.key);
+  const ERA_LABEL = Object.fromEntries(DATA.eras.map((e) => [e.key, e.label]));
 
   const SITE_ROOT = '{{SITE_ROOT}}';
   function siteHref(p) {
