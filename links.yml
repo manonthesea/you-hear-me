@@ -19,6 +19,7 @@ poems:
   clack-clack-clack:                         { doc: 12SlHOZgCUMJV_BgNaSORjtuDe6Di_RiuDhwWqDs2PgA, title: Clack Clack Clack }
   cryptic-word:                              { doc: 1-DrshyFYMpXn0RIG1BViIIa6TSDI4Q8_lV01fm8WPhU, title: Cryptic Word }
   desert-morning-chill:                      { doc: 18AETSQ45BzXtBx3v_qYpEJBHedv3Ai0_tN84k3MSfGk, title: Desert Morning Chill }
+  divergent-discourse:                       { doc: 1Dx9NRBzPiG8IlbmauZLSUfL2dt1YVOJz7ky1q3n6IjI, title: Divergent Discourse }
   documented-a-day-before-it-occurred:       { doc: 140uz3TKcMN4uR_7jJgT2njXGcT4OBs0H4C-VIW54RJc, title: Documented a Day Before It Occurred }
   eat-to-remember:                           { doc: 1WnQMmGi4shEp825N8Gy_M726f7ZhbmN7Jkk6j7b-J24, title: Eat to Remember }
   emmanuel-is-hard-to-see:                   { doc: 1fi4X2aufSgpQBwB25-oDZQSh4vwV91b2j1wTqEzOMiI, title: Emmanuel is Hard to See }
@@ -211,6 +212,7 @@ links:
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
   - { from: floating-chrysanthemums, phrase: "swim", to: how-soon-we-forget }
   - { from: how-soon-we-forget, phrase: "promise of an aspiring year", to: 12-31-19 }
+  - { from: in-and-out-of-consciousness, phrase: "(in-between)", to: divergent-discourse }
   - { from: in-and-out-of-consciousness, phrase: "in front of a screen", to: clack-clack-clack }
   - { from: in-and-out-of-consciousness, phrase: "lamp light", to: le-maison-du-ren-magritte }
   - { from: in-and-out-of-consciousness, phrase: "succumbing to sleep", to: its-okay-if-it-doesnt-make-sense-at-firs }
