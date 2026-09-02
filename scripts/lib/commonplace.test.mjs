@@ -9,7 +9,7 @@
 
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { buildDataset, dateKey, describe, renderCommonplace } from './commonplace.mjs';
+import { buildDataset, dateKey, describe, eraLabel, erasIn, renderCommonplace } from './commonplace.mjs';
 
 const ledger = {
     poems: new Map([
@@ -180,4 +180,73 @@ test('a "$" in a poem path survives into the page', () => {
     const page = renderCommonplace('{{DATA}}{{SITE_ROOT}}{{DESCRIPTION}}', dataset());
 
     assert.ok(page.includes('$Pre-2010/11.26.10.html'), 'the path was rewritten');
+});
+
+// --- eras -----------------------------------------------------------------
+
+test('the sorting mark on a folder is not shown to the reader', () => {
+    // The folders carry a punctuation mark so they sort in order on
+    // disk; it is bookkeeping, not a name.
+    assert.equal(eraLabel('2016-2017!'), '2016\u20132017');
+    assert.equal(eraLabel('2018-2019&'), '2018\u20132019');
+    assert.equal(eraLabel('2022-2023+'), '2022\u20132023');
+    assert.equal(eraLabel('2024-2025='), '2024\u20132025');
+    assert.equal(eraLabel('2010-2011^'), '2010\u20132011');
+    assert.equal(eraLabel('2020-2021'), '2020\u20132021', 'a folder with no mark is left alone');
+    assert.equal(eraLabel('$Pre-2010'), 'Before 2010');
+});
+
+test('the eras are read from the poems, not from a list written by hand', () => {
+    // This is the bug that prompted all of it: a seventh folder arrived
+    // from Drive, the written-out list still named six, and the poem in
+    // it was in the data with no shelf to stand on.
+    const poems = [
+        { era: '2020-2021' },
+        { era: '2010-2011^' },
+        { era: '$Pre-2010' },
+        { era: '2020-2021' },
+    ];
+
+    assert.deepEqual(erasIn(poems), [
+        { key: '$Pre-2010', label: 'Before 2010' },
+        { key: '2010-2011^', label: '2010\u20132011' },
+        { key: '2020-2021', label: '2020\u20132021' },
+    ]);
+});
+
+test('an era nobody anticipated sorts last rather than vanishing', () => {
+    // Being unrecognised is not a reason to go missing from the map.
+    const eras = erasIn([{ era: 'Notebooks' }, { era: '2020-2021' }, { era: '$Pre-2010' }]);
+
+    assert.deepEqual(eras.map((e) => e.key), ['$Pre-2010', '2020-2021', 'Notebooks']);
+});
+
+test('every poem on the map belongs to an era the map draws', () => {
+    // The page renders era by era, so a poem whose era is not listed is
+    // silently left off - along with every thread that touched it.
+    const data = dataset();
+    const listed = new Set(data.eras.map((e) => e.key));
+
+    for (const poem of data.poems) {
+        assert.ok(listed.has(poem.era), `${poem.title} is in "${poem.era}", which no shelf covers`);
+    }
+});
+
+test('every thread joins two poems that are actually drawn', () => {
+    // An edge whose endpoint has no card is skipped without a word, so
+    // the header can claim more threads than the map shows.
+    const data = dataset();
+    const drawn = new Set(data.poems.map((p) => p.key));
+
+    for (const edge of data.edges) {
+        assert.ok(drawn.has(edge.from) && drawn.has(edge.to), `${edge.from} -> ${edge.to}`);
+    }
+});
+
+test('the eras reach the page with the data', () => {
+    const page = renderCommonplace('{{DATA}}{{SITE_ROOT}}{{DESCRIPTION}}', dataset());
+    const parsed = JSON.parse(page.slice(0, page.lastIndexOf('}') + 1));
+
+    assert.ok(parsed.eras.length > 0);
+    assert.deepEqual(parsed.eras[0], { key: '$Pre-2010', label: 'Before 2010' });
 });

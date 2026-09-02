@@ -17,7 +17,45 @@ import { isPoem } from './manifest.mjs';
 // The folders are named for their era, with a punctuation mark that
 // keeps them sorting in order on disk. The reader does not need to see
 // the mark.
-export const ERA_ORDER = ['$Pre-2010', '2016-2017!', '2018-2019&', '2020-2021', '2022-2023+', '2024-2025='];
+//
+// This used to be a written-out list of the six eras that existed when
+// the page was built, and the map drew only those - so the morning a
+// seventh folder arrived from Drive, its poem was in the data, had a
+// card nobody drew, and lost the one thread pointing at it. A list of
+// what exists has to be read from what exists.
+
+/**
+ * The reader's name for an era folder.
+ *
+ * @param {string} folder - the top-level folder name, e.g. "2018-2019&".
+ */
+export function eraLabel(folder) {
+    if (folder === '$Pre-2010') return 'Before 2010';
+    return folder
+        .replace(/[^\w\s-]+$/, '')           // the sorting mark
+        .replace(/(\d{4})-(\d{4})/, '$1\u2013$2'); // a span takes an en dash
+}
+
+/**
+ * The eras these poems occupy, in reading order.
+ *
+ * Before 2010 leads, then the spans by their first year. Anything whose
+ * name carries no year sorts last rather than being dropped - being
+ * unrecognised is not a reason to go missing from the map.
+ *
+ * @param {Array<{ era: string }>} poems
+ * @returns {Array<{ key: string, label: string }>}
+ */
+export function erasIn(poems) {
+    const seen = [...new Set(poems.map((p) => p.era))];
+    const rank = (era) => {
+        if (era === '$Pre-2010') return -Infinity;
+        const year = era.match(/\d{4}/);
+        return year ? Number(year[0]) : Infinity;
+    };
+    seen.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+    return seen.map((key) => ({ key, label: eraLabel(key) }));
+}
 
 /**
  * A sortable key for a poem, from the filename its Doc was published at.
@@ -108,7 +146,7 @@ export function buildDataset({ ledger, entries, bySource, titles }) {
         }
     }
 
-    return { poems, edges };
+    return { poems, edges, eras: erasIn(poems) };
 }
 
 /**
@@ -134,8 +172,11 @@ export function describe({ poems, edges }) {
  *   and the live site's URL for a copy hosted anywhere else.
  * @returns {string}
  */
-export function renderCommonplace(template, { poems, edges, siteRoot = '' }) {
-    const data = JSON.stringify({ poems, edges });
+export function renderCommonplace(template, { poems, edges, eras, siteRoot = '' }) {
+    // The eras travel with the data. The page used to hold its own copy
+    // of the list, which is one place too many for a fact that changes
+    // whenever a folder does.
+    const data = JSON.stringify({ poems, edges, eras: eras ?? erasIn(poems) });
     // The JSON sits inside a <script> block, where the parser is looking
     // for "</script" and nothing else. No poem title contains one, but
     // the page should not depend on that staying true.
