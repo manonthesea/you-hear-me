@@ -115,6 +115,9 @@
   svg.maze.tracing .doubles.lit, svg.maze.tracing .stopper.lit { opacity: 1; stroke: var(--incoming); }
   svg.maze.tracing .edge-n.lit { opacity: 1; }
   .node.lit rect { stroke: var(--accent); }
+  /* The poem being pointed at, so the eye finds the middle of a lineage
+     that now runs both ways from it. */
+  .node.here rect { stroke: var(--accent); stroke-width: 2.2; fill: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
 
   /* ---- readout ---- */
   .readout {
@@ -133,6 +136,8 @@
   }
   .readout .ret { color: var(--incoming); }
   .readout .idle { color: var(--muted); font-style: italic; }
+  .readout .further { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); margin: 0.35rem 0 0; }
+  .readout ul.inbound { margin-top: 0.3rem; }
   .readout a.open { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); }
   .readout a.open:hover { color: var(--accent); border-color: var(--accent); }
 
@@ -338,6 +343,22 @@
     return chain;
   }
 
+  // Everything that descends from a poem, and the lines getting there.
+  // The median subtree is one poem and only the root's is the whole
+  // maze, so lighting all of it stays legible - and in a genealogy the
+  // descent is the point.
+  function descent(key) {
+    var nodes = [key], lines = [], i = 0;
+    for (; i < nodes.length; i++) {
+      DATA.tree.forEach(function (e) {
+        if (e.from !== nodes[i] || nodes.indexOf(e.to) !== -1) return;
+        nodes.push(e.to);
+        lines.push(e);
+      });
+    }
+    return { nodes: nodes, lines: lines };
+  }
+
   function trace(key) {
     clearLit();
     var chain = lineage(key);
@@ -349,6 +370,19 @@
           .forEach(function (p) { if (p) p.classList.add('lit'); });
       }
     });
+    // Where it goes, not only where it came from. Without this the
+    // maze showed a poem's ancestry and left its own descent greyed
+    // out - the next steps were the one thing it would not show you.
+    var on = descent(key);
+    on.nodes.forEach(function (k) {
+      var g = nodeAt.get(k); if (g) g.classList.add('lit');
+    });
+    on.lines.forEach(function (e) {
+      [lineOf.get(e.from + '>' + e.to), lineOf.get('n:' + e.from + '>' + e.to)]
+        .forEach(function (p) { if (p) p.classList.add('lit'); });
+    });
+    nodeAt.get(key).classList.add('here');
+
     DATA.returns.forEach(function (e) {
       if (e.from !== key) return;
       ['', 'stop:', 'n:'].forEach(function (pre) {
@@ -358,11 +392,12 @@
       var g = nodeAt.get(e.to); if (g) g.classList.add('lit');
     });
     state.lit = key;
-    say(key, chain);
+    say(key, chain, on);
   }
 
   function clearLit() {
     svg.querySelectorAll('.lit').forEach(function (n) { n.classList.remove('lit'); });
+    svg.querySelectorAll('.here').forEach(function (n) { n.classList.remove('here'); });
   }
   function clear() {
     clearLit();
@@ -371,10 +406,15 @@
     idle();
   }
 
-  function say(key, chain) {
+  function say(key, chain, on) {
     var n = byKey.get(key);
     var rets = DATA.returns.filter(function (e) { return e.from === key; });
     var kids = DATA.tree.filter(function (e) { return e.from === key; });
+    // Poems that double back to this one. Their stubs are drawn beside
+    // *them*, not here, so lighting one would point at nothing - they
+    // belong in the readout, where they can be named.
+    var backTo = DATA.returns.filter(function (e) { return e.to === key; });
+    var further = on ? on.nodes.length - 1 : 0;
     readout.innerHTML =
       '<h2>' + escapeHtml(n.title) + '</h2>' +
       '<p class="lineage">' +
@@ -395,14 +435,24 @@
         }).join('') +
         (kids.length + rets.length ? '' : '<li class="idle">nothing leads onward from here</li>') +
       '</ul>' +
+      (further > 1
+        ? '<p class="further">' + further + ' poems descend from here in all</p>'
+        : '') +
+      (backTo.length
+        ? '<ul class="inbound">' + backTo.map(function (e) {
+            return '<li class="ret">“' + escapeHtml(e.phrase) + '” &#8634; ' +
+              escapeHtml(byKey.get(e.from).title) + ' doubles back to here</li>';
+          }).join('') + '</ul>'
+        : '') +
       '<p style="margin:0.5rem 0 0"><a class="open" href="' + href(n) + '" target="_blank" rel="noopener">read it ↗</a></p>';
     document.getElementById('say').textContent =
-      n.title + ', ' + chain.length + ' poems from the root, ' + kids.length + ' descending, ' + rets.length + ' doubling back.';
+      n.title + ', ' + chain.length + ' poems from the root, ' + kids.length + ' descending, ' +
+      further + ' in all below it, ' + rets.length + ' doubling back.';
   }
 
   function idle() {
-    readout.innerHTML = '<p class="lineage idle">Point at a poem to trace its descent from the root, ' +
-      'and see which of its links carry on and which double back.</p>';
+    readout.innerHTML = '<p class="lineage idle">Point at a poem to light the way it came and ' +
+      'everything that descends from it, and to see which of its links carry on and which double back.</p>';
   }
 
   function tally() {
