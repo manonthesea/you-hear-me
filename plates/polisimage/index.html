@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crossing at the Pagus</title>
+    <style>
+        /* Black, edge to edge: the image is the whole page. */
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* The overlay is positioned against this. */
+            position: relative;
+            overflow: hidden;
+        }
+        /*
+         * Shrink-wraps the image, so anything positioned against it is
+         * placed relative to the picture rather than the window.
+         */
+        .stage {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .plate {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .plate img {
+            display: block;
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+        }
+
+
+
+        /*
+         * Over the right-hand side of the picture. Both numbers are
+         * percentages of the image's width, so the composition holds on a
+         * phone as well as a desktop.
+         */
+        .overlay {
+            position: absolute;
+            top: 50%;
+            right: 0%;
+            transform: translateY(-50%);
+            width: 34%;
+        }
+        .overlay img { display: block; width: 100%; height: auto; }
+        .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
+    </style>
+</head>
+<body>
+    <div class="stage">
+        <a class="plate" id="back" href="../../$Pre-2010/4.27.9.html">
+            <img src="../../Polisimage.jpg" alt="The Crossing at the Pagus">
+        </a>
+    </div>
+    <script>
+        // This plate's destination was chosen deliberately, so the
+        // referrer must not override it.
+
+
+    </script>
+</body>
+</html>
