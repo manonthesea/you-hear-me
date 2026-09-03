@@ -84,7 +84,13 @@ poems:
 # this section only says how a particular one should differ.
 assets:
   # Opens whole, at its own size. The first click magnifies it; the click
-  # after that leads to SNAFU rather than back to Pissing Diptych.
+  # after that leads back to the beginning of the collection.
+  #
+  # It used to lead to SNAFU, which was a swinging door rather than a way
+  # onward: SNAFU is the poem that sends a reader to Pissing Diptych in
+  # the first place, on "repetitive repetition", so the picture returned
+  # them to where they had just come from. Sent to the root instead, it
+  # is a portal - the deepest return the collection makes.
   #
   # Patton stands on the left of the frame, so the magnified view is
   # framed there rather than wherever the reader happened to click.
@@ -93,7 +99,7 @@ assets:
     zoom: 3
     zoom-on: click
     focus: left
-    to: snafu
+    to: its-okay-if-it-doesnt-make-sense-at-firs
 
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
