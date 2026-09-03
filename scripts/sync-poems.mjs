@@ -256,6 +256,7 @@ async function main() {
     // Resolves an overlay's "to:" slug to the page it was published at.
     let pathForSlug = () => undefined;
     const plates = new Map();
+    const portalConflicts = [];
     if (existsSync(LEDGER_PATH)) {
         const ledger = parseLedger(await readFile(LEDGER_PATH, 'utf8'));
         ledgerAssets = ledger.assets;
@@ -280,6 +281,27 @@ async function main() {
                     const name = link.target.name;
                     if (!plates.has(name)) plates.set(name, { asset: name, embed: name, back: sourcePath });
                     link.target = { kind: 'plate', path: platePath(plateSlug(name)) };
+                    continue;
+                }
+                if (link.target.kind === 'portal') {
+                    // The picture in the doorway. Its destination comes
+                    // from the link rather than from the image, which is
+                    // the point of "via" - so the same photograph could
+                    // never quietly lead two different ways.
+                    const asset = link.target.asset;
+                    const onward = link.target.path;
+                    const held = plates.get(asset);
+                    if (held && held.portalTo && held.portalTo !== onward) {
+                        portalConflicts.push({
+                            asset,
+                            why: `leads to both "${held.portalTo}" and "${onward}" - ` +
+                                'give each portal its own picture',
+                        });
+                        continue;
+                    }
+                    if (!held) plates.set(asset, { asset, back: sourcePath, portalTo: onward });
+                    else held.portalTo = onward;
+                    link.target = { kind: 'plate', path: platePath(plateSlug(asset)) };
                     continue;
                 }
                 if (link.target.kind !== 'asset') continue;
@@ -397,7 +419,7 @@ async function main() {
     // Plates are written after the poems, so a plate's way back always
     // points at a page this run actually produced.
     const plateEntries = [];
-    for (const { asset, back, embed } of plates.values()) {
+    for (const { asset, back, embed, portalTo } of plates.values()) {
         // An embedded picture is configured under its own name, and
         // always leads where the ledger said - there is no poem it
         // "came from" to fall back to.
@@ -410,8 +432,10 @@ async function main() {
               }
             : null;
         const platePathFor = platePath(plateSlug(asset));
-        // A pinned destination beats the poem the reader arrived from.
-        const pinnedTo = config.to ? pathForSlug(config.to) : config.href ?? null;
+        // A pinned destination beats the poem the reader arrived from,
+        // and a portal's destination - which belongs to the link - beats
+        // anything written on the image.
+        const pinnedTo = portalTo ?? (config.to ? pathForSlug(config.to) : config.href ?? null);
         const page = renderPlate({
             asset,
             title: config.title ?? path.posix.basename(asset),
@@ -466,8 +490,15 @@ async function main() {
                 `(${failure.reason})`
         );
     }
+    // One picture cannot stand in two doorways at once: the plate is
+    // written once per image, so a second destination would silently
+    // overwrite the first and send readers the wrong way.
+    for (const clash of portalConflicts) {
+        console.error(`  ledger: portal image "${clash.asset}" ${clash.why}`);
+    }
 
-    const ledgerProblems = ledgerMissingAssets.length + anchorFailures.length;
+    const ledgerProblems =
+        ledgerMissingAssets.length + anchorFailures.length + portalConflicts.length;
     console.log(
         `\nSync complete: ${created} created, ${updated} updated, ${unchanged} unchanged, ` +
             `${removed} removed, ${drafts} draft(s) skipped, ${failed} failed.`

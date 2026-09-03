@@ -199,10 +199,24 @@ export function parseLedger(text) {
     const links = rawLinks.map((link, i) => {
         const where = `links[${i}]`;
         if (!link || typeof link !== 'object') throw new Error(`${where} is not a mapping.`);
-        const { from, phrase, to, href, asset, embed } = link;
+        const { from, phrase, to, href, asset, embed, via } = link;
         if (typeof from !== 'string' || !from) throw new Error(`${where} needs "from".`);
         if (typeof phrase !== 'string' || !phrase.trim()) throw new Error(`${where} needs "phrase".`);
         if (!poems.has(from)) throw new Error(`${where}.from names an unknown poem: "${from}".`);
+
+        // "via" is a doorway, not a destination, so it is checked before
+        // them and never counted among them. It says the reader reaches
+        // the poem in "to" by way of a picture; without a "to" there is
+        // nothing on the far side of it, and saying so is more use than
+        // the general complaint about destinations below.
+        if (via !== undefined) {
+            if (typeof via !== 'string' || !via.trim()) {
+                throw new Error(`${where}.via needs the name of an image.`);
+            }
+            if (to === undefined) {
+                throw new Error(`${where} has "via" but no "to": a portal has to lead to a poem.`);
+            }
+        }
 
         const destinations = [to, href, asset, embed].filter((d) => d !== undefined);
         if (destinations.length !== 1) {
@@ -214,7 +228,7 @@ export function parseLedger(text) {
         if (embed !== undefined && !embeds.has(embed)) {
             throw new Error(`${where}.embed names an unknown embed: "${embed}".`);
         }
-        return { from, phrase, to, href, asset, embed, where };
+        return { from, phrase, to, href, asset, embed, via, where };
     });
 
     // The same phrase linked twice in one poem is a copy-paste slip: the
@@ -266,7 +280,22 @@ export function resolveLedger(ledger, { pathForDoc, assetExists }) {
                 pending.push({ ...link, why: `"${link.to}" is not published` });
                 continue;
             }
-            target = { kind: 'poem', path: target };
+            // A portal: a thread between two poems that the reader
+            // travels by way of a picture. It keeps "to" - so it is a
+            // link between poems everywhere the collection is drawn -
+            // and "via" only says what stands in the doorway. Written
+            // as an "asset" instead, the thread would vanish from the
+            // map, the walk and the maze, and the poem it leaves would
+            // read as a dead end.
+            if (link.via !== undefined) {
+                if (!assetExists(link.via)) {
+                    missingAssets.push({ ...link, why: `portal image "${link.via}" is not in the repo` });
+                    continue;
+                }
+                target = { kind: 'portal', path: target, asset: link.via };
+            } else {
+                target = { kind: 'poem', path: target };
+            }
         } else if (link.asset !== undefined) {
             if (!assetExists(link.asset)) {
                 missingAssets.push({ ...link, why: `asset "${link.asset}" is not in the repo` });

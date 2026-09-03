@@ -132,7 +132,11 @@ export function buildDataset({ ledger, entries, bySource, titles }) {
         if (!from) continue;
         for (const link of links) {
             const t = link.target;
-            if (t.kind === 'poem') {
+            // A portal is a thread between poems that happens to pass
+            // through a picture, so it belongs in the graph exactly as a
+            // plain link does. This is the whole reason "via" exists
+            // rather than reusing "asset".
+            if (t.kind === 'poem' || t.kind === 'portal') {
                 const to = keyByPath.get(t.path);
                 if (to) edges.push({ from, to, phrase: link.phrase });
             } else {
