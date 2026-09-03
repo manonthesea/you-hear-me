@@ -89,6 +89,39 @@ or `asset` a file in the repo. Poem and asset paths are stored
 root-relative and made relative to each page at build time, because pages
 sit at different depths.
 
+### Portals
+
+`via` is the one key that is not a destination. Alongside a `to`, it
+makes the link a **portal**: the reader lands on that picture, and
+clicking it carries them on to the poem.
+
+```yaml
+  - { from: pissing-diptych, phrase: "pee",
+      to: its-okay-if-it-doesnt-make-sense-at-firs, via: "patton-pissing.jpg" }
+```
+
+Read it as a sentence: *in Pissing Diptych, find "pee", and link it to
+It's Okay if it Doesn't Make Sense at First — by way of this picture.*
+
+The destination stays on the **link**, not on the image, and that is the
+whole point. A portal is still a thread between two poems, so the
+Commonplace Book, the Paths and the Maze all count it. Written as an
+`asset` instead, the thread would vanish from all three and the poem it
+leaves would read as a dead end — while the picture went on working
+perfectly in the browser, which is what makes the mistake so quiet.
+
+Two rules the build enforces:
+
+- **`via` needs a `to`.** A picture with nothing on the far side of it
+  is not a portal, and the run refuses it by name.
+- **Give each portal its own picture.** The plate is written once per
+  image, so an image asked to lead two different ways would have its
+  destination silently overwritten. The sync reports the clash and exits
+  non-zero rather than sending readers the wrong way.
+
+Anything else about the picture — its title, `zoom`, `focus` — still
+belongs in the `assets:` block. Only where it leads moved to the link.
+
 Run `npm run poems:ids` to print the `poems:` block ready to paste — it
 reads the manifest and the published pages, so it needs no Drive
 credentials. It lists poems only; the plates in the manifest are pages

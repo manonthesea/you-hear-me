@@ -1,8 +1,17 @@
 # The web of cross-poem links.
 #
 # Each entry says: in poem <from>, find <phrase>, and link it to <to> /
-# <asset> / <href>. The build applies these after poems are synced from
-# Drive - nothing is pasted into a Doc.
+# <asset> / <embed> / <href>. The build applies these after poems are
+# synced from Drive - nothing is pasted into a Doc.
+#
+# "via: some-image.jpg" alongside a "to:" makes the link a PORTAL: the
+# reader lands on that picture, and clicking it carries them on to the
+# poem. The destination stays on the link, so a portal is a thread
+# between two poems everywhere the collection is drawn - the map, the
+# walk and the maze all count it. Written as an "asset:" instead the
+# thread would disappear from all three and the poem would read as a
+# dead end. Give each portal its own picture: an image that led two
+# ways would need two plates, and the build refuses it.
 #
 # Poems are named by a slug bound to their Drive Doc ID, because paths
 # and titles both change. Run "npm run poems:ids" to regenerate the
@@ -83,14 +92,15 @@ poems:
 # its own where clicking returns the reader to the poem they came from;
 # this section only says how a particular one should differ.
 assets:
-  # Opens whole, at its own size. The first click magnifies it; the click
-  # after that leads back to the beginning of the collection.
+  # The first portal. Opens whole, at its own size; the first click
+  # magnifies it, and the click after that carries the reader on to
+  # wherever the link said - here, back to the beginning.
   #
-  # It used to lead to SNAFU, which was a swinging door rather than a way
-  # onward: SNAFU is the poem that sends a reader to Pissing Diptych in
-  # the first place, on "repetitive repetition", so the picture returned
-  # them to where they had just come from. Sent to the root instead, it
-  # is a portal - the deepest return the collection makes.
+  # Where it leads is no longer written here. It is on the link, under
+  # "via", so the thread from Pissing Diptych to the root is a thread
+  # the map, the walk and the maze can all see. It used to lead to
+  # SNAFU, which was a swinging door rather than a way onward: SNAFU is
+  # the poem that sends a reader here in the first place.
   #
   # Patton stands on the left of the frame, so the magnified view is
   # framed there rather than wherever the reader happened to click.
@@ -99,7 +109,6 @@ assets:
     zoom: 3
     zoom-on: click
     focus: left
-    to: its-okay-if-it-doesnt-make-sense-at-firs
 
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
@@ -264,7 +273,7 @@ links:
   - { from: paris, phrase: "spring lover", to: quite-like-my-love-for-you }
   - { from: people-in-the-street, phrase: "constructs of purchased meaning", to: clack-clack-clack }
   - { from: people-in-the-street, phrase: "the Spotted Cat", embed: the-spotted-cat }
-  - { from: pissing-diptych, phrase: "pee", asset: "patton-pissing.jpg" }
+  - { from: pissing-diptych, phrase: "pee", to: its-okay-if-it-doesnt-make-sense-at-firs, via: "patton-pissing.jpg" }
   - { from: prey-to-the-weather, phrase: "falls", to: marsh-voices }
   - { from: prey-to-the-weather, phrase: "rabbit", to: fertile-ground }
   - { from: quantum-nothingness, phrase: "the dog", to: nostalgia }

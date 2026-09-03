@@ -503,3 +503,97 @@ test('cover on an image embed fails, naming why it does not apply', () => {
         /applies to "frame: iframe"/
     );
 });
+
+// --- portals ---------------------------------------------------------------
+// "via" is the one key that does not decide where a link goes. It says
+// the reader gets there by way of a picture, and the whole point of it
+// is that the link stays a link between two poems: written as an
+// "asset" the thread disappears from the map, the walk and the maze,
+// and the poem it leaves reads as a dead end.
+
+test('a portal keeps its destination and names the picture in the doorway', () => {
+    const ledger = parseLedger(`
+poems:
+  a: { doc: doc-a, title: A }
+  b: { doc: doc-b, title: B }
+links:
+  - { from: a, phrase: "pee", to: b, via: "patton.jpg" }
+`);
+    const { bySource } = resolveLedger(ledger, {
+        pathForDoc: (d) => ({ 'doc-a': 'A.html', 'doc-b': 'B.html' })[d],
+        assetExists: () => true,
+    });
+
+    assert.deepEqual(bySource.get('A.html')[0].target, {
+        kind: 'portal',
+        path: 'B.html',
+        asset: 'patton.jpg',
+    });
+});
+
+test('a portal is still a link to a poem, not to a picture', () => {
+    // The distinction the whole feature exists for.
+    const ledger = parseLedger(`
+poems:
+  a: { doc: doc-a, title: A }
+  b: { doc: doc-b, title: B }
+links:
+  - { from: a, phrase: "pee", to: b, via: "patton.jpg" }
+  - { from: a, phrase: "other", asset: "patton.jpg" }
+`);
+    const { bySource } = resolveLedger(ledger, {
+        pathForDoc: (d) => ({ 'doc-a': 'A.html', 'doc-b': 'B.html' })[d],
+        assetExists: () => true,
+    });
+    const [portal, plain] = bySource.get('A.html');
+
+    assert.equal(portal.target.path, 'B.html', 'a portal names the poem it comes out at');
+    assert.equal(plain.target.kind, 'asset', 'a plain asset link still stops at the picture');
+    assert.equal(plain.target.path, 'patton.jpg');
+});
+
+test('a portal with no way out is refused', () => {
+    // A picture with nothing on the far side of it.
+    assert.throws(
+        () => parseLedger(`
+poems:
+  a: { doc: doc-a, title: A }
+links:
+  - { from: a, phrase: "pee", via: "patton.jpg" }
+`),
+        /has "via" but no "to"/
+    );
+});
+
+test('a portal whose picture is not in the repo waits, and says which picture', () => {
+    // The same treatment a plain asset link gets - the poem is still
+    // published, correct, and unlinked, rather than pointing at nothing.
+    const ledger = parseLedger(`
+poems:
+  a: { doc: doc-a, title: A }
+  b: { doc: doc-b, title: B }
+links:
+  - { from: a, phrase: "pee", to: b, via: "not-here-yet.jpg" }
+`);
+    const { bySource, missingAssets } = resolveLedger(ledger, {
+        pathForDoc: (d) => ({ 'doc-a': 'A.html', 'doc-b': 'B.html' })[d],
+        assetExists: () => false,
+    });
+
+    assert.equal(bySource.get('A.html'), undefined);
+    assert.equal(missingAssets.length, 1);
+    assert.match(missingAssets[0].why, /not-here-yet\.jpg/);
+});
+
+test('"via" must name an image, not be left empty', () => {
+    assert.throws(
+        () => parseLedger(`
+poems:
+  a: { doc: doc-a, title: A }
+  b: { doc: doc-b, title: B }
+links:
+  - { from: a, phrase: "pee", to: b, via: "  " }
+`),
+        /via needs the name of an image/
+    );
+});

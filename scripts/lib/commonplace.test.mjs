@@ -250,3 +250,36 @@ test('the eras reach the page with the data', () => {
     assert.ok(parsed.eras.length > 0);
     assert.deepEqual(parsed.eras[0], { key: '$Pre-2010', label: 'Before 2010' });
 });
+
+// --- portals --------------------------------------------------------------
+
+test('a portal counts as a thread between poems, like any other link', () => {
+    // The reason "via" exists rather than reusing "asset". If this ever
+    // stops holding, every portal disappears from the map, the walk and
+    // the maze at once, and the poems they leave read as dead ends -
+    // silently, because the picture still works in the browser.
+    const withPortal = new Map([
+        [
+            '$Pre-2010/11.26.10.html',
+            [{ phrase: 'pee', target: { kind: 'portal', path: '2020-2021/1. Winter/2.4.21.html', asset: 'patton.jpg' } }],
+        ],
+    ]);
+    const { edges } = buildDataset({ ledger, entries, bySource: withPortal, titles });
+
+    assert.deepEqual(edges, [{ from: 'snafu', to: 'march', phrase: 'pee' }]);
+});
+
+test('a plain picture is still kept off the graph', () => {
+    // The other half of the distinction: an "asset" link is a picture
+    // the poem shows, not a thread to somewhere.
+    const withAsset = new Map([
+        [
+            '$Pre-2010/11.26.10.html',
+            [{ phrase: 'pee', target: { kind: 'asset', path: 'patton.jpg' } }],
+        ],
+    ]);
+    const { edges, poems } = buildDataset({ ledger, entries, bySource: withAsset, titles });
+
+    assert.deepEqual(edges, []);
+    assert.deepEqual(poems.find((p) => p.key === 'snafu').extras, [{ kind: 'image', phrase: 'pee' }]);
+});
