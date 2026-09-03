@@ -46,6 +46,9 @@ jobs:
       - name: Rebuild the Paths
         run: npm run paths
 
+      - name: Rebuild the Maze
+        run: npm run maze
+
       - name: Commit and push if changed
         run: |
           git config user.name "poem-sync-bot"

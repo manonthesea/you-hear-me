@@ -1,0 +1,443 @@
+<meta charset="UTF-8">
+<title>The Maze</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f3efe3; --bg-wash: #ece5d3; --surface: #fffdf6; --surface-2: #f2ecda;
+    --ink: #262234; --ink-soft: #4a465c; --muted: #7d788f;
+    --border: #ddd3b8; --border-soft: #e6dec7;
+    --accent: #a8611f; --accent-soft: #d9ab6f;
+    --incoming: #6b46b0; --incoming-soft: #b79ce0;
+    --sage: #4d7d63; --sage-soft: #9cbfa9;
+    --isolated: #a49cae; --shadow: 220 30% 20%;
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15131d; --bg-wash: #1a1826; --surface: #1e1c2a; --surface-2: #262333;
+      --ink: #ece6d8; --ink-soft: #cdc6da; --muted: #8d879f;
+      --border: #34314a; --border-soft: #2a2739;
+      --accent: #e2a75c; --accent-soft: #7a5a30;
+      --incoming: #b79ae8; --incoming-soft: #5b4485;
+      --sage: #8fbfa0; --sage-soft: #3b5a49; --isolated: #5c586e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15131d; --bg-wash: #1a1826; --surface: #1e1c2a; --surface-2: #262333;
+    --ink: #ece6d8; --ink-soft: #cdc6da; --muted: #8d879f;
+    --border: #34314a; --border-soft: #2a2739;
+    --accent: #e2a75c; --accent-soft: #7a5a30;
+    --incoming: #b79ae8; --incoming-soft: #5b4485;
+    --sage: #8fbfa0; --sage-soft: #3b5a49; --isolated: #5c586e;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--font-body);
+    line-height: 1.5; -webkit-font-smoothing: antialiased; padding-bottom: 5rem;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1340px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2.5rem); }
+
+  .masthead {
+    padding: clamp(2.25rem, 5vw, 3.5rem) 0 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 60% 100% at 15% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+      var(--bg-wash);
+  }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem;
+  }
+  h1.title {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 3.1rem); letter-spacing: -0.01em; margin: 0 0 0.5rem;
+  }
+  .dek { font-size: 1.02rem; color: var(--ink-soft); max-width: 64ch; margin: 0 0 1rem; }
+  .dek b { font-weight: 600; color: var(--ink); }
+  .siblings { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin: 0 0 0.9rem; }
+  .siblings a {
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft);
+    text-decoration: none; border-bottom: 1px solid var(--accent-soft); padding-bottom: 1px;
+  }
+  .siblings a:hover { color: var(--accent); border-color: var(--accent); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 0.7rem 1.2rem; align-items: center; padding-bottom: 0.3rem; }
+  .toggle { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--ink-soft); cursor: pointer; }
+
+  /* ---- the drawing ---- */
+  .frame { overflow-x: auto; padding: 1.5rem 0 0.5rem; }
+  svg.maze { display: block; }
+
+  .gen-label {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; fill: var(--muted);
+  }
+  .descent { fill: none; stroke: var(--accent-soft); stroke-width: 1.6; }
+  /* A line that leads somewhere already standing in the maze. It leaves
+     its poem and stops - there is nowhere new for it to go. */
+  .doubles { fill: none; stroke: var(--isolated); stroke-width: 1.3; stroke-dasharray: 3 3; opacity: 0.65; }
+  .stopper { fill: none; stroke: var(--isolated); stroke-width: 1.3; opacity: 0.75; }
+  .edge-n {
+    font-family: var(--font-mono); font-size: 9px; fill: var(--muted);
+    text-anchor: middle; dominant-baseline: middle; pointer-events: none;
+  }
+  .edge-n.on-descent { fill: var(--accent); }
+
+  .node { cursor: pointer; }
+  .node rect {
+    fill: var(--surface); stroke: var(--border); stroke-width: 1; rx: 6;
+    transition: stroke 0.12s, fill 0.12s;
+  }
+  .node text.name {
+    font-family: var(--font-display); font-size: 12px; font-weight: 600; fill: var(--ink);
+    dominant-baseline: middle; pointer-events: none;
+  }
+  .node.root rect { stroke: var(--accent); stroke-width: 2; fill: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+  .node:hover rect, .node:focus-visible rect { stroke: var(--accent); }
+
+  /* Tracing a lineage: everything not on it steps back. */
+  svg.maze.tracing .node { opacity: 0.28; }
+  svg.maze.tracing .descent, svg.maze.tracing .doubles,
+  svg.maze.tracing .stopper, svg.maze.tracing .edge-n { opacity: 0.1; }
+  svg.maze.tracing .node.lit { opacity: 1; }
+  svg.maze.tracing .descent.lit { opacity: 1; stroke: var(--accent); stroke-width: 2.4; }
+  svg.maze.tracing .doubles.lit, svg.maze.tracing .stopper.lit { opacity: 1; stroke: var(--incoming); }
+  svg.maze.tracing .edge-n.lit { opacity: 1; }
+  .node.lit rect { stroke: var(--accent); }
+
+  /* ---- readout ---- */
+  .readout {
+    min-height: 5.5rem; border-top: 1px solid var(--border);
+    margin-top: 0.5rem; padding-top: 0.9rem;
+  }
+  .readout h2 { font-family: var(--font-display); font-size: 1.15rem; margin: 0 0 0.15rem; }
+  .readout .lineage { font-size: 0.9rem; color: var(--ink-soft); margin: 0 0 0.5rem; }
+  .readout .lineage em { font-family: var(--font-display); font-style: italic; color: var(--ink); }
+  .readout .sep { color: var(--accent); padding: 0 0.3rem; }
+  .readout ul { list-style: none; margin: 0.2rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; }
+  .readout li { font-size: 0.86rem; color: var(--ink-soft); }
+  .readout .num {
+    font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
+    border-radius: 4px; padding: 0 0.3rem; color: var(--muted); margin-right: 0.3rem;
+  }
+  .readout .ret { color: var(--incoming); }
+  .readout .idle { color: var(--muted); font-style: italic; }
+  .readout a.open { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); }
+  .readout a.open:hover { color: var(--accent); border-color: var(--accent); }
+
+  .tally, .legend {
+    display: flex; flex-wrap: wrap; gap: 0.35rem 1.2rem; align-items: center;
+    font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted);
+  }
+  .tally { border-top: 1px solid var(--border); margin-top: 1.2rem; padding-top: 0.8rem; }
+  .tally b { color: var(--ink); font-weight: 500; }
+  .legend { margin-top: 0.5rem; }
+  .swatch { display: inline-block; width: 1.1rem; border-top: 2px solid; vertical-align: middle; margin-right: 0.35rem; }
+
+  .offpath { margin-top: 1.6rem; }
+  .offpath h2 {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); font-weight: 500; margin: 0 0 0.5rem;
+  }
+  .offpath ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; }
+  .offpath li { font-family: var(--font-display); font-size: 0.92rem; color: var(--isolated); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">you-hear-me &middot; every path at once</p>
+    <h1 class="title">The Maze</h1>
+    <p class="dek" id="dek">&nbsp;</p>
+    <p class="siblings">
+      <a href="paths.html">walk it one step at a time &rarr; The Paths</a>
+      <a href="commonplace.html">see it as a shelf &rarr; The Commonplace Book</a>
+    </p>
+    <div class="controls">
+      <label class="toggle"><input type="checkbox" id="show-returns" checked> show the lines that double back</label>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="frame"><svg class="maze" id="maze" role="img" aria-labelledby="dek"></svg></div>
+
+  <div class="readout" id="readout"></div>
+  <div class="tally" id="tally"></div>
+  <div class="legend">
+    <span><span class="swatch" style="border-color: var(--accent-soft)"></span>a line of descent &mdash; the first way to arrive</span>
+    <span><span class="swatch" style="border-color: var(--isolated); border-top-style: dashed"></span>doubles back &mdash; stops, because it leads somewhere already here</span>
+    <span>numbers match the turns on The Paths</span>
+  </div>
+
+  <div class="offpath" id="offpath"></div>
+  <p class="visually-hidden" role="status" aria-live="polite" id="say"></p>
+</main>
+
+<script id="dataset" type="application/json">{{DATA}}</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('dataset').textContent);
+  var SITE_ROOT = '{{SITE_ROOT}}';
+  var NS = 'http://www.w3.org/2000/svg';
+
+  var COL = 200, ROW = 34, PAD_X = 14, PAD_Y = 30, W = 176, H = 24;
+  var svg = document.getElementById('maze');
+  var readout = document.getElementById('readout');
+
+  var byKey, nodeAt, lineOf, state = { root: DATA.root, returns: true, lit: null };
+
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function dateLabel(p) {
+    if (p.dated && /^\d{4}-\d{2}-\d{2}/.test(p.sortKey)) {
+      var q = p.sortKey.slice(0, 10).split('-');
+      return q[1] + '/' + q[2] + '/' + q[0].slice(2);
+    }
+    return (p.base || '').replace(/^Circa\s*/i, 'c. ');
+  }
+  function href(p) { return SITE_ROOT + p.path.split('/').map(encodeURIComponent).join('/'); }
+  function x(n) { return PAD_X + n.gen * COL; }
+  function y(n) { return PAD_Y + n.row * ROW; }
+  // Truncate by measuring, not by counting characters: "Mind's Deep"
+  // and "Transcendent Meaning in a Flooded City" are the same number of
+  // glyphs to a naive cut and nothing like the same width.
+  function fit(textEl, full, room) {
+    textEl.textContent = full;
+    if (textEl.getComputedTextLength() <= room) return;
+    var lo = 0, hi = full.length;
+    while (lo < hi) {
+      var mid = (lo + hi + 1) >> 1;
+      textEl.textContent = full.slice(0, mid) + '…';
+      if (textEl.getComputedTextLength() <= room) lo = mid; else hi = mid - 1;
+    }
+    textEl.textContent = full.slice(0, lo) + '…';
+  }
+
+  function draw() {
+    var maze = DATA;
+    byKey = new Map(maze.nodes.map(function (n) { return [n.key, n]; }));
+    nodeAt = new Map();
+    lineOf = new Map();
+
+    svg.textContent = '';
+    svg.classList.remove('tracing');
+    var width = PAD_X * 2 + (maze.generations - 1) * COL + W;
+    var height = PAD_Y * 2 + (maze.rows - 1) * ROW + H;
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
+    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+
+    // generation headings
+    for (var g = 0; g < maze.generations; g++) {
+      var t = el('text', { x: PAD_X, y: 14, class: 'gen-label' }, svg);
+      t.setAttribute('x', PAD_X + g * COL);
+      t.textContent = g === 0 ? 'the root' : g + (g === 1 ? ' step out' : ' steps out');
+    }
+
+    var lines = el('g', {}, svg);
+    var marks = el('g', {}, svg);
+
+    // --- lines of descent -------------------------------------------
+    maze.tree.forEach(function (e) {
+      var a = byKey.get(e.from), b = byKey.get(e.to);
+      if (!a || !b) return;
+      var x1 = x(a) + W, y1 = y(a) + H / 2, x2 = x(b), y2 = y(b) + H / 2;
+      var mid = (x1 + x2) / 2;
+      var p = el('path', {
+        class: 'descent',
+        d: 'M ' + x1 + ',' + y1 + ' C ' + mid + ',' + y1 + ' ' + mid + ',' + y2 + ' ' + x2 + ',' + y2,
+      }, lines);
+      lineOf.set(e.from + '>' + e.to, p);
+      var n = el('text', { class: 'edge-n on-descent', x: mid, y: (y1 + y2) / 2 - 5 }, marks);
+      n.textContent = e.n;
+      lineOf.set('n:' + e.from + '>' + e.to, n);
+    });
+
+    // --- lines that double back, and stop ---------------------------
+    if (state.returns) {
+      maze.returns.forEach(function (e) {
+        var a = byKey.get(e.from), b = byKey.get(e.to);
+        if (!a || !b) return;
+        // It leaves its poem heading toward where it would go, and ends
+        // in a bar: there is nowhere new for it to arrive.
+        var back = x(b) <= x(a);
+        var x1 = back ? x(a) : x(a) + W;
+        var y1 = y(a) + H / 2;
+        var dir = back ? -1 : 1;
+        var len = 30;
+        var dy = Math.sign((y(b) - y(a)) || 1) * 9;
+        var x2 = x1 + dir * len, y2 = y1 + dy;
+        var p = el('path', {
+          class: 'doubles',
+          d: 'M ' + x1 + ',' + y1 + ' Q ' + (x1 + dir * len * 0.6) + ',' + y1 + ' ' + x2 + ',' + y2,
+        }, lines);
+        var stop = el('path', {
+          class: 'stopper',
+          d: 'M ' + x2 + ',' + (y2 - 4) + ' L ' + x2 + ',' + (y2 + 4),
+        }, lines);
+        lineOf.set(e.from + '>' + e.to, p);
+        lineOf.set('stop:' + e.from + '>' + e.to, stop);
+        var n = el('text', { class: 'edge-n', x: x2 + dir * 7, y: y2 }, marks);
+        n.textContent = e.n;
+        lineOf.set('n:' + e.from + '>' + e.to, n);
+      });
+    }
+
+    // --- the poems --------------------------------------------------
+    maze.nodes.forEach(function (n) {
+      var g = el('g', {
+        class: 'node' + (n.key === maze.root ? ' root' : ''),
+        tabindex: '0', role: 'button',
+        'aria-label': n.title + ', ' + (n.gen === 0 ? 'the root' : n.gen + ' steps from the root'),
+      }, svg);
+      el('rect', { x: x(n), y: y(n), width: W, height: H }, g);
+      var name = el('text', { class: 'name', x: x(n) + 9, y: y(n) + H / 2 }, g);
+      fit(name, n.title, W - 18);
+      var title = el('title', {}, g);
+      title.textContent = n.title + '  ' + dateLabel(n);
+      g.addEventListener('mouseenter', function () { trace(n.key); });
+      g.addEventListener('focus', function () { trace(n.key); });
+      g.addEventListener('mouseleave', clear);
+      g.addEventListener('blur', clear);
+      g.addEventListener('click', function () { window.open(href(n), '_blank', 'noopener'); });
+      nodeAt.set(n.key, g);
+    });
+
+    tally();
+    offPath();
+    idle();
+  }
+
+  // --- tracing a lineage --------------------------------------------
+  function lineage(key) {
+    var chain = [], seen = {};
+    var at = key;
+    while (at && !seen[at]) { seen[at] = 1; chain.unshift(at); at = (byKey.get(at) || {}).parent; }
+    return chain;
+  }
+
+  function trace(key) {
+    clearLit();
+    var chain = lineage(key);
+    svg.classList.add('tracing');
+    chain.forEach(function (k, i) {
+      var g = nodeAt.get(k); if (g) g.classList.add('lit');
+      if (i > 0) {
+        [lineOf.get(chain[i - 1] + '>' + k), lineOf.get('n:' + chain[i - 1] + '>' + k)]
+          .forEach(function (p) { if (p) p.classList.add('lit'); });
+      }
+    });
+    DATA.returns.forEach(function (e) {
+      if (e.from !== key) return;
+      ['', 'stop:', 'n:'].forEach(function (pre) {
+        var p = lineOf.get(pre + e.from + '>' + e.to);
+        if (p) p.classList.add('lit');
+      });
+      var g = nodeAt.get(e.to); if (g) g.classList.add('lit');
+    });
+    state.lit = key;
+    say(key, chain);
+  }
+
+  function clearLit() {
+    svg.querySelectorAll('.lit').forEach(function (n) { n.classList.remove('lit'); });
+  }
+  function clear() {
+    clearLit();
+    svg.classList.remove('tracing');
+    state.lit = null;
+    idle();
+  }
+
+  function say(key, chain) {
+    var n = byKey.get(key);
+    var rets = DATA.returns.filter(function (e) { return e.from === key; });
+    var kids = DATA.tree.filter(function (e) { return e.from === key; });
+    readout.innerHTML =
+      '<h2>' + escapeHtml(n.title) + '</h2>' +
+      '<p class="lineage">' +
+        chain.map(function (k, i) {
+          var node = byKey.get(k);
+          return (i ? '<span class="sep">&rarr;</span><em>“' + escapeHtml(node.via) + '”</em> ' : '') +
+            escapeHtml(node.title);
+        }).join(' ') +
+      '</p>' +
+      '<ul>' +
+        kids.map(function (e) {
+          return '<li><span class="num">' + e.n + '</span>“' + escapeHtml(e.phrase) + '” &rarr; ' +
+            escapeHtml(byKey.get(e.to).title) + '</li>';
+        }).join('') +
+        rets.map(function (e) {
+          return '<li class="ret"><span class="num">' + e.n + '</span>“' + escapeHtml(e.phrase) +
+            '” &#8634; back to ' + escapeHtml(byKey.get(e.to).title) + '</li>';
+        }).join('') +
+        (kids.length + rets.length ? '' : '<li class="idle">nothing leads onward from here</li>') +
+      '</ul>' +
+      '<p style="margin:0.5rem 0 0"><a class="open" href="' + href(n) + '" target="_blank" rel="noopener">read it ↗</a></p>';
+    document.getElementById('say').textContent =
+      n.title + ', ' + chain.length + ' poems from the root, ' + kids.length + ' descending, ' + rets.length + ' doubling back.';
+  }
+
+  function idle() {
+    readout.innerHTML = '<p class="lineage idle">Point at a poem to trace its descent from the root, ' +
+      'and see which of its links carry on and which double back.</p>';
+  }
+
+  function tally() {
+    document.getElementById('tally').innerHTML =
+      '<span><b>' + DATA.nodes.length + '</b> poems in the maze</span>' +
+      '<span><b>' + DATA.generations + '</b> generations</span>' +
+      '<span><b>' + DATA.tree.length + '</b> lines of descent</span>' +
+      '<span><b>' + DATA.returns.length + '</b> double back</span>' +
+      '<span><b>' + DATA.returns.filter(function (e) { return e.to === DATA.root; }).length +
+        '</b> of those to the root itself</span>';
+  }
+
+  function offPath() {
+    var box = document.getElementById('offpath');
+    if (!DATA.offPath.length) { box.innerHTML = ''; return; }
+    box.innerHTML = '<h2>' + DATA.offPath.length + ' poems no path from here reaches</h2><ul>' +
+      DATA.offPath.map(function (p) { return '<li>' + escapeHtml(p.title) + '</li>'; }).join('') + '</ul>';
+  }
+
+  // --- controls -------------------------------------------------------
+  document.getElementById('show-returns').addEventListener('change', function () {
+    state.returns = this.checked;
+    draw();
+  });
+
+  var dek = document.getElementById('dek');
+  function setDek() {
+    var root = byKey.get(DATA.root);
+    dek.innerHTML = 'Every poem you can reach from <b>' + escapeHtml(root.title) + '</b>, set out by how far it lies from it. ' +
+      'A line of descent is the first way to arrive somewhere; a line that <b>doubles back</b> stops where it starts, ' +
+      'because it leads to a poem already standing in the maze. <b>' + DATA.nodes.length + '</b> poems, <b>' +
+      DATA.generations + '</b> generations, <b>' + DATA.returns.length + '</b> lines that return.';
+  }
+
+  draw();
+  setDek();
+})();
+</script>
