@@ -110,6 +110,16 @@ assets:
     zoom-on: click
     focus: left
 
+  # The second portal, and the first made rather than found. By the
+  # Numbers opens on Numbers 1:1 - the census - and ends with men run
+  # down by dogs of the polis; Pagus Trip watches the same column from
+  # the far bank of a dry river, and asks whether to turn back to the
+  # city. The picture is that crossing, held at the question.
+  #
+  # Where it leads is on the link, under "via".
+  "Polisimage.jpg":
+    title: The Crossing at the Pagus
+
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
   # the poem, which is the default and so needs nothing said here.
@@ -212,7 +222,7 @@ links:
   - { from: 12-31-19, phrase: "the coming future", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: anxious-sounding-trees, phrase: "breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: by-the-numbers, phrase: "pagus borderlands", embed: pagus-borderlands }
-  - { from: by-the-numbers, phrase: "polis", to: pagus-trip }
+  - { from: by-the-numbers, phrase: "polis", to: pagus-trip, via: "Polisimage.jpg" }
   - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" }
   - { from: clack-clack-clack, phrase: "fate", to: the-birth-of-tragedy }
   - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
