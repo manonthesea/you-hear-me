@@ -120,6 +120,17 @@ assets:
   "Polisimage.jpg":
     title: The Crossing at the Pagus
 
+  # The third portal. One force at two scales: the gravity that pulls
+  # the fall over the rock is the gravity of You and I, where the stars
+  # burn out and the black holes take every atom. So the water and the
+  # star field share a frame with no seam between them.
+  #
+  # Both poems turn on the same verb - the water "splashes around to
+  # witness her", and an ending is "miraculous if a human stands to
+  # witness". Something is standing in the water to see it.
+  "pull-a-star.jpg":
+    title: The Force That Could Pull a Star In Upon Itself
+
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
   # the poem, which is the default and so needs nothing said here.
@@ -301,7 +312,7 @@ links:
   - { from: summer-storm, phrase: "cool breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: summer-storm, phrase: "quantum profound", to: quantum-nothingness }
   - { from: summer-storm, phrase: "snap-fire", to: snafu }
-  - { from: the-age-of-old-men-loitering, phrase: "pull a star in upon itself", to: you-and-i }
+  - { from: the-age-of-old-men-loitering, phrase: "pull a star in upon itself", to: you-and-i, via: "pull-a-star.jpg" }
   - { from: the-age-of-old-men-loitering, phrase: "what men desire", to: fertile-ground }
   - { from: the-bard-sings, phrase: "in that space", to: neighborhood-poet }
   - { from: the-bard-sings, phrase: "rhapsody of spring", to: in-spring }
