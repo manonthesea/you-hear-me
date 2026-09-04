@@ -166,14 +166,6 @@ embeds:
     src: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg"
     frame: image
 
-  # Illustrates "or turn back and return to the polis?" - a Reuters
-  # resizer URL, which means this src carries a signed, time-limited
-  # auth token and may need replacing once it expires.
-  the-polis:
-    title: The Polis
-    src: "https://www.reuters.com/resizer/v2/LDFMSPUH65JIPJIAHDOMVOIE4Q.jpg?auth=10fb814d80290adf8fb2a9bbe471061daffd57c50701d52aa9ed583f616adad5&width=1920&quality=80"
-    frame: image
-
   # The nine pages a reader used to be sent away to, and the one picture
   # among them. Framed on a plate so the collection keeps them, with a
   # click anywhere to come back and a way out in the corner.
@@ -287,7 +279,7 @@ links:
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Rains too long in coming", to: pagus-trip }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", embed: the-waste-land }
   - { from: pagus-trip, phrase: "Dry fish flake on the riverbed", to: the-end-of-the-line }
-  - { from: pagus-trip, phrase: "polis", embed: the-polis }
+  - { from: pagus-trip, phrase: "polis", to: snafu }
   - { from: paris, phrase: "Butte Chaumont", to: scenes-from-the-park }
   - { from: paris, phrase: "apparition", embed: in-a-station-of-the-metro }
   - { from: paris, phrase: "first days at the turn of the century", to: how-soon-we-forget }
