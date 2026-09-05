@@ -90,14 +90,36 @@ test('a button is placed by whichever edges it names', () => {
 
 test('a button bobs only when it is told to, and never against the reader', () => {
     const still = plate({ overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare' }] });
-    assert.doesNotMatch(still, /animation: bob/);
+    assert.doesNotMatch(still, /animation: bounce/);
 
     const bobbing = plate({
         overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare', bounce: 2.4 }],
     });
     // on the picture inside the link, so it cannot fight the placement
-    assert.match(bobbing, /\.overlay-1 img \{ animation: bob 2\.4s ease-in-out infinite; \}/);
+    assert.match(bobbing, /\.overlay-1 img \{ animation: bounce 2\.4s linear infinite; \}/);
     assert.match(bobbing, /@media \(prefers-reduced-motion: reduce\) \{\s*\.overlay img \{ animation: none; \}/s);
+});
+
+test('the motion is a bounce, not a float', () => {
+    // A float is a sine wave: symmetric, always moving. A bounce is
+    // anchored at the ground, decelerates on the way up and accelerates
+    // on the way down, hops once more, and then rests. The per-keyframe
+    // easings are what carry that difference.
+    const page = plate({ overlay: [{ image: 'y.png', href: 'index.html', alt: 'y', bounce: 2 }] });
+
+    const frames = page.match(/@keyframes bounce \{([\s\S]*?)\n        \}/)[1];
+    // leaves the ground and slows into the apex
+    assert.match(frames, /0% \{ transform: translateY\(0\); animation-timing-function: cubic-bezier\(0\.25/);
+    assert.match(frames, /32% \{ transform: translateY\(-28%\); animation-timing-function: cubic-bezier\(0\.55/);
+    // lands, then a smaller second hop
+    assert.match(frames, /58% \{ transform: translateY\(0\)/);
+    assert.match(frames, /70% \{ transform: translateY\(-8%\)/);
+    // and holds still before going again
+    assert.match(frames, /80%, 100% \{ transform: translateY\(0\); \}/);
+
+    // the easing lives in the keyframes, so the shorthand must not
+    // impose one of its own
+    assert.match(page, /animation: bounce 2s linear infinite/);
 });
 
 test('a button can give under the finger, and only when asked', () => {
@@ -118,7 +140,7 @@ test('bobbing and pressing act on separate layers, so neither cancels the other'
         overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare', press: true, bounce: 3 }],
     });
 
-    assert.match(page, /\.overlay-1 img \{ animation: bob 3s/);
+    assert.match(page, /\.overlay-1 img \{ animation: bounce 3s/);
     assert.match(page, /\.overlay-1:active \.press \{ transform: scale\(0\.92\)/);
     // the placement transform is still the link's own and untouched
     assert.match(page, /\.overlay-1 \{[^}]*translateY\(-50%\)/s);
