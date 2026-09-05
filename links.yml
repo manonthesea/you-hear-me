@@ -173,7 +173,7 @@ assets:
   # itself leads. "bounce" is how many seconds one bob takes; left out,
   # the button holds still. A reader who has asked their machine for
   # less motion gets none.
-  "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
+  "Fergus.jpeg":
     title: Who Goes with Fergus?
     overlay:
       - image: Yeats.png
@@ -263,7 +263,7 @@ links:
   - { from: anxious-sounding-trees, phrase: "breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: by-the-numbers, phrase: "pagus borderlands", embed: pagus-borderlands }
   - { from: by-the-numbers, phrase: "polis", to: pagus-trip, via: "Polisimage.jpg" }
-  - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" }
+  - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "Fergus.jpeg" }
   - { from: clack-clack-clack, phrase: "fate", to: the-birth-of-tragedy }
   - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }
