@@ -134,6 +134,7 @@ assets:
         left: 32
         bottom: 8
         press: true
+        bounce: 2.6
 
   # The third portal. One force at two scales: the gravity that pulls
   # the fall over the rock is the gravity of You and I, where the stars
@@ -166,6 +167,7 @@ assets:
         right: 7
         bottom: 7
         press: true
+        bounce: 2.6
 
   # Buttons over a picture. Each one sits where it is put - across in
   # percentages of the picture's width, down of its height - and leads
@@ -179,6 +181,7 @@ assets:
       - image: Yeats.png
         alt: Yeats
         href: index.html
+        press: true
         bounce: 2.6
 
 # Pictures that live on someone else's server. Shown on a plate of our
