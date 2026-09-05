@@ -137,12 +137,19 @@ assets:
   "floating-chrysanthemums.jpg":
     title: Floating Chrysanthemums
 
+  # Buttons over a picture. Each one sits where it is put - across in
+  # percentages of the picture's width, down of its height - and leads
+  # somewhere of its own, which need not be where clicking the picture
+  # itself leads. "bounce" is how many seconds one bob takes; left out,
+  # the button holds still. A reader who has asked their machine for
+  # less motion gets none.
   "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
     title: Who Goes with Fergus?
     overlay:
-      image: Yeats.png
-      alt: Yeats
-      href: index.html
+      - image: Yeats.png
+        alt: Yeats
+        href: index.html
+        bounce: 2.6
 
 # Pictures that live on someone else's server. Shown on a plate of our
 # own, so a click can lead somewhere in the collection instead of

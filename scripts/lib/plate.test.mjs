@@ -50,16 +50,54 @@ test('an overlay is a second, separate click target', () => {
         overlay: { image: 'Yeats.png', href: 'index.html', alt: 'Yeats' },
     });
 
-    assert.match(page, /<a class="overlay" href="\.\.\/\.\.\/index\.html"/);
+    assert.match(page, /<a class="overlay overlay-1" href="\.\.\/\.\.\/index\.html"/);
     assert.match(page, /<img src="\.\.\/\.\.\/Yeats\.png" alt="Yeats">/);
     // and the image underneath still goes back
     assert.match(page, /<a class="plate" id="back"/);
 });
 
-test('an overlay sits off-centre right', () => {
+test('an overlay sits off-centre right, and centred down, by default', () => {
     const page = plate({ overlay: { image: 'Yeats.png', href: 'index.html', alt: 'Yeats' } });
 
-    assert.match(page, /\.overlay\s*\{[^}]*right:/s);
+    assert.match(page, /\.overlay-1\s*\{[^}]*right: 0%;/s);
+    assert.match(page, /\.overlay-1\s*\{[^}]*top: 50%;[^}]*translateY\(-50%\)/s);
+});
+
+test('a plate can carry several buttons, each with its own destination', () => {
+    const page = plate({
+        overlay: [
+            { image: 'Yeats.png', href: 'index.html', alt: 'Yeats' },
+            { image: 'rabbit.png', href: '$Pre-2010/4.27.9.html', alt: 'A hare' },
+        ],
+    });
+
+    assert.match(page, /<a class="overlay overlay-1" href="\.\.\/\.\.\/index\.html"/);
+    assert.match(page, /<a class="overlay overlay-2" href="\.\.\/\.\.\/\$Pre-2010\/4\.27\.9\.html"/);
+    assert.match(page, /alt="A hare"/);
+});
+
+test('a button is placed by whichever edges it names', () => {
+    const page = plate({
+        overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare', width: 12, left: 40, top: 30 }],
+    });
+
+    assert.match(page, /\.overlay-1\s*\{[^}]*width: 12%;/s);
+    assert.match(page, /\.overlay-1\s*\{[^}]*left: 40%;/s);
+    assert.match(page, /\.overlay-1\s*\{[^}]*top: 30%;/s);
+    // placed down the picture itself, so it is not also being centred
+    assert.doesNotMatch(page, /\.overlay-1\s*\{[^}]*translateY/s);
+});
+
+test('a button bobs only when it is told to, and never against the reader', () => {
+    const still = plate({ overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare' }] });
+    assert.doesNotMatch(still, /animation: bob/);
+
+    const bobbing = plate({
+        overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare', bounce: 2.4 }],
+    });
+    // on the picture inside the link, so it cannot fight the placement
+    assert.match(bobbing, /\.overlay-1 img \{ animation: bob 2\.4s ease-in-out infinite; \}/);
+    assert.match(bobbing, /@media \(prefers-reduced-motion: reduce\) \{\s*\.overlay img \{ animation: none; \}/s);
 });
 
 test('a title with markup characters cannot break out', () => {

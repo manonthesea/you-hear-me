@@ -79,7 +79,9 @@ function attrHref(fromDir, toPath) {
  *   zoomOn?: 'load'|'click',  // magnified from the outset, or on the first click
  *   focus?: number|null,      // 0..1 across, where the magnified view frames (zoomOn: click)
  *   scroll?: number|null,     // 0..1, how far down to open the view (zoomOn: load)
- *   overlay?: { image: string, href: string, alt: string } | null,
+ *   overlay?: Overlay | Overlay[] | null,   // buttons over the picture, where
+ *                              // Overlay is { image, href, alt, width?, left?,
+ *                              // right?, top?, bottom?, bounce? }
  *   embed?: { src: string, frame: 'iframe'|'image', cover?: boolean } | null,
  * }} plate
  * @returns {string} the finished page.
@@ -130,18 +132,43 @@ export function renderPlate({
                     // clamps, so 0 simply rests against the left edge.
                     left + ${focus} * after.width - window.innerWidth / 2`;
 
-    // Positioned against the image rather than the window, so the amount
-    // of overlap stays the same whatever size the screen is. Percentages
-    // are of the image's own width: right:0 sits the overlay flush inside
-    // the right edge, a negative value hangs it off.
-    const overlayWidth = overlay?.width ?? 34;
-    const overlayRight = overlay?.right ?? 0;
-    const overlayHtml = overlay
-        ? `
-        <a class="overlay" href="${attrHref(dir, overlay.href)}" aria-label="${escapeHtml(overlay.alt)}">
-            <img src="${attrHref(dir, overlay.image)}" alt="${escapeHtml(overlay.alt)}">
-        </a>`
-        : '';
+    // Buttons over the picture. Positioned against the image rather than
+    // the window, so the amount of overlap stays the same whatever size
+    // the screen is: across, percentages are of the image's own width,
+    // and down, of its height. right:0 sits a button flush inside the
+    // right edge; a negative value hangs it off.
+    //
+    // A single mapping is still accepted, so a plate with one button
+    // reads the way it always did.
+    const overlays = overlay === null ? [] : Array.isArray(overlay) ? overlay : [overlay];
+    const overlayHtml = overlays
+        .map(
+            (one, i) => `
+        <a class="overlay overlay-${i + 1}" href="${attrHref(dir, one.href)}" aria-label="${escapeHtml(one.alt)}">
+            <img src="${attrHref(dir, one.image)}" alt="${escapeHtml(one.alt)}">
+        </a>`,
+        )
+        .join('');
+
+    // Each button's own placement. Given neither edge, it sits against
+    // the right and centred down the picture - where the only button
+    // there has ever been sits, so nothing already written moves.
+    const overlayCss = overlays
+        .map((one, i) => {
+            const rules = [`width: ${one.width ?? 34}%;`];
+            if (one.left !== undefined) rules.push(`left: ${one.left}%;`);
+            else rules.push(`right: ${one.right ?? 0}%;`);
+            if (one.top !== undefined) rules.push(`top: ${one.top}%;`);
+            else if (one.bottom !== undefined) rules.push(`bottom: ${one.bottom}%;`);
+            else rules.push('top: 50%;', 'transform: translateY(-50%);');
+            // The bob is on the picture inside the link, not on the link
+            // itself, so it cannot fight the transform that centres it.
+            const bob = one.bounce
+                ? `\n        .overlay-${i + 1} img { animation: bob ${one.bounce}s ease-in-out infinite; }`
+                : '';
+            return `        .overlay-${i + 1} { ${rules.join(' ')} }${bob}`;
+        })
+        .join('\n');
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -251,15 +278,20 @@ ${zoomOnClick ? `
          * percentages of the image's width, so the composition holds on a
          * phone as well as a desktop.
          */
-        .overlay {
-            position: absolute;
-            top: 50%;
-            right: ${overlayRight}%;
-            transform: translateY(-50%);
-            width: ${overlayWidth}%;
-        }
+        .overlay { position: absolute; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
+${overlayCss}
+        /* Percentages here are of the button's own height, so a small
+           button bobs a small distance and the motion reads the same at
+           every size. */
+        @keyframes bob {
+            from, to { transform: translateY(0); }
+            50% { transform: translateY(-9%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .overlay img { animation: none; }
+        }
     </style>
 </head>
 <body>

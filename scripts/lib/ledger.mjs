@@ -115,26 +115,47 @@ export function parseLedger(text) {
         if (to !== undefined && !poems.has(to)) {
             throw new Error(`assets["${asset}"].to names an unknown poem: "${to}".`);
         }
-        if (overlay !== undefined) {
-            if (!overlay || typeof overlay !== 'object') {
-                throw new Error(`assets["${asset}"].overlay must be a mapping.`);
+        // One button over the picture, or several. A single mapping is
+        // still written the way it always was; a list puts more than one
+        // thing on the same plate, each with its own place and its own
+        // destination.
+        const overlays = overlay === undefined ? [] : Array.isArray(overlay) ? overlay : [overlay];
+        overlays.forEach((one, i) => {
+            // Named for the reader of this file: "overlay" when there is
+            // only one, "overlay[0]" when they are counting them out.
+            const where = `assets["${asset}"].overlay${Array.isArray(overlay) ? `[${i}]` : ''}`;
+            if (!one || typeof one !== 'object' || Array.isArray(one)) {
+                throw new Error(`${where} must be a mapping.`);
             }
-            if (typeof overlay.image !== 'string' || !overlay.image) {
-                throw new Error(`assets["${asset}"].overlay needs an "image".`);
+            if (typeof one.image !== 'string' || !one.image) {
+                throw new Error(`${where} needs an "image".`);
             }
-            for (const key of ['width', 'right']) {
-                if (overlay[key] !== undefined && typeof overlay[key] !== 'number') {
-                    throw new Error(`assets["${asset}"].overlay.${key} must be a number (percent of the image's width).`);
+            // Where it sits and how big it is, in percentages of the
+            // picture: across of the picture's width, down of its height.
+            for (const key of ['width', 'left', 'right', 'top', 'bottom']) {
+                if (one[key] !== undefined && typeof one[key] !== 'number') {
+                    throw new Error(`${where}.${key} must be a number (a percentage of the picture).`);
                 }
             }
-            const targets = [overlay.to, overlay.href].filter((t) => t !== undefined);
+            // An edge to measure from, not both edges at once.
+            if (one.left !== undefined && one.right !== undefined) {
+                throw new Error(`${where} needs "left" or "right", not both.`);
+            }
+            if (one.top !== undefined && one.bottom !== undefined) {
+                throw new Error(`${where} needs "top" or "bottom", not both.`);
+            }
+            // How long one bob takes. Absent, it holds still.
+            if (one.bounce !== undefined && (typeof one.bounce !== 'number' || !(one.bounce > 0))) {
+                throw new Error(`${where}.bounce must be a positive number of seconds.`);
+            }
+            const targets = [one.to, one.href].filter((t) => t !== undefined);
             if (targets.length !== 1) {
-                throw new Error(`assets["${asset}"].overlay needs exactly one of "to" or "href".`);
+                throw new Error(`${where} needs exactly one of "to" or "href".`);
             }
-            if (overlay.to !== undefined && !poems.has(overlay.to)) {
-                throw new Error(`assets["${asset}"].overlay.to names an unknown poem: "${overlay.to}".`);
+            if (one.to !== undefined && !poems.has(one.to)) {
+                throw new Error(`${where}.to names an unknown poem: "${one.to}".`);
             }
-        }
+        });
         assets.set(asset, {
             title: title ?? null,
             zoom: zoom ?? null,
@@ -143,7 +164,7 @@ export function parseLedger(text) {
             scroll: scroll ?? null,
             to: to ?? null,
             href: href ?? null,
-            overlay: overlay ?? null,
+            overlay: overlays,
         });
     }
 

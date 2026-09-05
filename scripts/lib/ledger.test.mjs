@@ -242,6 +242,74 @@ test('an ampersand in a folder name is HTML-escaped', () => {
     );
 });
 
+// --- buttons over a picture ----------------------------------------------
+
+const withOverlay = (yaml) =>
+    parseLedger(`${LEDGER}\nassets:\n  scan0005.jpg:\n    overlay:\n${yaml}`).assets.get('scan0005.jpg')
+        .overlay;
+
+test('one button may be written as a mapping, as it always was', () => {
+    const overlay = withOverlay('      image: Yeats.png\n      to: snafu\n');
+
+    assert.equal(overlay.length, 1);
+    assert.equal(overlay[0].image, 'Yeats.png');
+    assert.equal(overlay[0].to, 'snafu');
+});
+
+test('several buttons may be written as a list', () => {
+    const overlay = withOverlay(
+        '      - { image: Yeats.png, to: snafu }\n      - { image: rabbit.png, to: osiris, left: 40, top: 30, bounce: 2.4 }\n'
+    );
+
+    assert.equal(overlay.length, 2);
+    assert.equal(overlay[1].image, 'rabbit.png');
+    assert.equal(overlay[1].left, 40);
+    assert.equal(overlay[1].bounce, 2.4);
+});
+
+test('a picture with no buttons has an empty list, not a null', () => {
+    assert.deepEqual(parseLedger(`${LEDGER}\nassets:\n  scan0005.jpg:\n    title: Black Mud Sound\n`).assets.get('scan0005.jpg').overlay, []);
+});
+
+test('a button measured from both edges at once is a mistake', () => {
+    assert.throws(
+        () => withOverlay('      - { image: Yeats.png, to: snafu, left: 10, right: 10 }\n'),
+        /overlay\[0\] needs "left" or "right", not both/
+    );
+    assert.throws(
+        () => withOverlay('      - { image: Yeats.png, to: snafu, top: 10, bottom: 10 }\n'),
+        /overlay\[0\] needs "top" or "bottom", not both/
+    );
+});
+
+test('a button that leads nowhere, or two ways at once, is a mistake', () => {
+    assert.throws(() => withOverlay('      image: Yeats.png\n'), /overlay needs exactly one of "to" or "href"/);
+    assert.throws(
+        () => withOverlay('      { image: Yeats.png, to: snafu, href: https://example.org }\n'),
+        /overlay needs exactly one of "to" or "href"/
+    );
+});
+
+test('a button pointing at a poem the ledger does not know is a mistake', () => {
+    // A misspelt slug here would otherwise become a link to nowhere.
+    assert.throws(() => withOverlay('      { image: Yeats.png, to: no-such-poem }\n'), /names an unknown poem/);
+});
+
+test('a bounce has to be a length of time', () => {
+    assert.throws(
+        () => withOverlay('      { image: Yeats.png, to: snafu, bounce: forever }\n'),
+        /bounce must be a positive number of seconds/
+    );
+});
+
+test('the entry named in the error counts the buttons out', () => {
+    // "overlay[1]" rather than "overlay", so a long list can be searched.
+    assert.throws(
+        () => withOverlay('      - { image: Yeats.png, to: snafu }\n      - { to: snafu }\n'),
+        /assets\["scan0005\.jpg"\]\.overlay\[1\] needs an "image"/
+    );
+});
+
 test('an asset is relative to the page too', () => {
     assert.equal(hrefFor({ kind: 'asset', path: 'scan0005.jpg' }, '$Pre-2010'), '../scan0005.jpg');
 });
