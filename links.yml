@@ -117,8 +117,23 @@ assets:
   # city. The picture is that crossing, held at the question.
   #
   # Where it leads is on the link, under "via".
+  #
+  # A hare is already in the picture, mid-leap on the far bank, the one
+  # living thing in a dead landscape. The button is a second hare, cut
+  # from an engraving rather than found in the photograph, running the
+  # dry riverbed the column is walking away from. It leads to Year of
+  # the Rabbit, which no path from the root reaches - so this is a way
+  # in to a poem that otherwise has none.
   "Polisimage.jpg":
     title: The Crossing at the Pagus
+    overlay:
+      - image: Rabbit Running.png
+        alt: A running hare
+        to: year-of-the-rabbit
+        width: 20
+        left: 32
+        bottom: 8
+        press: true
 
   # The third portal. One force at two scales: the gravity that pulls
   # the fall over the rock is the gravity of You and I, where the stars
