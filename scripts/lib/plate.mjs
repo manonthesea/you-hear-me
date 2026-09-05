@@ -163,9 +163,9 @@ export function renderPlate({
             else rules.push('top: 50%;', 'transform: translateY(-50%);');
             // Three layers, so two kinds of motion never fight over the
             // same transform: the link places the button, the span inside
-            // it gives under the finger, and the picture inside that bobs.
+            // it gives under the finger, and the picture inside that bounces.
             const bob = one.bounce
-                ? `\n        .overlay-${i + 1} img { animation: bob ${one.bounce}s ease-in-out infinite; }`
+                ? `\n        .overlay-${i + 1} img { animation: bounce ${one.bounce}s linear infinite; }`
                 : '';
             const press = one.press
                 ? `\n        .overlay-${i + 1} .press { transition: transform 120ms ease; }` +
@@ -289,12 +289,23 @@ ${zoomOnClick ? `
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
 ${overlayCss}
-        /* Percentages here are of the button's own height, so a small
-           button bobs a small distance and the motion reads the same at
-           every size. */
-        @keyframes bob {
-            from, to { transform: translateY(0); }
-            50% { transform: translateY(-9%); }
+        /* A bounce, not a float. The button rests on the picture rather
+           than hovering over it: it springs, slows as it rises, hangs an
+           instant at the top, falls back faster than it left, lands, and
+           takes one smaller hop before settling. Each leg carries its own
+           easing, which is what separates a bounce from a sine wave - out
+           of the ground it decelerates, into the ground it accelerates.
+           The still moment at the end is the rest between bounces.
+
+           Percentages are of the button's own height, so a small button
+           bounces a small distance and the motion reads the same at every
+           size. */
+        @keyframes bounce {
+            0% { transform: translateY(0); animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+            32% { transform: translateY(-28%); animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53); }
+            58% { transform: translateY(0); animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+            70% { transform: translateY(-8%); animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53); }
+            80%, 100% { transform: translateY(0); }
         }
         @media (prefers-reduced-motion: reduce) {
             .overlay img { animation: none; }

@@ -117,8 +117,23 @@ assets:
   # city. The picture is that crossing, held at the question.
   #
   # Where it leads is on the link, under "via".
+  #
+  # A hare is already in the picture, mid-leap on the far bank, the one
+  # living thing in a dead landscape. The button is a second hare, cut
+  # from an engraving rather than found in the photograph, running the
+  # dry riverbed the column is walking away from. It leads to Year of
+  # the Rabbit, which no path from the root reaches - so this is a way
+  # in to a poem that otherwise has none.
   "Polisimage.jpg":
     title: The Crossing at the Pagus
+    overlay:
+      - image: Rabbit Running.png
+        alt: A running hare
+        to: year-of-the-rabbit
+        width: 20
+        left: 32
+        bottom: 8
+        press: true
 
   # The third portal. One force at two scales: the gravity that pulls
   # the fall over the rock is the gravity of You and I, where the stars
@@ -158,7 +173,7 @@ assets:
   # itself leads. "bounce" is how many seconds one bob takes; left out,
   # the button holds still. A reader who has asked their machine for
   # less motion gets none.
-  "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
+  "Fergus.jpeg":
     title: Who Goes with Fergus?
     overlay:
       - image: Yeats.png
@@ -248,7 +263,7 @@ links:
   - { from: anxious-sounding-trees, phrase: "breeze", to: transcendent-meaning-in-a-flooded-city }
   - { from: by-the-numbers, phrase: "pagus borderlands", embed: pagus-borderlands }
   - { from: by-the-numbers, phrase: "polis", to: pagus-trip, via: "Polisimage.jpg" }
-  - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" }
+  - { from: clack-clack-clack, phrase: "Today's Fergus", asset: "Fergus.jpeg" }
   - { from: clack-clack-clack, phrase: "fate", to: the-birth-of-tragedy }
   - { from: clack-clack-clack, phrase: "pervasive concept", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }

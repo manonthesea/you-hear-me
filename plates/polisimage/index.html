@@ -52,7 +52,10 @@
         .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
-
+        .overlay-1 { width: 20%; left: 32%; bottom: 8%; }
+        .overlay-1 .press { transition: transform 120ms ease; }
+        .overlay-1:hover .press { transform: scale(1.04); }
+        .overlay-1:active .press { transform: scale(0.92); }
         /* Percentages here are of the button's own height, so a small
            button bobs a small distance and the motion reads the same at
            every size. */
@@ -72,6 +75,9 @@
     <div class="stage">
         <a class="plate" id="back" href="../../$Pre-2010/4.27.9.html">
             <img src="../../Polisimage.jpg" alt="The Crossing at the Pagus">
+        </a>
+        <a class="overlay overlay-1" href="../../2022-2023+/1.%20Winter/12.28.22.html" aria-label="A running hare">
+            <span class="press"><img src="../../Rabbit%20Running.png" alt="A running hare"></span>
         </a>
     </div>
     <script>
