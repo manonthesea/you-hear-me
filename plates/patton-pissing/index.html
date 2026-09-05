@@ -63,15 +63,24 @@
          * percentages of the image's width, so the composition holds on a
          * phone as well as a desktop.
          */
-        .overlay {
-            position: absolute;
-            top: 50%;
-            right: 0%;
-            transform: translateY(-50%);
-            width: 34%;
-        }
+        .overlay { position: absolute; }
+        .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
+
+        /* Percentages here are of the button's own height, so a small
+           button bobs a small distance and the motion reads the same at
+           every size. */
+        @keyframes bob {
+            from, to { transform: translateY(0); }
+            50% { transform: translateY(-9%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .overlay img { animation: none; }
+            /* The give under the finger stays - it is feedback, not
+               decoration - but it arrives at once instead of easing. */
+            .overlay .press { transition: none; }
+        }
     </style>
 </head>
 <body>

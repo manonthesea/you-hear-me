@@ -49,6 +49,7 @@
          * phone as well as a desktop.
          */
         .overlay { position: absolute; }
+        .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
         .overlay-1 { width: 34%; right: 0%; top: 50%; transform: translateY(-50%); }
@@ -62,6 +63,9 @@
         }
         @media (prefers-reduced-motion: reduce) {
             .overlay img { animation: none; }
+            /* The give under the finger stays - it is feedback, not
+               decoration - but it arrives at once instead of easing. */
+            .overlay .press { transition: none; }
         }
     </style>
 </head>
@@ -71,7 +75,7 @@
             <img src="../../DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" alt="Who Goes with Fergus?">
         </a>
         <a class="overlay overlay-1" href="../../index.html" aria-label="Yeats">
-            <img src="../../Yeats.png" alt="Yeats">
+            <span class="press"><img src="../../Yeats.png" alt="Yeats"></span>
         </a>
     </div>
     <script>
