@@ -121,10 +121,10 @@ assets:
   #
   # A hare is already in the picture, mid-leap on the far bank, the one
   # living thing in a dead landscape. The button is a second hare, cut
-  # from an engraving rather than found in the photograph, running the
-  # dry riverbed the column is walking away from. It leads to Year of
-  # the Rabbit, which no path from the root reaches - so this is a way
-  # in to a poem that otherwise has none.
+  # from an engraving rather than found in the photograph, running out
+  # of the bottom right corner and away from the column. It leads to
+  # Year of the Rabbit, which no path from the root reaches - so this is
+  # a way in to a poem that otherwise has none.
   "Polisimage.jpg":
     title: The Crossing at the Pagus
     overlay:
@@ -132,8 +132,8 @@ assets:
         alt: A running hare
         to: year-of-the-rabbit
         width: 20
-        left: 32
-        bottom: 8
+        right: 4
+        bottom: 6
         press: true
         bounce: 2.6
 
