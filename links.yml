@@ -84,6 +84,7 @@ poems:
   trouble-sleeping-as-a-child:               { doc: 1CvMmNLy1X0qAI-x8BeRDv-9ccgz340h8fJp1nq6Z5cA, title: Trouble Sleeping as a Child }
   vulture-tree:                              { doc: 1Fq6q6L5ungIpj2ELSj3hJCJGV1Tt2se-F9cH_rAtTUM, title: Vulture Tree }
   what-could-have-been:                      { doc: 1KFuyneTLbO_q8ebT22YVj3WVs24upQkzmoJEwCCK_HY, title: What Could Have Been }
+  winter-is-coming:                          { doc: 1TWlGekKYgeepEapM3Lp6GH_JVKX4SrthTg90qGQwyfw, title: Winter is Coming }
   year-of-the-rabbit:                        { doc: 1MbI3L0E4aNJTckQTCENDZIawxaYEwGwqRx9hab6GpIs, title: Year of the Rabbit }
   you-and-i:                                 { doc: 16hPP2pblEzTSyVOIfwbI8TWQ10krsjS_akzQ2NDmOmg, title: You and I }
   your-song-in-the-morning:                  { doc: 1Efw9AEjmMOwLmnw2hqXPmb0fGbGJ3qNLpBbYC9jSQag, title: Your Song in the Morning }
@@ -120,10 +121,10 @@ assets:
   #
   # A hare is already in the picture, mid-leap on the far bank, the one
   # living thing in a dead landscape. The button is a second hare, cut
-  # from an engraving rather than found in the photograph, running the
-  # dry riverbed the column is walking away from. It leads to Year of
-  # the Rabbit, which no path from the root reaches - so this is a way
-  # in to a poem that otherwise has none.
+  # from an engraving rather than found in the photograph, running out
+  # of the bottom right corner and away from the column. It leads to
+  # Year of the Rabbit, which no path from the root reaches - so this is
+  # a way in to a poem that otherwise has none.
   "Polisimage.jpg":
     title: The Crossing at the Pagus
     overlay:
@@ -131,8 +132,8 @@ assets:
         alt: A running hare
         to: year-of-the-rabbit
         width: 20
-        left: 32
-        bottom: 8
+        right: 4
+        bottom: 6
         press: true
         bounce: 2.6
 
@@ -144,8 +145,22 @@ assets:
   # Both poems turn on the same verb - the water "splashes around to
   # witness her", and an ending is "miraculous if a human stands to
   # witness". Something is standing in the water to see it.
+  # A statue of the Virgin already stands in the pool at the foot of the
+  # falls, ankle-deep, arms open. The button is a second one, on the rock
+  # across the water - the same figure, out of the stream and above it.
+  # She leads to Winter is Coming, the poem that asks Mother Mary to sing
+  # a lullaby, which no path from the root reaches.
   "pull-a-star.jpg":
     title: The Force That Could Pull a Star In Upon Itself
+    overlay:
+      - image: mary-statue.png
+        alt: A statue of the Virgin
+        to: winter-is-coming
+        width: 13
+        right: 6
+        bottom: 5
+        press: true
+        bounce: 2.6
 
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to

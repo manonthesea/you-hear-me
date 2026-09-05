@@ -52,7 +52,11 @@
         .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
-
+        .overlay-1 { width: 13%; right: 6%; bottom: 5%; }
+        .overlay-1 img { animation: bounce 2.6s linear infinite; }
+        .overlay-1 .press { transition: transform 120ms ease; }
+        .overlay-1:hover .press { transform: scale(1.04); }
+        .overlay-1:active .press { transform: scale(0.92); }
         /* A bounce, not a float. The button rests on the picture rather
            than hovering over it: it springs, slows as it rises, hangs an
            instant at the top, falls back faster than it left, lands, and
@@ -83,6 +87,9 @@
     <div class="stage">
         <a class="plate" id="back" href="../../2016-2017!/2.%20Spring/5.2.17.html">
             <img src="../../pull-a-star.jpg" alt="The Force That Could Pull a Star In Upon Itself">
+        </a>
+        <a class="overlay overlay-1" href="../../2024-2025=/4.%20Fall/11.21.24.html" aria-label="A statue of the Virgin">
+            <span class="press"><img src="../../mary-statue.png" alt="A statue of the Virgin"></span>
         </a>
     </div>
     <script>
