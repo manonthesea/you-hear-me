@@ -148,6 +148,10 @@ export function parseLedger(text) {
             if (one.bounce !== undefined && (typeof one.bounce !== 'number' || !(one.bounce > 0))) {
                 throw new Error(`${where}.bounce must be a positive number of seconds.`);
             }
+            // Whether it gives under the finger like a real button.
+            if (one.press !== undefined && typeof one.press !== 'boolean') {
+                throw new Error(`${where}.press must be true or false.`);
+            }
             const targets = [one.to, one.href].filter((t) => t !== undefined);
             if (targets.length !== 1) {
                 throw new Error(`${where} needs exactly one of "to" or "href".`);

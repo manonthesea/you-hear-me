@@ -48,21 +48,36 @@
          * percentages of the image's width, so the composition holds on a
          * phone as well as a desktop.
          */
-        .overlay {
-            position: absolute;
-            top: 50%;
-            right: 0%;
-            transform: translateY(-50%);
-            width: 34%;
-        }
+        .overlay { position: absolute; }
+        .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
+        .overlay-1 { width: 14%; right: 7%; bottom: 7%; }
+        .overlay-1 .press { transition: transform 120ms ease; }
+        .overlay-1:hover .press { transform: scale(1.04); }
+        .overlay-1:active .press { transform: scale(0.92); }
+        /* Percentages here are of the button's own height, so a small
+           button bobs a small distance and the motion reads the same at
+           every size. */
+        @keyframes bob {
+            from, to { transform: translateY(0); }
+            50% { transform: translateY(-9%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .overlay img { animation: none; }
+            /* The give under the finger stays - it is feedback, not
+               decoration - but it arrives at once instead of easing. */
+            .overlay .press { transition: none; }
+        }
     </style>
 </head>
 <body>
     <div class="stage">
         <a class="plate" id="back" href="../../$Pre-2010/Circa%202009.html">
             <img src="../../floating-chrysanthemums.jpg" alt="Floating Chrysanthemums">
+        </a>
+        <a class="overlay overlay-1" href="../../2016-2017!/1.%20Winter/2.27.17.html" aria-label="A chrysanthemum">
+            <span class="press"><img src="../../Chrysanthemum.png" alt="A chrysanthemum"></span>
         </a>
     </div>
     <script>

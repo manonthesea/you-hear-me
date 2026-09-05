@@ -145,7 +145,7 @@ export function renderPlate({
         .map(
             (one, i) => `
         <a class="overlay overlay-${i + 1}" href="${attrHref(dir, one.href)}" aria-label="${escapeHtml(one.alt)}">
-            <img src="${attrHref(dir, one.image)}" alt="${escapeHtml(one.alt)}">
+            <span class="press"><img src="${attrHref(dir, one.image)}" alt="${escapeHtml(one.alt)}"></span>
         </a>`,
         )
         .join('');
@@ -161,12 +161,18 @@ export function renderPlate({
             if (one.top !== undefined) rules.push(`top: ${one.top}%;`);
             else if (one.bottom !== undefined) rules.push(`bottom: ${one.bottom}%;`);
             else rules.push('top: 50%;', 'transform: translateY(-50%);');
-            // The bob is on the picture inside the link, not on the link
-            // itself, so it cannot fight the transform that centres it.
+            // Three layers, so two kinds of motion never fight over the
+            // same transform: the link places the button, the span inside
+            // it gives under the finger, and the picture inside that bobs.
             const bob = one.bounce
                 ? `\n        .overlay-${i + 1} img { animation: bob ${one.bounce}s ease-in-out infinite; }`
                 : '';
-            return `        .overlay-${i + 1} { ${rules.join(' ')} }${bob}`;
+            const press = one.press
+                ? `\n        .overlay-${i + 1} .press { transition: transform 120ms ease; }` +
+                  `\n        .overlay-${i + 1}:hover .press { transform: scale(1.04); }` +
+                  `\n        .overlay-${i + 1}:active .press { transform: scale(0.92); }`
+                : '';
+            return `        .overlay-${i + 1} { ${rules.join(' ')} }${bob}${press}`;
         })
         .join('\n');
 
@@ -279,6 +285,7 @@ ${zoomOnClick ? `
          * phone as well as a desktop.
          */
         .overlay { position: absolute; }
+        .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
 ${overlayCss}
@@ -291,6 +298,9 @@ ${overlayCss}
         }
         @media (prefers-reduced-motion: reduce) {
             .overlay img { animation: none; }
+            /* The give under the finger stays - it is feedback, not
+               decoration - but it arrives at once instead of easing. */
+            .overlay .press { transition: none; }
         }
     </style>
 </head>

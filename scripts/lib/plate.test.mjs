@@ -51,7 +51,7 @@ test('an overlay is a second, separate click target', () => {
     });
 
     assert.match(page, /<a class="overlay overlay-1" href="\.\.\/\.\.\/index\.html"/);
-    assert.match(page, /<img src="\.\.\/\.\.\/Yeats\.png" alt="Yeats">/);
+    assert.match(page, /<span class="press"><img src="\.\.\/\.\.\/Yeats\.png" alt="Yeats"><\/span>/);
     // and the image underneath still goes back
     assert.match(page, /<a class="plate" id="back"/);
 });
@@ -98,6 +98,30 @@ test('a button bobs only when it is told to, and never against the reader', () =
     // on the picture inside the link, so it cannot fight the placement
     assert.match(bobbing, /\.overlay-1 img \{ animation: bob 2\.4s ease-in-out infinite; \}/);
     assert.match(bobbing, /@media \(prefers-reduced-motion: reduce\) \{\s*\.overlay img \{ animation: none; \}/s);
+});
+
+test('a button can give under the finger, and only when asked', () => {
+    const still = plate({ overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare' }] });
+    assert.doesNotMatch(still, /:active .press/);
+
+    const pressed = plate({
+        overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare', press: true }],
+    });
+    assert.match(pressed, /\.overlay-1:hover \.press \{ transform: scale\(1\.04\); \}/);
+    assert.match(pressed, /\.overlay-1:active \.press \{ transform: scale\(0\.92\); \}/);
+});
+
+test('bobbing and pressing act on separate layers, so neither cancels the other', () => {
+    // The link places the button, the span gives under the finger, the
+    // picture bobs. One transform each.
+    const page = plate({
+        overlay: [{ image: 'rabbit.png', href: 'index.html', alt: 'A hare', press: true, bounce: 3 }],
+    });
+
+    assert.match(page, /\.overlay-1 img \{ animation: bob 3s/);
+    assert.match(page, /\.overlay-1:active \.press \{ transform: scale\(0\.92\)/);
+    // the placement transform is still the link's own and untouched
+    assert.match(page, /\.overlay-1 \{[^}]*translateY\(-50%\)/s);
 });
 
 test('a title with markup characters cannot break out', () => {

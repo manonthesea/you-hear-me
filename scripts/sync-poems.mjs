@@ -436,6 +436,7 @@ async function main() {
             top: one.top,
             bottom: one.bottom,
             bounce: one.bounce,
+            press: one.press,
         }));
         const platePathFor = platePath(plateSlug(asset));
         // A pinned destination beats the poem the reader arrived from,

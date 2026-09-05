@@ -134,8 +134,23 @@ assets:
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
   # the poem, which is the default and so needs nothing said here.
+  #
+  # The pin is a fifth flower, and deliberately not a painted one: it
+  # sits in the empty sea at the lower right, where none of the four
+  # fall, so it reads as an object on the picture rather than part of
+  # it. It gives under the finger, and it carries the poem's own onward
+  # line - "swim" - so the reader who went into the picture can go on
+  # from inside it instead of only back out.
   "floating-chrysanthemums.jpg":
     title: Floating Chrysanthemums
+    overlay:
+      - image: Chrysanthemum.png
+        alt: A chrysanthemum
+        to: how-soon-we-forget
+        width: 14
+        right: 7
+        bottom: 7
+        press: true
 
   # Buttons over a picture. Each one sits where it is put - across in
   # percentages of the picture's width, down of its height - and leads

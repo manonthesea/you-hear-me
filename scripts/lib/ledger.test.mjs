@@ -295,6 +295,14 @@ test('a button pointing at a poem the ledger does not know is a mistake', () => 
     assert.throws(() => withOverlay('      { image: Yeats.png, to: no-such-poem }\n'), /names an unknown poem/);
 });
 
+test('a press is a yes or no, not a measurement', () => {
+    assert.throws(
+        () => withOverlay('      { image: Yeats.png, to: snafu, press: 3 }\n'),
+        /press must be true or false/
+    );
+    assert.equal(withOverlay('      { image: Yeats.png, to: snafu, press: true }\n')[0].press, true);
+});
+
 test('a bounce has to be a length of time', () => {
     assert.throws(
         () => withOverlay('      { image: Yeats.png, to: snafu, bounce: forever }\n'),
