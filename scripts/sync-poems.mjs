@@ -424,13 +424,20 @@ async function main() {
         // always leads where the ledger said - there is no poem it
         // "came from" to fall back to.
         const config = (embed ? ledgerEmbeds.get(embed) : ledgerAssets.get(asset)) ?? {};
-        const overlay = config.overlay
-            ? {
-                  image: config.overlay.image,
-                  alt: config.overlay.alt ?? 'Go to the front page',
-                  href: config.overlay.to ? pathForSlug(config.overlay.to) : config.overlay.href,
-              }
-            : null;
+        // Every button on this plate, each carrying its own destination
+        // and its own place on the picture.
+        const overlay = (config.overlay ?? []).map((one) => ({
+            image: one.image,
+            alt: one.alt ?? 'Go to the front page',
+            href: one.to ? pathForSlug(one.to) : one.href,
+            width: one.width,
+            left: one.left,
+            right: one.right,
+            top: one.top,
+            bottom: one.bottom,
+            bounce: one.bounce,
+            press: one.press,
+        }));
         const platePathFor = platePath(plateSlug(asset));
         // A pinned destination beats the poem the reader arrived from,
         // and a portal's destination - which belongs to the link - beats

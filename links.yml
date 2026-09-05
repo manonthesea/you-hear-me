@@ -134,15 +134,37 @@ assets:
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
   # the poem, which is the default and so needs nothing said here.
+  #
+  # The pin is a fifth flower, and deliberately not a painted one: it
+  # sits in the empty sea at the lower right, where none of the four
+  # fall, so it reads as an object on the picture rather than part of
+  # it. It gives under the finger, and it carries the poem's own onward
+  # line - "swim" - so the reader who went into the picture can go on
+  # from inside it instead of only back out.
   "floating-chrysanthemums.jpg":
     title: Floating Chrysanthemums
+    overlay:
+      - image: Chrysanthemum.png
+        alt: A chrysanthemum
+        to: how-soon-we-forget
+        width: 14
+        right: 7
+        bottom: 7
+        press: true
 
+  # Buttons over a picture. Each one sits where it is put - across in
+  # percentages of the picture's width, down of its height - and leads
+  # somewhere of its own, which need not be where clicking the picture
+  # itself leads. "bounce" is how many seconds one bob takes; left out,
+  # the button holds still. A reader who has asked their machine for
+  # less motion gets none.
   "DA560EC6-116C-41A4-86A7-1698A5907497.jpeg":
     title: Who Goes with Fergus?
     overlay:
-      image: Yeats.png
-      alt: Yeats
-      href: index.html
+      - image: Yeats.png
+        alt: Yeats
+        href: index.html
+        bounce: 2.6
 
 # Pictures that live on someone else's server. Shown on a plate of our
 # own, so a click can lead somewhere in the collection instead of
@@ -164,14 +186,6 @@ embeds:
   empire-of-light:
     title: The Empire of Light
     src: "https://www.guggenheim.org/wp-content/uploads/1953/01/76.2553.102_ph_web-1.jpg"
-    frame: image
-
-  # Illustrates "or turn back and return to the polis?" - a Reuters
-  # resizer URL, which means this src carries a signed, time-limited
-  # auth token and may need replacing once it expires.
-  the-polis:
-    title: The Polis
-    src: "https://www.reuters.com/resizer/v2/LDFMSPUH65JIPJIAHDOMVOIE4Q.jpg?auth=10fb814d80290adf8fb2a9bbe471061daffd57c50701d52aa9ed583f616adad5&width=1920&quality=80"
     frame: image
 
   # The nine pages a reader used to be sent away to, and the one picture
@@ -287,7 +301,7 @@ links:
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Rains too long in coming", to: pagus-trip }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", embed: the-waste-land }
   - { from: pagus-trip, phrase: "Dry fish flake on the riverbed", to: the-end-of-the-line }
-  - { from: pagus-trip, phrase: "polis", embed: the-polis }
+  - { from: pagus-trip, phrase: "polis", to: snafu }
   - { from: paris, phrase: "Butte Chaumont", to: scenes-from-the-park }
   - { from: paris, phrase: "apparition", embed: in-a-station-of-the-metro }
   - { from: paris, phrase: "first days at the turn of the century", to: how-soon-we-forget }

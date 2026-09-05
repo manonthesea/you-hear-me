@@ -48,15 +48,21 @@
          * percentages of the image's width, so the composition holds on a
          * phone as well as a desktop.
          */
-        .overlay {
-            position: absolute;
-            top: 50%;
-            right: 0%;
-            transform: translateY(-50%);
-            width: 34%;
-        }
+        .overlay { position: absolute; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
+        .overlay-1 { width: 34%; right: 0%; top: 50%; transform: translateY(-50%); }
+        .overlay-1 img { animation: bob 2.6s ease-in-out infinite; }
+        /* Percentages here are of the button's own height, so a small
+           button bobs a small distance and the motion reads the same at
+           every size. */
+        @keyframes bob {
+            from, to { transform: translateY(0); }
+            50% { transform: translateY(-9%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .overlay img { animation: none; }
+        }
     </style>
 </head>
 <body>
@@ -64,7 +70,7 @@
         <a class="plate" id="back" href="../../2020-2021/3.%20Summer/10.19.20.html">
             <img src="../../DA560EC6-116C-41A4-86A7-1698A5907497.jpeg" alt="Who Goes with Fergus?">
         </a>
-        <a class="overlay" href="../../index.html" aria-label="Yeats">
+        <a class="overlay overlay-1" href="../../index.html" aria-label="Yeats">
             <img src="../../Yeats.png" alt="Yeats">
         </a>
     </div>
