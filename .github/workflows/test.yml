@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
 
+# This workflow is the one place code from a pull request runs, so it is
+# given nothing it does not need. A fork's pull request already gets a
+# read-only token and no secrets; saying so here means the job keeps that
+# footing even if the repository default is later widened.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,8 +24,14 @@ jobs:
         with:
           node-version: 22
 
+      # "ci" installs what the lockfile pins rather than whatever the
+      # range resolves to today, so a test run is reproducible; and
+      # "--ignore-scripts" means a dependency's install hooks do not run,
+      # which is how a pull request would otherwise execute code of its
+      # own choosing on the runner. Nothing here needs them: the three
+      # dependencies are cheerio, googleapis and yaml.
       - name: Install dependencies
-        run: npm install
+        run: npm ci --ignore-scripts
 
       - name: Run tests
         run: npm test
