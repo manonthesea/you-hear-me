@@ -67,3 +67,33 @@ test("the front door's destination exists on disk", async () => {
 
     assert.ok(existsSync(path.join(REPO_ROOT, target)), `${target} is missing from the repo`);
 });
+
+test('the three views keep themselves out of search results', async () => {
+    // Nothing on the site links to them, so a reader reaches the map
+    // by being shown it. A search result would undo that quietly, and
+    // the meta tag lives in a template a later edit could drop.
+    for (const view of ['maze.html', 'paths.html', 'commonplace.html']) {
+        const page = await readFile(path.join(REPO_ROOT, view), 'utf8');
+
+        assert.match(page, /<meta name="robots" content="noindex">/, `${view} is missing its noindex`);
+    }
+});
+
+test('no robots.txt overrides the noindex by forbidding the fetch', async () => {
+    // A disallowed page is one the crawler never fetches, so it never
+    // reads the noindex - and a page linked from anywhere else can stay
+    // in the index as a bare URL. The two do not stack; noindex alone is
+    // what removes a page. If a robots.txt is ever added, it must leave
+    // these three reachable.
+    const robots = path.join(REPO_ROOT, 'robots.txt');
+    if (!existsSync(robots)) return;
+
+    const text = await readFile(robots, 'utf8');
+    for (const view of ['maze', 'paths', 'commonplace']) {
+        assert.doesNotMatch(
+            text,
+            new RegExp(`^\\s*Disallow:\\s*/${view}\\.html`, 'mi'),
+            `robots.txt disallows /${view}.html, which stops the crawler reading its noindex`
+        );
+    }
+});
