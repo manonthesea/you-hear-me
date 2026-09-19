@@ -13,8 +13,12 @@ export function escapeHtml(str) {
 
 // Poems mirror their Drive folders, so a page can sit any number of
 // directories deep. The stylesheet lives at the repo root either way.
+export function assetPathFor(dir, file) {
+    return path.posix.join(path.posix.relative(dir || '.', '.') || '.', 'assets', file);
+}
+
 export function cssPathFor(dir) {
-    return path.posix.join(path.posix.relative(dir || '.', '.') || '.', 'assets/poem.css');
+    return assetPathFor(dir, 'poem.css');
 }
 
 // The indents are set in px, so they do not shrink when the type does.
@@ -77,6 +81,7 @@ export function renderPage(template, { title, body, date, dir = '', footnotesHtm
     return template
         .replaceAll('{{TITLE}}', () => escapeHtml(title))
         .replaceAll('{{CSS_PATH}}', cssPathFor(dir))
+        .replaceAll('{{TRAIL_PATH}}', assetPathFor(dir, 'trail.js'))
         // Derived here rather than passed in, so a caller cannot forget it.
         .replaceAll('{{COLS}}', String(columnsFor(body)))
         .replaceAll('{{BODY}}', () => body)

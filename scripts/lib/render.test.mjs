@@ -7,9 +7,9 @@
 
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { columnsFor, cssPathFor, escapeHtml, renderPage } from './render.mjs';
+import { assetPathFor, columnsFor, cssPathFor, escapeHtml, renderPage } from './render.mjs';
 
-const TEMPLATE = `<html><head><link rel="stylesheet" href="{{CSS_PATH}}"><title>{{TITLE}}</title></head>
+const TEMPLATE = `<html><head><link rel="stylesheet" href="{{CSS_PATH}}"><script src="{{TRAIL_PATH}}" defer></script><title>{{TITLE}}</title></head>
 <body><div class="poem" style="--cols: {{COLS}}"><h1>{{TITLE}}</h1><pre>
 {{BODY}}
 
@@ -128,6 +128,27 @@ test('every placeholder is filled', () => {
 test('the stylesheet path still climbs out of nested folders', () => {
     assert.equal(cssPathFor(''), 'assets/poem.css');
     assert.equal(cssPathFor('2020-2021/1. Winter'), '../../assets/poem.css');
+});
+
+test('a rendered poem carries the trail script, pathed to its own depth', () => {
+    const deep = renderPage(TEMPLATE, {
+        title: 'T',
+        body: 'a line',
+        date: '1.1.1',
+        dir: '2020-2021/1. Winter',
+    });
+    assert.match(deep, /<script src="\.\.\/\.\.\/assets\/trail\.js" defer><\/script>/);
+
+    const shallow = renderPage(TEMPLATE, { title: 'T', body: 'a line', date: '1.1.1' });
+    assert.match(shallow, /<script src="assets\/trail\.js" defer><\/script>/);
+});
+
+test('every asset climbs out the same way the stylesheet does', () => {
+    // A poem sits one, two or three folders down depending on its era,
+    // so anything it loads has to be told how far back up the tree it is.
+    assert.equal(assetPathFor('', 'trail.js'), 'assets/trail.js');
+    assert.equal(assetPathFor('$Pre-2010', 'trail.js'), '../assets/trail.js');
+    assert.equal(assetPathFor('2020-2021/1. Winter', 'trail.js'), '../../assets/trail.js');
 });
 
 test('escapeHtml still escapes the three that matter', () => {
