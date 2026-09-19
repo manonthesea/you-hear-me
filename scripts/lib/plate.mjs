@@ -182,6 +182,7 @@ export function renderPlate({
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${safeTitle}</title>
+    <script src="${attrHref(dir, 'assets/trail.js')}" defer></script>
     <style>
         /* Black, edge to edge: the image is the whole page. */
         html, body { height: 100%; }

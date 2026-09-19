@@ -1,0 +1,11 @@
+# The Worker is deployed by hand from the Cloudflare dashboard for now.
+# This file is what makes it deployable from here instead, once the KV
+# namespace id is filled in - it is on the namespace's page in the
+# dashboard, and it is an identifier rather than a secret.
+name = "you-hear-me-trail"
+main = "trail.js"
+compatibility_date = "2026-09-19"
+
+[[kv_namespaces]]
+binding = "TRAIL"
+id = "PASTE_THE_NAMESPACE_ID_HERE"

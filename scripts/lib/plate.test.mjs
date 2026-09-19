@@ -146,6 +146,13 @@ test('bobbing and pressing act on separate layers, so neither cancels the other'
     assert.match(page, /\.overlay-1 \{[^}]*translateY\(-50%\)/s);
 });
 
+test('a plate carries the trail script too, so a button press is seen', () => {
+    // A plate is where the buttons are. Leaving it off would mean the
+    // trail showed which links were followed but never which pictures
+    // were pressed.
+    assert.match(plate(), /<script src="\.\.\/\.\.\/assets\/trail\.js" defer><\/script>/);
+});
+
 test('a title with markup characters cannot break out', () => {
     const page = renderPlate({ asset: ASSET, title: 'A & <b>', back: null });
 
