@@ -70,6 +70,17 @@ export default {
             return new Response('Bad request', { status: 400, headers });
         }
 
+        const phrase = clip(crossing && crossing.phrase);
+
+        // Said before the write rather than after it, so a crossing that
+        // arrives but fails to store still shows up here. Between this
+        // line and the response code, the two halves can be told apart:
+        // a line with no 204 after it is a write that did not land.
+        //
+        // The same edge that goes into the store, and nothing more - the
+        // log is no more revealing than the rows are.
+        console.log(`${from} -> ${to} ("${phrase}")`);
+
         // Fixed width, so listing the keys in order lists the crossings
         // in the order they happened.
         const at = Date.now();
@@ -77,7 +88,7 @@ export default {
 
         await env.TRAIL.put(
             key,
-            JSON.stringify({ from, to, phrase: clip(crossing && crossing.phrase), at }),
+            JSON.stringify({ from, to, phrase, at }),
             { expirationTtl: KEEP_FOR }
         );
 

@@ -314,6 +314,7 @@ links:
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "semblance", to: madness-at-hand }
   - { from: its-okay-if-it-doesnt-make-sense-at-firs, phrase: "the scene becomes a stage", to: scenes-from-the-park }
   - { from: language-makes-more-sense, phrase: "drift", to: the-drift }
+  - { from: language-makes-more-sense, phrase: "semblance", to: months-later }
   - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", embed: empire-of-light }
   - { from: le-maison-du-ren-magritte, phrase: "creation", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: le-maison-du-ren-magritte, phrase: "her", to: your-song-in-the-morning }
