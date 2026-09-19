@@ -7,9 +7,14 @@
 // a crossing it accepts is stored in the shape a later reader expects.
 
 import { strict as assert } from 'node:assert';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import worker from './trail.js';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
 
 const ORIGIN = 'https://manonthesea.github.io';
 
@@ -28,6 +33,19 @@ const post = (body, origin = ORIGIN) =>
 
 const crossing = (extra = {}) =>
     JSON.stringify({ from: '/a.html', to: '/b.html', phrase: 'semblance', ...extra });
+
+test('the deploy config names a real store, and the binding the code uses', async () => {
+    // The repository deploys this Worker now, so a placeholder or a
+    // renamed binding would not be caught by a person looking at the
+    // dashboard - it would just deploy, and every crossing would fail
+    // on a binding that was not there.
+    const config = await readFile(path.join(HERE, 'wrangler.toml'), 'utf8');
+
+    assert.match(config, /^binding = "TRAIL"$/m, 'the binding is not the TRAIL the code reads');
+    assert.match(config, /^id = "[0-9a-f]{32}"$/m, 'the namespace id is missing or not an id');
+    assert.doesNotMatch(config, /PASTE_THE/, 'the namespace id is still the placeholder');
+    assert.match(config, /^main = "trail\.js"$/m, 'the entry point does not name this file');
+});
 
 test('a GET says it is alive, and says nothing else', async () => {
     // This is what a browser is pointed at to check a deploy took, so it

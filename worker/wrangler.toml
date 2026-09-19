@@ -1,11 +1,17 @@
-# The Worker is deployed by hand from the Cloudflare dashboard for now.
-# This file is what makes it deployable from here instead, once the KV
-# namespace id is filled in - it is on the namespace's page in the
-# dashboard, and it is an identifier rather than a secret.
+# How the Worker gets deployed.
+#
+# It is connected to this repository in the Cloudflare dashboard, with
+# the root directory set to "worker", so a merge to main deploys it the
+# way a merge already publishes everything else. Nothing is pasted into
+# a browser editor any more.
+#
+# The namespace id below is an identifier, not a secret: it names which
+# store the binding points at, and holds no authority over it. Knowing
+# it lets nobody read or write the store.
 name = "you-hear-me-trail"
 main = "trail.js"
 compatibility_date = "2026-09-19"
 
 [[kv_namespaces]]
 binding = "TRAIL"
-id = "PASTE_THE_NAMESPACE_ID_HERE"
+id = "b256ec6b991c4e4f90e3effa9814c837"
