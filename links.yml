@@ -317,6 +317,7 @@ links:
   - { from: le-maison-du-ren-magritte, phrase: "One lamp lights the very center", embed: empire-of-light }
   - { from: le-maison-du-ren-magritte, phrase: "creation", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: le-maison-du-ren-magritte, phrase: "her", to: your-song-in-the-morning }
+  - { from: madness-at-hand, phrase: "semblance", to: language-makes-more-sense }
   - { from: madness-at-hand, phrase: "the devil", to: trouble-sleeping-as-a-child }
   - { from: making-up-after-decades-together, phrase: "words they deserve", to: quite-like-my-love-for-you }
   - { from: marked-by-water, phrase: "drift", to: language-makes-more-sense }
