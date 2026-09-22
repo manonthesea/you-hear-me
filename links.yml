@@ -110,8 +110,8 @@ assets:
   # way on.
   #
   # The button is the head the picture took off him, down on the boards
-  # at his feet, on the dark left side of the deck where there is
-  # nothing else to look at. It leads where the picture leads. The
+  # at the near end of the bridge, on the right where the deck runs
+  # out of the frame. It leads where the picture leads. The
   # other three buttons on this site each open a poem of their own, but
   # this one is not a second way out - it is the way out, made
   # unmissable. A reader who does not think to click a photograph will
@@ -123,7 +123,7 @@ assets:
         alt: The general's own head
         to: its-okay-if-it-doesnt-make-sense-at-firs
         width: 17
-        left: 5
+        right: 5
         bottom: 4
         press: true
         bounce: 2.6
