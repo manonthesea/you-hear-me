@@ -287,6 +287,7 @@ links:
   - { from: cryptic-word, phrase: "metaphysics", to: the-party-inside }
   - { from: desert-morning-chill, phrase: "outside lamp", to: its-okay-if-it-doesnt-make-sense-at-firs }
   - { from: documented-a-day-before-it-occurred, phrase: "The path drops off", to: omen-of-the-dead-belly-up-hog }
+  - { from: documented-a-day-before-it-occurred, phrase: "Who died?", to: months-later }
   - { from: documented-a-day-before-it-occurred, phrase: "electrons of our thoughts", to: time-is-purposeful }
   - { from: documented-a-day-before-it-occurred, phrase: "rag and bone", to: prey-to-the-weather }
   - { from: every-poem-is-an-aged-memory, phrase: "her arms", to: your-song-in-the-morning }
@@ -322,6 +323,7 @@ links:
   - { from: madness-at-hand, phrase: "the devil", to: trouble-sleeping-as-a-child }
   - { from: making-up-after-decades-together, phrase: "words they deserve", to: quite-like-my-love-for-you }
   - { from: marked-by-water, phrase: "drift", to: language-makes-more-sense }
+  - { from: months-later, phrase: "semblance", to: prey-to-the-weather }
   - { from: months-later, phrase: "that rabbit", to: year-of-the-rabbit }
   - { from: marsh-voices, phrase: "black", to: osiris-brings-the-drip-drop-drip }
   - { from: masquerade, phrase: "Sleep grips you", to: in-and-out-of-consciousness }
@@ -386,7 +388,7 @@ links:
   - { from: trouble-sleeping-as-a-child, phrase: "red devil", to: floating-chrysanthemums }
   - { from: vulture-tree, phrase: "electricity", to: summer-storm }
   - { from: vulture-tree, phrase: "feeds the buzzards", to: omen-of-the-dead-belly-up-hog }
-  - { from: year-of-the-rabbit, phrase: "You killed that rabbit two years ago", to: months-later }
+  - { from: year-of-the-rabbit, phrase: "You killed that rabbit two years ago", to: fertile-ground }
   - { from: you-and-i, phrase: "you and I", to: on-the-shortest-night }
   - { from: your-song-in-the-morning, phrase: "my silent question", to: the-eleventh-hour }
   - { from: your-song-in-the-morning, phrase: "you whisper found comprehension", to: its-okay-if-it-doesnt-make-sense-at-firs }
