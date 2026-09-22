@@ -179,6 +179,31 @@ assets:
         press: true
         bounce: 2.6
 
+  # The fourth portal, and a picture this collection lost once already.
+  #
+  # Pagus Trip asks "or turn back and return to the polis?" and the
+  # answer used to be a photograph of the Capitol on the sixth of
+  # January, 2021 - a police munition going off in front of the steps,
+  # the crowd on the terrace, the dome lit above it. The polis, turned
+  # back to.
+  #
+  # It hung on a Reuters resizer URL whose auth token was signed and
+  # time-limited, and when the token expired the frame loaded at 0x0
+  # and the reader arrived at a black page. The line was pointed
+  # straight at SNAFU instead and the picture was let go.
+  #
+  # It is here now because a crawler happened to take a copy in May
+  # 2024 and the Internet Archive still had it. The file is in the
+  # repository this time. Nothing about it can expire.
+  #
+  # And it is "via" rather than "embed", which is the difference that
+  # matters: an embed is not an edge, so the old arrangement gave the
+  # reader a picture and showed the map nothing. This way the
+  # photograph stands in the doorway and the line still goes to SNAFU
+  # underneath it, counted by the map, the walk and the maze alike.
+  "the-polis.jpg":
+    title: The Polis
+
   # The kamikaze photograph the poem is named for, with the
   # chrysanthemums painted back into it. Clicking returns the reader to
   # the poem, which is the default and so needs nothing said here.
@@ -357,7 +382,7 @@ links:
   - { from: osiris-brings-the-drip-drop-drip, phrase: "Rains too long in coming", to: pagus-trip }
   - { from: osiris-brings-the-drip-drop-drip, phrase: "stony rubbish", embed: the-waste-land }
   - { from: pagus-trip, phrase: "Dry fish flake on the riverbed", to: the-end-of-the-line }
-  - { from: pagus-trip, phrase: "polis", to: snafu }
+  - { from: pagus-trip, phrase: "polis", to: snafu, via: "the-polis.jpg" }
   - { from: paris, phrase: "Butte Chaumont", to: scenes-from-the-park }
   - { from: paris, phrase: "apparition", embed: in-a-station-of-the-metro }
   - { from: paris, phrase: "first days at the turn of the century", to: how-soon-we-forget }
