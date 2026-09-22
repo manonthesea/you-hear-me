@@ -408,7 +408,23 @@ test('a framed embed fills the page, having no size of its own to keep', () => {
     const page = embedPlate();
 
     assert.match(page, /\.stage \{ position: absolute; inset: 0;/);
-    assert.match(page, /\.embed \{ display: block; width: 100%; height: 100%; border: 0; \}/);
+    assert.match(page, /\.embed \{ display: block; width: 100%; height: 100%; border: 0;/);
+});
+
+test('a framed embed is backed with white, so the plate does not show through it', () => {
+    // A framed document's canvas is transparent when the page sets no
+    // background of its own - the browser paints white for a page read
+    // on its own, but not for one in a frame. Without this the plate's
+    // black came through and left dark text on dark: this is how The
+    // Waste Land arrived, with its title invisible and only a highlight
+    // and a red rule legible.
+    const page = embedPlate();
+
+    assert.match(
+        page,
+        /\.embed \{[^}]*background: #fff;/,
+        'the frame has no background, so a transparent page shows the plate behind it'
+    );
 });
 
 test('frame: image draws the remote picture as an ordinary plate', () => {

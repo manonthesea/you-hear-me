@@ -226,7 +226,17 @@ ${framed ? `
          * nothing to shrink-wrap the way a local image is shrink-wrapped.
          */
         .stage { position: absolute; inset: 0; max-width: none; max-height: none; }
-        .embed { display: block; width: 100%; height: 100%; border: 0; }
+        /*
+         * White behind the frame, because a framed document's canvas is
+         * transparent when the page sets no background of its own. Read
+         * on its own such a page still looks white - the browser paints
+         * that - but in here the plate's black came through it and left
+         * dark text on dark, which is how The Waste Land arrived: the
+         * title gone entirely, the byline barely grey, nothing legible
+         * but a highlight and a red rule. A page that paints its own
+         * background covers this and never sees it.
+         */
+        .embed { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
         /*
          * The whole surface is the button. A click inside a cross-origin
          * frame never reaches this page, so the link cannot wrap the frame
