@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patton on the Rhine</title>
+    <title>Patton on the Rhine, with Clockwork</title>
     <script src="../../assets/trail.js" defer></script>
     <style>
         /* Black, edge to edge: the image is the whole page. */
@@ -45,21 +45,6 @@
 
 
         /*
-         * The magnified state, entered on the first click. The width
-         * itself is set on the image by the script, from the size it was
-         * actually being drawn at - the constraints are only released
-         * here so that width can take effect and the page can scroll.
-         */
-        .plate { cursor: zoom-in; }
-        body.zoomed { display: block; overflow: auto; }
-        body.zoomed .stage { max-width: none; max-height: none; }
-        body.zoomed .plate { cursor: pointer; }
-        body.zoomed .plate, body.zoomed .plate img {
-            max-width: none;
-            max-height: none;
-            height: auto;
-        }
-        /*
          * Over the right-hand side of the picture. Both numbers are
          * percentages of the image's width, so the composition holds on a
          * phone as well as a desktop.
@@ -68,7 +53,11 @@
         .overlay .press { display: block; }
         .overlay img { display: block; width: 100%; height: auto; }
         .overlay:focus-visible, .plate:focus-visible { outline: 2px solid #58a6ff; }
-
+        .overlay-1 { width: 17%; left: 5%; bottom: 4%; }
+        .overlay-1 img { animation: bounce 2.6s linear infinite; }
+        .overlay-1 .press { transition: transform 120ms ease; }
+        .overlay-1:hover .press { transform: scale(1.04); }
+        .overlay-1:active .press { transform: scale(0.92); }
         /* A bounce, not a float. The button rests on the picture rather
            than hovering over it: it springs, slows as it rises, hangs an
            instant at the top, falls back faster than it left, lands, and
@@ -98,57 +87,17 @@
 <body>
     <div class="stage">
         <a class="plate" id="back" href="../../2020-2021/1.%20Winter/2.4.21.html">
-            <img src="../../patton-pissing.jpg" alt="Patton on the Rhine">
+            <img src="../../Cyborg%20Patton.jpg" alt="Patton on the Rhine, with Clockwork">
+        </a>
+        <a class="overlay overlay-1" href="../../2020-2021/1.%20Winter/2.4.21.html" aria-label="The general's own head">
+            <span class="press"><img src="../../Patton%20head.png" alt="The general's own head"></span>
         </a>
     </div>
     <script>
         // This plate's destination was chosen deliberately, so the
         // referrer must not override it.
 
-        // Click once to magnify, again to follow the link.
-        //
-        // The href is left exactly as it is, so a reader with no
-        // scripting simply arrives at the destination on the first click.
-        // The zoom is an addition to the page, never a gate across it.
-        (function () {
-            const plate = document.getElementById('back');
-            const image = plate.querySelector('img');
-            let magnified = false;
 
-            plate.addEventListener('click', function (event) {
-                if (magnified) return;   // this one travels
-                event.preventDefault();
-
-                // Where in the picture the reader pointed, as a fraction
-                // of it. A keyboard press carries no coordinates, so it
-                // magnifies about the middle instead.
-                const keyboard = event.detail === 0;
-                const before = image.getBoundingClientRect();
-                if (!before.width || !before.height) return;
-                const anchorX = keyboard ? window.innerWidth / 2 : event.clientX;
-                const anchorY = keyboard ? window.innerHeight / 2 : event.clientY;
-                const fx = keyboard ? 0.5 : (anchorX - before.left) / before.width;
-                const fy = keyboard ? 0.5 : (anchorY - before.top) / before.height;
-
-                // Magnified against the size it was actually drawn at, so
-                // "3" means 3 times bigger than what the reader was
-                // just looking at, whatever the screen.
-                image.style.width = before.width * 3 + 'px';
-                document.body.classList.add('zoomed');
-                magnified = true;
-
-                const after = image.getBoundingClientRect();
-                const left = after.left + window.scrollX;
-                const top = after.top + window.scrollY;
-                window.scrollTo(
-                    // Across, the view is framed at 0 of the way over
-                    // whatever the reader clicked, and centred on it. scrollTo
-                    // clamps, so 0 simply rests against the left edge.
-                    left + 0 * after.width - window.innerWidth / 2,
-                    top + fy * after.height - anchorY
-                );
-            });
-        })();
     </script>
 </body>
 </html>

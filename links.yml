@@ -93,23 +93,40 @@ poems:
 # its own where clicking returns the reader to the poem they came from;
 # this section only says how a particular one should differ.
 assets:
-  # The first portal. Opens whole, at its own size; the first click
-  # magnifies it, and the click after that carries the reader on to
-  # wherever the link said - here, back to the beginning.
+  # The first portal. The photograph Pissing Diptych is written from -
+  # the pontoon bridge over the Rhine, March 1945 - with the general's
+  # head replaced by a ball of clockwork.
   #
-  # Where it leads is no longer written here. It is on the link, under
-  # "via", so the thread from Pissing Diptych to the root is a thread
-  # the map, the walk and the maze can all see. It used to lead to
-  # SNAFU, which was a swinging door rather than a way onward: SNAFU is
-  # the poem that sends a reader here in the first place.
+  # Where it leads is not written here. It is on the link, under "via",
+  # so the thread from Pissing Diptych to the root is a thread the map,
+  # the walk and the maze can all see. It used to lead to SNAFU, which
+  # was a swinging door rather than a way onward: SNAFU is the poem
+  # that sends a reader here in the first place.
   #
-  # Patton stands on the left of the frame, so the magnified view is
-  # framed there rather than wherever the reader happened to click.
-  "patton-pissing.jpg":
-    title: Patton on the Rhine
-    zoom: 3
-    zoom-on: click
-    focus: left
+  # It used to magnify on the first click and travel on the second.
+  # That was built when the interesting thing in the frame was small
+  # and far to the left. Now the interesting thing is the head, and it
+  # is unmissable, so the zoom only stood between the reader and the
+  # way on.
+  #
+  # The button is the head the picture took off him, down on the boards
+  # at his feet, on the dark left side of the deck where there is
+  # nothing else to look at. It leads where the picture leads. The
+  # other three buttons on this site each open a poem of their own, but
+  # this one is not a second way out - it is the way out, made
+  # unmissable. A reader who does not think to click a photograph will
+  # click a head that bounces.
+  "Cyborg Patton.jpg":
+    title: Patton on the Rhine, with Clockwork
+    overlay:
+      - image: Patton head.png
+        alt: The general's own head
+        to: its-okay-if-it-doesnt-make-sense-at-firs
+        width: 17
+        left: 5
+        bottom: 4
+        press: true
+        bounce: 2.6
 
   # The second portal, and the first made rather than found. By the
   # Numbers opens on Numbers 1:1 - the census - and ends with men run
@@ -297,6 +314,7 @@ links:
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
   - { from: floating-chrysanthemums, phrase: "swim", to: how-soon-we-forget }
   - { from: how-soon-we-forget, phrase: "promise of an aspiring year", to: 12-31-19 }
+  - { from: how-many-conversations-are-you-part, phrase: "drip, drip, drip", to: osiris-brings-the-drip-drop-drip }
   - { from: how-many-conversations-are-you-part, phrase: "infinite end", to: you-and-i }
   - { from: in-and-out-of-consciousness, phrase: "(in-between)", to: how-many-conversations-are-you-part }
   - { from: in-and-out-of-consciousness, phrase: "in front of a screen", to: clack-clack-clack }
@@ -346,7 +364,7 @@ links:
   - { from: paris, phrase: "spring lover", to: quite-like-my-love-for-you }
   - { from: people-in-the-street, phrase: "constructs of purchased meaning", to: clack-clack-clack }
   - { from: people-in-the-street, phrase: "the Spotted Cat", embed: the-spotted-cat }
-  - { from: pissing-diptych, phrase: "pee", to: its-okay-if-it-doesnt-make-sense-at-firs, via: "patton-pissing.jpg" }
+  - { from: pissing-diptych, phrase: "pee", to: its-okay-if-it-doesnt-make-sense-at-firs, via: "Cyborg Patton.jpg" }
   - { from: prey-to-the-weather, phrase: "falls", to: marsh-voices }
   - { from: prey-to-the-weather, phrase: "rabbit", to: fertile-ground }
   - { from: quantum-nothingness, phrase: "the dog", to: nostalgia }
