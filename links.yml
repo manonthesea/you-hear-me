@@ -314,6 +314,7 @@ links:
   - { from: floating-chrysanthemums, phrase: "Floating Chrysanthemums", asset: "floating-chrysanthemums.jpg" }
   - { from: floating-chrysanthemums, phrase: "swim", to: how-soon-we-forget }
   - { from: how-soon-we-forget, phrase: "promise of an aspiring year", to: 12-31-19 }
+  - { from: how-many-conversations-are-you-part, phrase: "drip, drip, drip", to: osiris-brings-the-drip-drop-drip }
   - { from: how-many-conversations-are-you-part, phrase: "infinite end", to: you-and-i }
   - { from: in-and-out-of-consciousness, phrase: "(in-between)", to: how-many-conversations-are-you-part }
   - { from: in-and-out-of-consciousness, phrase: "in front of a screen", to: clack-clack-clack }
