@@ -23,7 +23,6 @@
 
 poems:
   12-31-19:                                  { doc: 1Pfd450stzwB0ObaW58m-MKmtpJoRdZVL7a7dXqilfP0, title: 12.31.19 }
-  20th-century-blues:                        { doc: 1O1mY-1T05w7PnCHqcFjNWBU1cSafUKOYEDdxZx6hmis, title: 20th Century Blues }
   anxious-sounding-trees:                    { doc: 1SGWXbWjBmoeRPXiMpHx8qIz3zxr-Bo0b6xUkxoIz_Wc, title: Anxious Sounding Trees }
   by-the-numbers:                            { doc: 1DJVhMxIYAFUXkbmi9eWHThMoosS7JtFfT2Qm8mx-4MU, title: By the Numbers }
   clack-clack-clack:                         { doc: 12SlHOZgCUMJV_BgNaSORjtuDe6Di_RiuDhwWqDs2PgA, title: Clack Clack Clack }
@@ -112,15 +111,17 @@ assets:
   #
   # The button is the head the picture took off him, down on the boards
   # at his feet, on the dark left side of the deck where there is
-  # nothing else to look at. It leads to 20th Century Blues, which no
-  # path from the root reaches - a poem whose second line is what this
-  # picture shows: "You see me standing, as though I'm fine."
+  # nothing else to look at. It leads where the picture leads. The
+  # other three buttons on this site each open a poem of their own, but
+  # this one is not a second way out - it is the way out, made
+  # unmissable. A reader who does not think to click a photograph will
+  # click a head that bounces.
   "Cyborg Patton.jpg":
     title: Patton on the Rhine, with Clockwork
     overlay:
       - image: Patton head.png
         alt: The general's own head
-        to: 20th-century-blues
+        to: its-okay-if-it-doesnt-make-sense-at-firs
         width: 17
         left: 5
         bottom: 4
